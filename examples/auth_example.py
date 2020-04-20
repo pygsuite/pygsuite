@@ -1,4 +1,3 @@
-from pygsuite.constants import CLIENTS
 
 if __name__ == "__main__":
 

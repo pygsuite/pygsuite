@@ -63,7 +63,6 @@ class TableCell(BaseElement):
             })
 
         if font_size and text:
-            print(font_size)
             reqs.append({"updateTextStyle": {
                 "objectId": self.table_id,
                 "cellLocation": self.cell_location,
@@ -175,9 +174,10 @@ class TableRow(BaseElement):
 
 
 class Table(BaseElement):
-    def __init__(self, element, document):
+    def __init__(self, element, document, last):
         BaseElement.__init__(self, element, document)
         self._details = self._element.get('table')
+        self.last = last
 
     def __getitem__(self, item):
         return self.rows[item]

@@ -63,7 +63,6 @@ class TableCell(BaseElement):
             })
 
         if font_size and text:
-            print(font_size)
             reqs.append({"updateTextStyle": {
                 "objectId": self.table_id,
                 "cellLocation": self.cell_location,

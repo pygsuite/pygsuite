@@ -6,5 +6,3 @@ def get_credentials():
     return path.join(dirname, 'credentials.json')
 
 CREDENTIALS = environ.get('GOOGLE_APPLICATION_CREDENTIALS') or get_credentials()
-
-CLIENTS = Clients(CREDENTIALS)

@@ -2,6 +2,7 @@
 import ast
 import re
 import setuptools
+import pathlib
 
 _version_re = re.compile(r"__version__\s+=\s+(.*)")
 with open("pygsuite/__init__.py", "rb") as f:
@@ -24,6 +25,7 @@ setuptools.setup(
     author_email="ethan.dickinson@gmail.com",
     description="Packages for working with google suite products.",
     long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     packages=setuptools.find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=[install_requires],
     extras_require={},

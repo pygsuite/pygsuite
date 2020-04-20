@@ -36,9 +36,10 @@ class Text():
 
 
 class BaseElement(object):
-    def __init__(self, element, document):
+    def __init__(self, element, document, last):
         self._element = element
         self._document = document
+        self._last = last
 
     @property
     def id(self):

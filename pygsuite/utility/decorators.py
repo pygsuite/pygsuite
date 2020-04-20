@@ -19,6 +19,15 @@ import time
 from functools import wraps
 
 
+def safe_property(f):
+    @property
+    def wrapper(self, *args, **kwargs):
+        if len(self._change_queue)>0:
+            self.flush()
+        return f(self, *args, **kwargs)
+    return wrapper
+
+
 def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
     """
     Retry calling the decorated function using an exponential backoff.

@@ -8,12 +8,6 @@ if __name__ == "__main__":
     Clients.authorize_string(auth)
 
     document = Document(id = '1kJh3tPyXoDzu_TIltDAXHRiFj-X0XDlVUiOP0wz_M8E')
-    for object in document.body.content:
-        print(object)
-        print(object.start_index)
-        print(object.end_index)
-        print(getattr(object, 'text', None))
-    document.body.delete()
-
-    document.body.add_text('ABC123', style=True)
-    document.flush()
+    print(document._document)
+    print(document.body.content)
+    # print(vars(document._document))
