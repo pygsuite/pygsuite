@@ -1,9 +1,10 @@
 from pygsuite.docs.body import Body
 
 
-class Document():
+class Document:
     def __init__(self, id=None, name=None, client=None, _document=None):
         from pygsuite import Clients
+
         client = client or Clients.docs_client
         self.service = client
         self.id = id
@@ -11,7 +12,7 @@ class Document():
         self._change_queue = []
 
     def id(self):
-        return self._document['id']
+        return self._document["id"]
 
     def _mutation(self, reqs, flush=False):
         if not reqs:
@@ -22,8 +23,11 @@ class Document():
 
     def flush(self):
         if self._change_queue:
-            out = self.service.documents().batchUpdate(body={'requests': self._change_queue},
-                                                       documentId=self.id).execute()['replies']
+            out = (
+                self.service.documents()
+                .batchUpdate(body={"requests": self._change_queue}, documentId=self.id)
+                .execute()["replies"]
+            )
         else:
             return []
         self._change_queue = []
@@ -42,7 +46,7 @@ class Document():
 
     @property
     def body(self):
-        return Body(self._document.get('body'), self)
+        return Body(self._document.get("body"), self)
 
     @property
     def footers(self):
@@ -58,7 +62,7 @@ class Document():
 
     @property
     def title(self):
-        return self._document.get('title')
+        return self._document.get("title")
 
     @title.setter
     def title(self, x):

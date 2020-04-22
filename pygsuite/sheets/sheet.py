@@ -1,6 +1,7 @@
 from .worksheet import Worksheet
 
-class Spreadsheet():
+
+class Spreadsheet:
     def __init__(self, service, id):
         self.service = service
         self.id = id
@@ -8,11 +9,14 @@ class Spreadsheet():
         self._change_queue = []
 
     def id(self):
-        return self._sheet['id']
+        return self._sheet["id"]
 
     def flush(self):
-        out = self.service.presentations().batchUpdate(body={'requests': self._change_queue},
-                                                       presentationId=self.id).execute()['replies']
+        out = (
+            self.service.presentations()
+            .batchUpdate(body={"requests": self._change_queue}, presentationId=self.id)
+            .execute()["replies"]
+        )
         self._change_queue = []
         self.refresh()
         return out
@@ -26,4 +30,3 @@ class Spreadsheet():
 
     def refresh(self):
         self._sheet = self.service.open_by_key(self.id)
-

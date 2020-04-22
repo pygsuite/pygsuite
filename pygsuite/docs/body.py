@@ -16,9 +16,11 @@ class Body(object):
 
     @property
     def content(self):
-        content_len = len(self._body.get('content'))
-        return [DocElement(element, self._document, idx == content_len - 1) for idx, element in
-                enumerate(self._body.get('content'))]
+        content_len = len(self._body.get("content"))
+        return [
+            DocElement(element, self._document, idx == content_len - 1)
+            for idx, element in enumerate(self._body.get("content"))
+        ]
 
     def delete(self, flush=True):
         # save the last character of the last element
@@ -47,41 +49,42 @@ class Body(object):
     def __getitem__(self, item):
         return self.content[item]
 
-    def __setitem__(self, index, value, style = None):
+    def __setitem__(self, index, value, style=None):
         self.content[index] = value
 
     def add_text(self, text, position=None, style=None):
-        message = {'insertText': {'text': text,
-                                         }}
+        message = {"insertText": {"text": text}}
         if position:
-            message['insertText']['location'] = {
-                "index": position
-            }
+            message["insertText"]["location"] = {"index": position}
         else:
-            message['insertText']['endOfSegmentLocation'] = {}
+            message["insertText"]["endOfSegmentLocation"] = {}
         self._document._mutation([message])
         if style:
             updated = self._document.flush()[-1]
             print(updated)
 
-
-
+    def add_image(self, uri, position=None):
+        message = {
+            "insertInlineImage": {
+                "uri": uri,
+                # "objectSize": {
+                #     object (Size)
+                # }
+            }
+        }
+        if position:
+            message["insertInlineImage"]["location"] = {"index": position}
+        else:
+            message["insertInlineImage"]["endOfSegmentLocation"] = {}
+        self._document._mutation([message])
 
     def style(self, text):
-        message = {"updateTextStyle": {
-            "objectId": self.table_id,
-            "cellLocation": self.cell_location,
-            "style":
-                {
-                    "fontSize":
-                        {"magnitude": font_size,
-                         "unit": "PT"}
-
-
-                },
-            "textRange": {
-                "type": "ALL"
-            },
-            "fields": "fontSize"
-        }
+        message = {
+            "updateTextStyle": {
+                "objectId": self.table_id,
+                "cellLocation": self.cell_location,
+                "style": {"fontSize": {"magnitude": font_size, "unit": "PT"}},
+                "textRange": {"type": "ALL"},
+                "fields": "fontSize",
+            }
         }

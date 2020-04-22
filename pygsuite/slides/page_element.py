@@ -6,19 +6,18 @@ from .page_elements.base_element import BaseElement
 from .page_elements.table import Table
 from .page_elements.image import Image
 
+
 class PageElement(object):
     def __init__(self, element, presentation):
         self._element = element
         self._presentation = presentation
 
     def __new__(cls, element, presentation):
-        if element.get('shape'):
+        if element.get("shape"):
             return Shape(element, presentation)
-        elif element.get('table'):
+        elif element.get("table"):
             return Table(element, presentation)
-        elif element.get('image'):
+        elif element.get("image"):
             return Image(element, presentation)
         else:
             return BaseElement(element, presentation)
-
-
