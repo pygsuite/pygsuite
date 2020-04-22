@@ -1,4 +1,7 @@
 from pygsuite.docs.body import Body
+from pygsuite.docs.footers import Footers
+from pygsuite.docs.footnotes import Footnotes
+from pygsuite.docs.headers import Headers
 
 
 class Document:

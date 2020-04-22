@@ -1,10 +1,7 @@
-from dataclasses import dataclass
-from typing import List, Dict
-
-from .page_elements.shape import Shape
 from .page_elements.base_element import BaseElement
-from .page_elements.table import Table
 from .page_elements.image import Image
+from .page_elements.shape import Shape
+from .page_elements.table import Table
 
 
 class PageElement(object):

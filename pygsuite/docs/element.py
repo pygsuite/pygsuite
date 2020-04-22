@@ -1,10 +1,8 @@
-from dataclasses import dataclass
-from typing import List, Dict
-
-from .doc_elements.paragraph import Paragraph
 from .doc_elements.base_element import BaseElement
+from .doc_elements.paragraph import Paragraph
 from .doc_elements.section_break import SectionBreak
 from .doc_elements.table import Table
+
 
 # from .doc_elements.image import Image
 

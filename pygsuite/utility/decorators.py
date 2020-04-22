@@ -1,3 +1,5 @@
+import time
+from functools import wraps
 from types import MethodType
 
 
@@ -14,10 +16,6 @@ class lazy_property(object):
 
         setattr(obj, "_method_{}".format(self.func_name), MethodType(self.fget, obj))
         return value
-
-
-import time
-from functools import wraps
 
 
 def safe_property(f):

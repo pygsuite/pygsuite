@@ -79,12 +79,14 @@ class Body(object):
         self._document._mutation([message])
 
     def style(self, text):
+        # TODO: finish this method
         message = {
             "updateTextStyle": {
                 "objectId": self.table_id,
                 "cellLocation": self.cell_location,
-                "style": {"fontSize": {"magnitude": font_size, "unit": "PT"}},
+                "style": {"fontSize": {"magnitude": 1, "unit": "PT"}},
                 "textRange": {"type": "ALL"},
                 "fields": "fontSize",
             }
         }
+        return message

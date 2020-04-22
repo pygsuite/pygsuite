@@ -1,7 +1,8 @@
-import pytest
-import json
-from pygsuite.docs.document import Document
 from ast import literal_eval
+
+import pytest
+
+from pygsuite.docs.document import Document
 
 
 @pytest.fixture

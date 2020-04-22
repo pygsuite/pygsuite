@@ -1,5 +1,4 @@
 from os import environ, path
-from pygsuite.auth import Clients
 
 
 def get_credentials():

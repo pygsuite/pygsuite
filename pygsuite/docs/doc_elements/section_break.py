@@ -1,14 +1,3 @@
-from .paragraph_elements import (
-    AutoText,
-    ColumnBreak,
-    HorizontalRule,
-    PageBreak,
-    TextRun,
-    FootnoteReference,
-    Equation,
-)
-
-
 class SectionBreak(object):
     def __init__(self, element, document, last):
         self._element = element

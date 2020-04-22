@@ -78,7 +78,7 @@ class Presentation:
             else:
                 id = layout
             base["slideLayoutReference"] = {"layoutId": id}
-        if not index is None:
+        if not index is None:  # noqa: E714
             base["insertionIndex"] = index
         if placeholders is not None:
             if not layout:
