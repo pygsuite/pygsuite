@@ -1,3 +1,3 @@
 from .authorization import Clients
 
-__all__ = ['Clients']
+__all__ = ["Clients"]

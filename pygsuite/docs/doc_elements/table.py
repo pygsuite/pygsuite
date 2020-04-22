@@ -9,36 +9,29 @@ class TableCell(BaseElement):
         self.column_index = column_index
 
     def __repr__(self):
-        return f'cell {self.row_index} by {self.column_index} in table {self.table_id}'
+        return f"cell {self.row_index} by {self.column_index} in table {self.table_id}"
 
     @property
     def text(self):
-        if self._element.get('text'):
-            return Text(self._element.get('text')).text
+        if self._element.get("text"):
+            return Text(self._element.get("text")).text
         return None
 
     @property
     def cell_location(self):
-        return {
-            "rowIndex": self.row_index,
-            "columnIndex": self.column_index
-        }
+        return {"rowIndex": self.row_index, "columnIndex": self.column_index}
 
     def update_text(self, text, bullets=False, font_size=None, **kwargs):
         # only delete text if there is some
         if self.text:
             reqs = [
-
-
                 {
                     "deleteText": {
                         "objectId": self.table_id,
                         "cellLocation": self.cell_location,
-                        "textRange": {
-                            "type": "ALL"
-                        }
+                        "textRange": {"type": "ALL"},
                     }
-                },
+                }
             ]
         else:
             reqs = []
@@ -48,41 +41,36 @@ class TableCell(BaseElement):
                     "objectId": self.table_id,
                     "cellLocation": self.cell_location,
                     "text": text,
-                    "insertionIndex": 0
+                    "insertionIndex": 0,
                 }
-            }]
+            }
+        ]
 
         if bullets and text:
-            reqs.append({"createParagraphBullets": {
-                "objectId": self.table_id,
-                "cellLocation": self.cell_location,
-                "textRange": {
-                    "type": "ALL"
+            reqs.append(
+                {
+                    "createParagraphBullets": {
+                        "objectId": self.table_id,
+                        "cellLocation": self.cell_location,
+                        "textRange": {"type": "ALL"},
+                    }
                 }
-            }
-            })
+            )
 
         if font_size and text:
-            reqs.append({"updateTextStyle": {
-                "objectId": self.table_id,
-                "cellLocation": self.cell_location,
-                "style":
-                    {
-                        "fontSize":
-                            {"magnitude": font_size,
-                             "unit": "PT"}
-
-
-                    },
-                "textRange": {
-                    "type": "ALL"
-                },
-                "fields": "fontSize"
-            }
-            })
+            reqs.append(
+                {
+                    "updateTextStyle": {
+                        "objectId": self.table_id,
+                        "cellLocation": self.cell_location,
+                        "style": {"fontSize": {"magnitude": font_size, "unit": "PT"}},
+                        "textRange": {"type": "ALL"},
+                        "fields": "fontSize",
+                    }
+                }
+            )
 
         return self._document._mutation(reqs)
-
 
     def set_background_color(self, theme_color=None, rgb_color=None):
         assert theme_color or rgb_color
@@ -91,33 +79,29 @@ class TableCell(BaseElement):
         if theme_color:
             color = {"themeColor": theme_color}
         elif rgb_color:
-            color = {'rgbColor': {
-                "red": rgb_color[0]/256,
-                "green": rgb_color[1]/256,
-                "blue": rgb_color[2]/256,
-            }}
+            color = {
+                "rgbColor": {
+                    "red": rgb_color[0] / 256,
+                    "green": rgb_color[1] / 256,
+                    "blue": rgb_color[2] / 256,
+                }
+            }
         else:
-            raise ValueError('No color provided')
+            raise ValueError("No color provided")
 
-        reqs = [{'updateTableCellProperties': {
-            "objectId": self.table_id,
-            "tableRange": {'location': self.cell_location, 'rowSpan': 1, 'columnSpan': 1},
-            "tableCellProperties": {
-                "tableCellBackgroundFill": {
-
-                    "solidFill":
-                        {
-                            "color": color,
-                            "alpha": 1
-                        }
-
-                },
-            },
-            "fields": "tableCellBackgroundFill.solidFill.color"
-        }}
+        reqs = [
+            {
+                "updateTableCellProperties": {
+                    "objectId": self.table_id,
+                    "tableRange": {"location": self.cell_location, "rowSpan": 1, "columnSpan": 1},
+                    "tableCellProperties": {
+                        "tableCellBackgroundFill": {"solidFill": {"color": color, "alpha": 1}}
+                    },
+                    "fields": "tableCellBackgroundFill.solidFill.color",
+                }
+            }
         ]
         self._document._mutation(reqs)
-
 
     def set_border_color(self, theme_color=None, rgb_color=None, weight=2):
         assert theme_color or rgb_color
@@ -126,37 +110,31 @@ class TableCell(BaseElement):
         if theme_color:
             color = {"themeColor": theme_color}
         elif rgb_color:
-            color = {'rgbColor': {
-                "red": rgb_color[0]/256,
-                "green": rgb_color[1]/256,
-                "blue": rgb_color[2]/256,
-            }}
-        else:
-            raise ValueError('No color provided')
-
-        reqs = [{'updateTableBorderProperties': {
-            "objectId": self.table_id,
-            "tableRange": {'location': self.cell_location, 'rowSpan': 1, 'columnSpan': 1},
-            "tableBorderProperties": {
-                "tableBorderFill": {
-
-                    "solidFill":
-                        {
-                            "color": color,
-                            "alpha": 1
-                        },
-
-                },
-                "weight": {
-                    "magnitude": weight,
-                    "unit": 'PT'
+            color = {
+                "rgbColor": {
+                    "red": rgb_color[0] / 256,
+                    "green": rgb_color[1] / 256,
+                    "blue": rgb_color[2] / 256,
                 }
-            },
-            "fields": "tableBorderFill.solidFill.color,weight.magnitude",
+            }
+        else:
+            raise ValueError("No color provided")
 
-        }}
+        reqs = [
+            {
+                "updateTableBorderProperties": {
+                    "objectId": self.table_id,
+                    "tableRange": {"location": self.cell_location, "rowSpan": 1, "columnSpan": 1},
+                    "tableBorderProperties": {
+                        "tableBorderFill": {"solidFill": {"color": color, "alpha": 1}},
+                        "weight": {"magnitude": weight, "unit": "PT"},
+                    },
+                    "fields": "tableBorderFill.solidFill.color,weight.magnitude",
+                }
+            }
         ]
         self._document._mutation(reqs)
+
 
 class TableRow(BaseElement):
     def __init__(self, element, document, table_id, row_index):
@@ -166,8 +144,16 @@ class TableRow(BaseElement):
 
     @property
     def cells(self):
-        return [TableCell(val, self._document, table_id=self.table_id, column_index=idx, row_index=self.row_index)
-                for idx, val in enumerate(self._element['tableCells'])]
+        return [
+            TableCell(
+                val,
+                self._document,
+                table_id=self.table_id,
+                column_index=idx,
+                row_index=self.row_index,
+            )
+            for idx, val in enumerate(self._element["tableCells"])
+        ]
 
     def __getitem__(self, item):
         return self.cells[item]
@@ -176,7 +162,7 @@ class TableRow(BaseElement):
 class Table(BaseElement):
     def __init__(self, element, document, last):
         BaseElement.__init__(self, element, document)
-        self._details = self._element.get('table')
+        self._details = self._element.get("table")
         self.last = last
 
     def __getitem__(self, item):
@@ -188,20 +174,22 @@ class Table(BaseElement):
 
     @property
     def row_count(self):
-        return self._details['rows']
+        return self._details["rows"]
 
     @property
     def column_count(self):
-        return self._details['columns']
+        return self._details["columns"]
 
     @property
     def rows(self):
-        return [TableRow(row, self._document, self.id, idx) for idx, row in enumerate(self._details['tableRows'])
-                ]
+        return [
+            TableRow(row, self._document, self.id, idx)
+            for idx, row in enumerate(self._details["tableRows"])
+        ]
 
     @property
     def id(self):
-        return self._element['objectId']
+        return self._element["objectId"]
 
     @property
     def children(self):

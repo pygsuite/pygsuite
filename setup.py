@@ -1,8 +1,8 @@
 # type: ignore
 import ast
 import re
+
 import setuptools
-import pathlib
 
 _version_re = re.compile(r"__version__\s+=\s+(.*)")
 with open("pygsuite/__init__.py", "rb") as f:
@@ -12,10 +12,8 @@ with open("pygsuite/__init__.py", "rb") as f:
         raise SystemExit(1)
     version = str(ast.literal_eval(_match.group(1)))
 
-
 with open("requirements.txt", "r") as f:
     install_requires = [line.strip().replace("==", ">=") for line in f.readlines()]
-
 
 setuptools.setup(
     name="pygsuite",

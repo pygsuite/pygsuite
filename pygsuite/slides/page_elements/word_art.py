@@ -1,5 +1,4 @@
-
-''' "elementGroup": {
+""" "elementGroup": {
     object (Group)
   },
   "shape": {
@@ -22,4 +21,4 @@
   },
   "sheetsChart": {
     object (SheetsChart)
-  }'''
+  }"""

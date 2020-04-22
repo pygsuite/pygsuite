@@ -1,43 +1,44 @@
-
 class BaseTextElement(object):
     def __init__(self, element, presentation):
         self._element = element
         self._presentation = presentation
 
     def end_index(self):
-        return self._element.get('endIndex')
+        return self._element.get("endIndex")
 
     def start_index(self):
-        return self._element.get('startIndex')
+        return self._element.get("startIndex")
 
     def text_run(self):
-        return self._element.get('textRun')
+        return self._element.get("textRun")
+
 
 class TextRun(BaseTextElement):
     def __init__(self, element, presentation):
         BaseTextElement.__init__(self, element, presentation)
-        self._detail = element.get('textRun')
+        self._detail = element.get("textRun")
 
     @property
     def content(self):
-        return self._detail.get('content')
+        return self._detail.get("content")
 
     def style(self):
-        return self._detail.get('style')
+        return self._detail.get("style")
+
 
 class ParagraphMarker(BaseTextElement):
     def __init__(self, element, presentation):
         BaseTextElement.__init__(self, element, presentation)
-        self._detail = element.get('paragraphMarker')
+        self._detail = element.get("paragraphMarker")
 
     def style(self):
-        return self._detail.get('style')
+        return self._detail.get("style")
 
     def bullet(self):
-        return self._detail.get('bullet')
+        return self._detail.get("bullet")
 
-    
-'''"textElements": [ {
+
+""""textElements": [ {
     "endIndex": 224,
     "paragraphMarker": { "style": {} }
   }, {
@@ -92,4 +93,4 @@ class ParagraphMarker(BaseTextElement):
     "endIndex": 500,
     "startIndex": 277,
     "textRun": { "content": "Ka swu thefognay, tay waddeant varpa u inzo.\n", "style": {} }
-}]'''
+}]"""

@@ -1,3 +1,5 @@
+import time
+from functools import wraps
 from types import MethodType
 
 
@@ -15,16 +17,14 @@ class lazy_property(object):
         setattr(obj, "_method_{}".format(self.func_name), MethodType(self.fget, obj))
         return value
 
-import time
-from functools import wraps
-
 
 def safe_property(f):
     @property
     def wrapper(self, *args, **kwargs):
-        if len(self._change_queue)>0:
+        if len(self._change_queue) > 0:
             self.flush()
         return f(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -41,8 +41,8 @@ def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
             each retry).
         logger: Logger to use. If None, print.
     """
-    def deco_retry(f):
 
+    def deco_retry(f):
         @wraps(f)
         def f_retry(*args, **kwargs):
             mtries, mdelay = tries, delay
@@ -50,7 +50,7 @@ def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
                 try:
                     return f(*args, **kwargs)
                 except exceptions as e:
-                    msg = '{}, Retrying in {} seconds...'.format(e, mdelay)
+                    msg = "{}, Retrying in {} seconds...".format(e, mdelay)
                     if logger:
                         logger.warning(msg)
                     else:
