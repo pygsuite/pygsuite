@@ -13,8 +13,8 @@ class Spreadsheet:
 
     def flush(self):
         out = (
-            self.service.presentations()
-            .batchUpdate(body={"requests": self._change_queue}, presentationId=self.id)
+            self.service.spreadsheets()
+            .batchUpdate(body={"requests": self._change_queue}, spreadsheetId=self.id)
             .execute()["replies"]
         )
         self._change_queue = []
