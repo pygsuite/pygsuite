@@ -1,3 +1,6 @@
+from typing import List
+
+from pygsuite.common.style import TextStyle
 from pygsuite.docs.element import DocElement
 
 
@@ -15,7 +18,7 @@ class Body(object):
         self._document = document
 
     @property
-    def content(self):
+    def content(self) -> List[DocElement]:
         content_len = len(self._body.get("content"))
         return [
             DocElement(element, self._document, idx == content_len - 1)
@@ -28,14 +31,11 @@ class Body(object):
             object.delete()
         if flush:
             self._document.flush()
+        self.content = []
 
     @content.setter
     def content(self, x):
-        raise NotImplementedError
-
-    @content.setter
-    def content(self, x):
-        raise NotImplementedError
+        self._body["content"] = x
 
     @property
     def start_index(self):
@@ -52,16 +52,43 @@ class Body(object):
     def __setitem__(self, index, value, style=None):
         self.content[index] = value
 
-    def add_text(self, text, position=None, style=None):
+    def add_text(self, text: str, position: int = None, style: TextStyle = None):
+        if style and not position:
+            # if there are pending changes
+            # we need to flush them to infer proper style positioning
+            self._document.flush()
         message = {"insertText": {"text": text}}
-        if position:
+        if position is not None:
             message["insertText"]["location"] = {"index": position}
         else:
             message["insertText"]["endOfSegmentLocation"] = {}
-        self._document._mutation([message])
+        queued = [message]
+
         if style:
-            updated = self._document.flush()[-1]
-            print(updated)
+            start = position
+
+            if position is None:
+                start = self.content[-1].end_index - 1 if self.content else 1
+
+            end = start + len(text)
+
+            fields, style = style.to_doc_style()
+            queued.append(
+                {
+                    "updateTextStyle": {
+                        "range": {"startIndex": start, "endIndex": end},
+                        "textStyle": style,
+                        "fields": fields,
+                    }
+                }
+            )
+
+        self._document._mutation(queued)
+
+        if style and not position:
+            # we need to force a flush here, as the assumed indices
+            # will not be accurate after multiple queued changes
+            self._document.flush()
 
     def add_image(self, uri, position=None):
         message = {
@@ -78,15 +105,14 @@ class Body(object):
             message["insertInlineImage"]["endOfSegmentLocation"] = {}
         self._document._mutation([message])
 
-    def style(self, text):
+    def style(self, style: TextStyle, start: int, end: int):
         # TODO: finish this method
+        fields, style = style.to_doc_style()
         message = {
             "updateTextStyle": {
-                "objectId": self.table_id,
-                "cellLocation": self.cell_location,
-                "style": {"fontSize": {"magnitude": 1, "unit": "PT"}},
-                "textRange": {"type": "ALL"},
-                "fields": "fontSize",
+                "textStyle": style,
+                "range": {"startIndex": start, "endIndex": end},
+                "fields": fields,
             }
         }
         return message

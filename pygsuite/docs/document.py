@@ -2,6 +2,8 @@ from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
+from pygsuite.utility.decorators import retry
+from googleapiclient.errors import HttpError
 
 
 class Document:
@@ -24,15 +26,28 @@ class Document:
         if flush:
             return self.flush()
 
-    def flush(self):
-        if self._change_queue:
-            out = (
-                self.service.documents()
-                .batchUpdate(body={"requests": self._change_queue}, documentId=self.id)
-                .execute()["replies"]
-            )
+    @retry((HttpError), tries=3, delay=10, backoff=5)
+    def flush(self, reverse=False):
+        print(self._change_queue)
+        if reverse:
+            base = reversed(self._change_queue)
         else:
+            base = self._change_queue
+        final = []
+        for item in base:
+            if isinstance(item, list):
+                for i in item:
+                    final.append(i)
+            else:
+                final.append(item)
+        if not base:
             return []
+        out = (
+            self.service.documents()
+            .batchUpdate(body={"requests": final}, documentId=self.id)
+            .execute()["replies"]
+        )
+
         self._change_queue = []
         self.refresh()
         return out
@@ -72,4 +87,4 @@ class Document:
         raise NotImplementedError
 
     def refresh(self):
-        self._sheet = self.service.documents().get(documentId=self.id).execute()
+        self._document = self.service.documents().get(documentId=self.id).execute()
