@@ -44,7 +44,7 @@ class Spreadsheet:
     def get_data_from_ranges(self, ranges):
 
         get_response = self._client.spreadsheets().values().batchGet(
-            spreadsheetId=self._spreadsheetId, ranges=ranges).execute()
+            spreadsheetId=self.id, ranges=ranges).execute()
 
         dfs = dict()
 
