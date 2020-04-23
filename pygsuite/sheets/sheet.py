@@ -15,7 +15,6 @@ class Spreadsheet:
         self.id = id
         self._sheet = service.open_by_key(id)
         self._batchUpdate_queue = []
-        # self._batchGet_queue = []
 
     def id(self):
         return self._sheet["id"]
