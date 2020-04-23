@@ -1,6 +1,7 @@
 import pandas as pd
 
-from .worksheet import Worksheet
+from pygsuite.sheets.worksheet import Worksheet
+from pygsuite.utility.decorators import retry
 
 
 class Spreadsheet:
@@ -19,11 +20,17 @@ class Spreadsheet:
     def id(self):
         return self._sheet["id"]
 
-    def flush(self):
+    @retry((HttpError), tries=3, delay=10, backoff=5)
+    def flush(self, reverse=False):
+
+        if reverse:
+            base = reversed(self._batchUpdate_queue)
+        else:
+            base = self._batchUpdate_queue
 
         update_response = (
             self.service.spreadsheets()
-            .batchUpdate(body={"requests": self._batchUpdate_queue}, spreadsheetId=self.id)
+            .batchUpdate(body={"requests": base}, spreadsheetId=self.id)
             .execute()["replies"]
         )
         self._batchUpdate_queue = []
@@ -75,3 +82,5 @@ class Spreadsheet:
         }
 
         self._batchUpdate_queue.append(request)
+
+    def
