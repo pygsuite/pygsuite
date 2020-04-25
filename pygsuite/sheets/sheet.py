@@ -37,7 +37,11 @@ class Spreadsheet:
             try:
                 return [worksheet for worksheet in self.worksheets if worksheet.name == key][0]
             except ValueError:
-                raise ValueError("No worksheet with the title '{key}' exists. The worksheets included in your spreadsheet are: {worksheets}".format(key=key, worksheets=[worksheet.name for worksheet in self.worksheets]))
+                raise ValueError(
+                    "No worksheet with the title '{key}' exists. The worksheets included in your spreadsheet are: {worksheets}".format(
+                        key=key, worksheets=[worksheet.name for worksheet in self.worksheets]
+                    )
+                )
         else:
             raise ValueError("Please enter the sheet index or name you are trying to get.")
 
@@ -54,8 +58,7 @@ class Spreadsheet:
             base = self._spreadsheets_batchUpdate_queue
 
         update_response = (
-            self.service
-            .spreadsheets()
+            self.service.spreadsheets()
             .batchUpdate(body={"requests": base}, spreadsheetId=self.id)
             .execute()["responses"]
         )

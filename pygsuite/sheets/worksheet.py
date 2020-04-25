@@ -15,7 +15,6 @@ def index_to_alphabet(idx):
 
 
 class Worksheet(object):
-
     def __init__(self, worksheet, spreadsheet):
         self._worksheet = worksheet
         self._spreadsheet = spreadsheet
