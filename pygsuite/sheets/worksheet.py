@@ -15,6 +15,7 @@ def index_to_alphabet(idx):
 
 
 class Worksheet(object):
+
     def __init__(self, worksheet, spreadsheet):
         self._worksheet = worksheet
         self._spreadsheet = spreadsheet
@@ -38,10 +39,6 @@ class Worksheet(object):
     @property
     def column_count(self):
         return self._properties["gridProperties"]["columnCount"]
-
-    # @property
-    # def values(self):
-    #     return self._spreadsheet.values_get(self.name)
 
     def range_from_indexes(self, startcol, startrow, endcol, endrow):
 
