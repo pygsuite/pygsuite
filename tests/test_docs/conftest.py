@@ -7,5 +7,5 @@ from pygsuite.docs.document import Document
 
 @pytest.fixture
 def test_document():
-    with open("test_document.json") as file:
+    with open("test_document.json_capture") as file:
         return Document(_document=literal_eval(file.read()))
