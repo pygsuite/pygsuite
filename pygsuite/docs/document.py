@@ -7,9 +7,11 @@ from googleapiclient.errors import HttpError
 
 
 class Document:
-    def __init__(self, id=None, name=None, client=None, _document=None):
+    def __init__(self, id=None, name=None, client=None, _document=None, local=False):
         from pygsuite import Clients
 
+        if local:
+            client = client or Clients.local_docs_client
         client = client or Clients.docs_client
         self.service = client
         self.id = id
