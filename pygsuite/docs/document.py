@@ -25,7 +25,7 @@ class Document:
         if not local:
             client = client or Clients.docs_client
         self.service = client
-        self.id = parse_id(id)
+        self.id = parse_id(id) if id else None
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
 
