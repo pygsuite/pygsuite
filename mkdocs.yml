@@ -20,6 +20,5 @@ theme: material
 #  - "auto"
 markdown_extensions:
   - codehilite
-  - urlize
   - admonition
 
