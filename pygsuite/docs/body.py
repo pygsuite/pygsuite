@@ -13,9 +13,14 @@ class Body(object):
 
     def __init__(self, body, document):
         # TODO
-        self._body = body
+        # self._body = body
         # self._properties = slide['slideProperties']
         self._document = document
+        self._pending = []
+
+    @property
+    def _body(self):
+        return self._document._document.get("body")
 
     @property
     def content(self) -> List[DocElement]:
@@ -43,19 +48,37 @@ class Body(object):
 
     @property
     def end_index(self):
-        return self.content[-1].end_index
+        return self.content[-1].end_index + sum(self._pending)
 
-    #
+    @property
+    def _end_index_append(self):
+        if not self._pending and not self.content:
+            return 1
+        elif not self.content:
+            return sum(self._pending)
+        else:
+            return self.content[-1].end_index + sum(self._pending)
+
     def __getitem__(self, item):
         return self.content[item]
 
     def __setitem__(self, index, value, style=None):
         self.content[index] = value
 
+    def newline(self, count: int = 1):
+        self.add_text("\n" * count)
+
+    def flush(self):
+        self._document.flush()
+
     def add_text(self, text: str, position: int = None, style: TextStyle = None):
-        if style and not position:
+        self._pending.append(len(text))
+        if style and not position and self._document._change_queue:
             # if there are pending changes
-            # we need to flush them to infer proper style positioning
+            # we currently need to flush them to infer proper style positioning
+            # TODO: calculate this virtually
+            # We could get the size of each pending object, track it, and infer the appropriate style index
+            # without flushing
             self._document.flush()
         message = {"insertText": {"text": text}}
         if position is not None:
@@ -66,11 +89,15 @@ class Body(object):
 
         if style:
             start = position
-
             if position is None:
-                start = self.content[-1].end_index - 1 if self.content else 1
+                if not self.content:
+                    start = 1
 
-            end = start + len(text)
+                    end = start + len(text)
+                else:
+                    start = self.content[-1].end_index - 1
+
+                    end = start + len(text)
 
             fields, style = style.to_doc_style()
             queued.append(
@@ -84,11 +111,6 @@ class Body(object):
             )
 
         self._document._mutation(queued)
-
-        if style and not position:
-            # we need to force a flush here, as the assumed indices
-            # will not be accurate after multiple queued changes
-            self._document.flush()
 
     def add_image(self, uri, position=None):
         message = {

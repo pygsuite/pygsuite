@@ -1,9 +1,21 @@
+from googleapiclient.errors import HttpError
+
 from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
 from pygsuite.utility.decorators import retry
-from googleapiclient.errors import HttpError
+
+
+def parse_id(input_id: str) -> str:
+    if "/" in input_id:
+        portions = input_id.split("/")
+        for idx, val in enumerate(portions):
+            if val == "d":
+                return portions[idx + 1]
+        raise ValueError("Unable to parse ID from input")
+    else:
+        return input_id
 
 
 class Document:
@@ -13,8 +25,8 @@ class Document:
         if not local:
             client = client or Clients.docs_client
         self.service = client
-        self.id = id
-        self._document = _document or client.documents().get(documentId=id).execute()
+        self.id = parse_id(id)
+        self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
 
     def id(self):
@@ -89,3 +101,4 @@ class Document:
 
     def refresh(self):
         self._document = self.service.documents().get(documentId=self.id).execute()
+        self.body._pending = []
