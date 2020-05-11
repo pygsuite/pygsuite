@@ -1,7 +1,8 @@
-import pandas as pd
+# import pandas as pd
 from math import floor
+from string import ascii_letters, ascii_lowercase, ascii_uppercase
 
-ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+from pygsuite.common.style import BorderStyle
 
 
 def index_to_alphabet(idx):
@@ -9,9 +10,17 @@ def index_to_alphabet(idx):
     count = floor(idx / 26)
     remainder = idx % 26
     if count:
-        out = ALPHABET[count - 1]
-    out += ALPHABET[remainder - 1]
+        out = ascii_uppercase[count - 1]
+    out += ascii_uppercase[remainder - 1]
     return out
+
+
+def alphabet_to_index(cell_ref):
+    idx = 0
+    for char in cell_ref:
+        if char in ascii_letters:
+            idx = idx * 26 + (ord(char.upper()) - ord("A")) + 1
+    return idx - 1
 
 
 class Worksheet(object):
@@ -64,14 +73,54 @@ class Worksheet(object):
         values = self._spreadsheet.get_data_from_ranges(worksheet_range)
         return values
 
-    # @property
-    # def dataframe(self):
-    #     values = self.all_values
-    #     header = values[0]
-    #     processed = []
-    #     for row in values[1:]:
-    #         if len(row) < len(header):
-    #             diff = len(header) - len(row)
-    #             row += [""] * diff
-    #         processed.append(row)
-    #     return pd.DataFrame.from_records(processed, columns=header)
+    def format_borders(
+        self,
+        start_row_index,
+        end_row_index,
+        start_column_index,
+        end_column_index,
+        border_styles,
+    ):
+
+        request = {
+            "updateBorders": {
+                "range": {
+                    "sheetId": self.id,
+                    "startRowIndex": start_row_index,
+                    "endRowIndex": end_row_index,
+                    "startColumnIndex": start_column_index,
+                    "endColumnIndex": end_column_index
+                }
+            }
+        }
+
+        for border_style in border_styles:
+
+            request["updateBorders"][border_style.position] = border_style.to_json()
+
+        self._spreadsheet._spreadsheets_update_queue.append(request)
+
+    def format_cells(
+        self,
+        start_row_index,
+        end_row_index,
+        start_column_index,
+        end_column_index,
+        cell,
+    ):
+
+        request = {
+            "repeatCell": {
+                "range": {
+                    "sheetId": self.id,
+                    "startRowIndex": start_row_index,
+                    "endRowIndex": end_row_index,
+                    "startColumnIndex": start_column_index,
+                    "endColumnIndex": end_column_index
+                },
+                "cell": cell.to_json(),
+                "fields": "userEnteredFormat(textFormat)"
+            }
+        }
+
+        self._spreadsheet._spreadsheets_update_queue.append(request)

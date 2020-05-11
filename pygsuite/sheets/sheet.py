@@ -12,7 +12,7 @@ def create_new_spreadsheet(service, title):
     # TODO: add functionality to specify "filepath"?
 
     Args:
-        service (googleapiclient.discovery.Resource): connection to the Google API Sheets resource. 
+        service (googleapiclient.discovery.Resource): connection to the Google API Sheets resource.
         title (str): name for the new spreadsheet document
 
     Returns:
@@ -34,8 +34,7 @@ def create_new_spreadsheet(service, title):
 
     id = spreadsheet.get("spreadsheetId")
 
-    # TODO: do we want to return the Spreadsheet object instead? Or both?
-    return id
+    return Spreadsheet(service=service, id=id)
 
 
 class Spreadsheet:
@@ -51,7 +50,7 @@ class Spreadsheet:
     # DateTimeRenderOption objects: https://developers.google.com/sheets/api/reference/rest/v4/DateTimeRenderOption
     DATE_TIME_RENDER_OPTIONS = ["SERIAL_NUMBER", "FORMATTED_STRING"]
 
-    def __init__(self, service, id):
+    def __init__(self, id, client=None,):
         """Method to initialize the class.
 
         The __init__ method accepts a client connection to the Google API, which it uses to retrieve the properties
@@ -60,20 +59,20 @@ class Spreadsheet:
         Args:
             service (googleapiclient.discovery.Resource): connection to the Google API Sheets resource.
             id (str): id of the Google Spreadsheet. Spreadsheet id can be found in the Spreadsheet URL between /d/ and /edit, eg:
-
                 https://docs.google.com/spreadsheets/d/<spreadsheetId>/edit#gid=0
         """
 
-        self.service = service
+        from pygsuite import Clients
+        self.service = client or Clients.sheets_client
         self.id = id
 
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=id).execute()
         self._properties = self._spreadsheet.get("properties")
 
         # queues to add to and run in flush()
-        self._spreadsheets_batchUpdate_queue = []
-        self._values_batchUpdate_queue = []
-        self._values_batchGet_queue = []
+        self._spreadsheets_update_queue = []
+        self._values_update_queue = []
+        # self._values_get_queue = []
 
     def __getitem__(self, key):
 
@@ -101,33 +100,79 @@ class Spreadsheet:
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
 
     @retry((HttpError), tries=3, delay=10, backoff=5)
-    def flush(self, reverse=False):
+    def flush(self,
+              reverse=False,
+              value_input_option="RAW",
+              include_values_in_response=False,
+              response_value_render_option="FORMATTED_VALUE",
+              response_date_time_render_option="SERIAL_NUMBER"
+              ):
+
+        assert value_input_option in self.VALUE_INPUT_OPTIONS
+        assert response_value_render_option in self.VALUE_RENDER_OPTIONS
+        assert response_date_time_render_option in self.DATE_TIME_RENDER_OPTIONS
 
         if reverse:
-            base = reversed(self._spreadsheets_batchUpdate_queue)
+            _spreadsheets_update_queue = reversed(self._spreadsheets_update_queue)
+            _values_update_queue = reversed(self._values_update_queue)
+            # _values_get_queue = reversed(self._values_get_queue)
         else:
-            base = self._spreadsheets_batchUpdate_queue
+            _spreadsheets_update_queue = self._spreadsheets_update_queue
+            _values_update_queue = self._values_update_queue
+            # _values_get_queue = self._values_get_queue
 
         response_dict = dict()
 
-        response_dict["spreadsheets_batchUpdate_response"] = (
+        response_dict["spreadsheets_update_response"] = (
             self.service.spreadsheets()
-            .batchUpdate(body={"requests": base}, spreadsheetId=self.id)
-            .execute()["responses"]
+            .batchUpdate(body={"requests": _spreadsheets_update_queue}, spreadsheetId=self.id)
+            .execute()  # ["responses"]
         )
 
-        response_dict["values_batchUpdate_response"] = (
+        response_dict["values_update_response"] = (
             self.service.spreadsheets()
             .values()
-            .batchUpdate(spreadsheetId=self.id, body=self._values_batchUpdate_queue)
+            .batchUpdate(spreadsheetId=self.id, body={
+                "valueInputOption": value_input_option,
+                "data": _values_update_queue,
+                "includeValuesInResponse": include_values_in_response,
+                "responseValueRenderOption": response_value_render_option,
+                "responseDateTimeRenderOption": response_date_time_render_option,
+            })
+            .execute()  # ["responses"]
         )
 
-        self._spreadsheets_batchUpdate_queue = []
-        self._values_batchUpdate_queue = []
-        self._values_batchGet_queue = []
+        self._spreadsheets_update_queue = []
+        self._values_update_queue = []
+        # self._values_get_queue = []
         self.refresh()
 
         return response_dict
+
+    def create_sheet(self):
+
+        pass
+
+    def get_values_from_ranges(self, ranges,):
+
+        get_response = (
+            self.service.spreadsheets()
+            .values()
+            .batchGet(spreadsheetId=self.id, ranges=ranges)
+            .execute()
+        )
+
+        # TODO: because the request supports getting data from multiple ranges at once, this is a list
+        # however, the output of this is a litte bit messy at the moment--is a dict better or
+        # limiting this to read one valueRange at a time?
+        values_out = []
+
+        for value_range in get_response.get("valueRanges"):
+
+            values = value_range.get("values")
+            values_out.append(values)
+
+        return values_out
 
     def get_data_from_ranges(self, ranges):
 
@@ -143,63 +188,56 @@ class Spreadsheet:
 
         dfs = dict()
 
-        for valueRange in get_response.get("valueRanges"):
+        for value_range in get_response.get("valueRanges"):
 
             # TODO: do we want to handle header rows here, or leave that to end users?
             # if headers are optional, would the option be for each range of data being fetched?
 
-            values = valueRange.get("values")
+            values = value_range.get("values")
             df = pd.DataFrame.from_records(data=values)
-            dfs[valueRange.get("range")] = df
+            dfs[value_range.get("range")] = df
 
         return dfs
+
+    def insert_data(
+        self,
+        insert_range,
+        values,
+        major_dimension="ROWS",
+    ):
+
+        assert major_dimension in self.DIMENSIONS
+
+        value_range = {
+            "range": insert_range,
+            "majorDimension": major_dimension,
+            "values": values
+        }
+
+        self._values_update_queue.append(value_range)
+
+        return self
 
     def insert_data_from_df(
         self,
         df,
         insert_range,
-        # TODO: do we want these pythonic-ly named; something like value_input_option, major_dimension, etc.?
-        valueInputOption="RAW",
-        majorDimension="ROWS",
-        responseValueRenderOption="FORMATTED_VALUE",
-        responseDateTimeRenderOption="SERIAL_NUMBER",
+        major_dimension="ROWS",
     ):
 
-        # TODO: change to helpful exceptions
-
-        assert valueInputOption in self.VALUE_INPUT_OPTIONS
-        assert majorDimension in self.DIMENSIONS
-        assert responseValueRenderOption in self.VALUE_RENDER_OPTIONS
-        assert responseDateTimeRenderOption in self.DATE_TIME_RENDER_OPTIONS
+        # TODO: this insert_data_from_df method might be better as a method that we can
+        # attach to insert_data--something like: mySpreadsheet.insert_data().from_df()
 
         header = df.columns.values.tolist()
         data = df.values.tolist()
-
-        # TODO: should header be optional parameter?
-        # additionally, what about header row where header != column names of df?
 
         values = []
         if len(header) > 0:
             values.append(header)
         values.extend(data)
 
-        valueRange = {"range": insert_range, "majorDimension": majorDimension, "values": values}
-
-        request = {
-            "valueInputOption": valueInputOption,
-            "data": [valueRange],
-            "includeValuesInResponse": False,
-            "responseValueRenderOption": responseValueRenderOption,
-            "responseDateTimeRenderOption": responseDateTimeRenderOption,
-        }
-
-        self._values_batchUpdate_queue.append(request)
-
-        # response = (
-        #     self.service.spreadsheets()
-        #     .values()
-        #     .batchUpdate(spreadsheetId=self.id, body=request)
-        #     .execute()
-        # )
-
-        # return response
+        self.insert_data(
+            insert_range=insert_range,
+            values=values,
+            major_dimension=major_dimension,
+        )
