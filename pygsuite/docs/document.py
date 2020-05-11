@@ -1,17 +1,32 @@
+from googleapiclient.errors import HttpError
+
 from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
+from pygsuite.utility.decorators import retry
+
+
+def parse_id(input_id: str) -> str:
+    if "/" in input_id:
+        portions = input_id.split("/")
+        for idx, val in enumerate(portions):
+            if val == "d":
+                return portions[idx + 1]
+        raise ValueError("Unable to parse ID from input")
+    else:
+        return input_id
 
 
 class Document:
-    def __init__(self, id=None, name=None, client=None, _document=None):
+    def __init__(self, id=None, name=None, client=None, _document=None, local=False):
         from pygsuite import Clients
 
-        client = client or Clients.docs_client
+        if not local:
+            client = client or Clients.docs_client
         self.service = client
-        self.id = id
-        self._document = _document or client.documents().get(documentId=id).execute()
+        self.id = parse_id(id) if id else None
+        self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
 
     def id(self):
@@ -24,15 +39,28 @@ class Document:
         if flush:
             return self.flush()
 
-    def flush(self):
-        if self._change_queue:
-            out = (
-                self.service.documents()
-                .batchUpdate(body={"requests": self._change_queue}, documentId=self.id)
-                .execute()["replies"]
-            )
+    @retry((HttpError), tries=3, delay=10, backoff=5)
+    def flush(self, reverse=False):
+        print(self._change_queue)
+        if reverse:
+            base = reversed(self._change_queue)
         else:
+            base = self._change_queue
+        final = []
+        for item in base:
+            if isinstance(item, list):
+                for i in item:
+                    final.append(i)
+            else:
+                final.append(item)
+        if not base:
             return []
+        out = (
+            self.service.documents()
+            .batchUpdate(body={"requests": final}, documentId=self.id)
+            .execute()["replies"]
+        )
+
         self._change_queue = []
         self.refresh()
         return out
@@ -72,4 +100,5 @@ class Document:
         raise NotImplementedError
 
     def refresh(self):
-        self._sheet = self.service.documents().get(documentId=self.id).execute()
+        self._document = self.service.documents().get(documentId=self.id).execute()
+        self.body._pending = []
