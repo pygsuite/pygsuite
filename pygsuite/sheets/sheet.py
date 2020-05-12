@@ -20,17 +20,11 @@ def create_new_spreadsheet(service, title):
     """
 
     if not isinstance(title, str):
-        raise TypeError(
-            "The name of the spreadsheet must be given as a string.")
+        raise TypeError("The name of the spreadsheet must be given as a string.")
 
-    request = {
-        "properties": {
-            "title": title
-        }
-    }
+    request = {"properties": {"title": title}}
 
-    spreadsheet = service.spreadsheets().create(
-        body=request, fields="spreadsheetId").execute()
+    spreadsheet = service.spreadsheets().create(body=request, fields="spreadsheetId").execute()
 
     id = spreadsheet.get("spreadsheetId")
 
@@ -50,7 +44,9 @@ class Spreadsheet:
     # DateTimeRenderOption objects: https://developers.google.com/sheets/api/reference/rest/v4/DateTimeRenderOption
     DATE_TIME_RENDER_OPTIONS = ["SERIAL_NUMBER", "FORMATTED_STRING"]
 
-    def __init__(self, id, client=None,):
+    def __init__(
+        self, id, client=None,
+    ):
         """Method to initialize the class.
 
         The __init__ method accepts a client connection to the Google API, which it uses to retrieve the properties
@@ -63,6 +59,7 @@ class Spreadsheet:
         """
 
         from pygsuite import Clients
+
         self.service = client or Clients.sheets_client
         self.id = id
 
@@ -100,13 +97,14 @@ class Spreadsheet:
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
 
     @retry((HttpError), tries=3, delay=10, backoff=5)
-    def flush(self,
-              reverse=False,
-              value_input_option="RAW",
-              include_values_in_response=False,
-              response_value_render_option="FORMATTED_VALUE",
-              response_date_time_render_option="SERIAL_NUMBER"
-              ):
+    def flush(
+        self,
+        reverse=False,
+        value_input_option="RAW",
+        include_values_in_response=False,
+        response_value_render_option="FORMATTED_VALUE",
+        response_date_time_render_option="SERIAL_NUMBER",
+    ):
 
         assert value_input_option in self.VALUE_INPUT_OPTIONS
         assert response_value_render_option in self.VALUE_RENDER_OPTIONS
@@ -132,13 +130,16 @@ class Spreadsheet:
         response_dict["values_update_response"] = (
             self.service.spreadsheets()
             .values()
-            .batchUpdate(spreadsheetId=self.id, body={
-                "valueInputOption": value_input_option,
-                "data": _values_update_queue,
-                "includeValuesInResponse": include_values_in_response,
-                "responseValueRenderOption": response_value_render_option,
-                "responseDateTimeRenderOption": response_date_time_render_option,
-            })
+            .batchUpdate(
+                spreadsheetId=self.id,
+                body={
+                    "valueInputOption": value_input_option,
+                    "data": _values_update_queue,
+                    "includeValuesInResponse": include_values_in_response,
+                    "responseValueRenderOption": response_value_render_option,
+                    "responseDateTimeRenderOption": response_date_time_render_option,
+                },
+            )
             .execute()  # ["responses"]
         )
 
@@ -153,7 +154,9 @@ class Spreadsheet:
 
         pass
 
-    def get_values_from_ranges(self, ranges,):
+    def get_values_from_ranges(
+        self, ranges,
+    ):
 
         get_response = (
             self.service.spreadsheets()
@@ -200,29 +203,19 @@ class Spreadsheet:
         return dfs
 
     def insert_data(
-        self,
-        insert_range,
-        values,
-        major_dimension="ROWS",
+        self, insert_range, values, major_dimension="ROWS",
     ):
 
         assert major_dimension in self.DIMENSIONS
 
-        value_range = {
-            "range": insert_range,
-            "majorDimension": major_dimension,
-            "values": values
-        }
+        value_range = {"range": insert_range, "majorDimension": major_dimension, "values": values}
 
         self._values_update_queue.append(value_range)
 
         return self
 
     def insert_data_from_df(
-        self,
-        df,
-        insert_range,
-        major_dimension="ROWS",
+        self, df, insert_range, major_dimension="ROWS",
     ):
 
         # TODO: this insert_data_from_df method might be better as a method that we can
@@ -237,7 +230,5 @@ class Spreadsheet:
         values.extend(data)
 
         self.insert_data(
-            insert_range=insert_range,
-            values=values,
-            major_dimension=major_dimension,
+            insert_range=insert_range, values=values, major_dimension=major_dimension,
         )

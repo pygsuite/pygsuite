@@ -24,15 +24,7 @@ class Color:
 
     def to_json(self):
 
-        return {
-            "color": {
-                "rgbColor": {
-                    "red": self.red,
-                    "green": self.green,
-                    "blue": self.blue
-                }
-            }
-        }
+        return {"color": {"rgbColor": {"red": self.red, "green": self.green, "blue": self.blue}}}
 
     def to_sheet_style(self):
 

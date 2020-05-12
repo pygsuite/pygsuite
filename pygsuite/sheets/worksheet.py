@@ -24,7 +24,6 @@ def alphabet_to_index(cell_ref):
 
 
 class Worksheet(object):
-
     def __init__(self, worksheet, spreadsheet):
         self._worksheet = worksheet
         self._spreadsheet = spreadsheet
@@ -74,12 +73,7 @@ class Worksheet(object):
         return values
 
     def format_borders(
-        self,
-        start_row_index,
-        end_row_index,
-        start_column_index,
-        end_column_index,
-        border_styles,
+        self, start_row_index, end_row_index, start_column_index, end_column_index, border_styles,
     ):
 
         request = {
@@ -89,7 +83,7 @@ class Worksheet(object):
                     "startRowIndex": start_row_index,
                     "endRowIndex": end_row_index,
                     "startColumnIndex": start_column_index,
-                    "endColumnIndex": end_column_index
+                    "endColumnIndex": end_column_index,
                 }
             }
         }
@@ -101,12 +95,7 @@ class Worksheet(object):
         self._spreadsheet._spreadsheets_update_queue.append(request)
 
     def format_cells(
-        self,
-        start_row_index,
-        end_row_index,
-        start_column_index,
-        end_column_index,
-        cell,
+        self, start_row_index, end_row_index, start_column_index, end_column_index, cell,
     ):
         fields, cell_json = cell.to_json()
 
@@ -117,10 +106,10 @@ class Worksheet(object):
                     "startRowIndex": start_row_index,
                     "endRowIndex": end_row_index,
                     "startColumnIndex": start_column_index,
-                    "endColumnIndex": end_column_index
+                    "endColumnIndex": end_column_index,
                 },
                 "cell": cell_json,
-                "fields": fields
+                "fields": fields,
             }
         }
 
