@@ -14,19 +14,38 @@ class Color:
     red: float = None
     blue: float = None
     green: float = None
+    alpha: float = None
 
     def __post_init__(self):
+
         assert self.hex or (self.red and self.blue and self.green)
         if self.hex:
             self.red, self.green, self.blue = hex_to_rgb(self.hex)
 
     def to_json(self):
+
         return {
+            "color": {
+                "rgbColor": {
+                    "red": self.red,
+                    "green": self.green,
+                    "blue": self.blue
+                }
+            }
+        }
+
+    def to_sheet_style(self):
+
+        base = {
             "red": self.red,
             "green": self.green,
             "blue": self.blue,
-            "alpha": self.alpha
         }
+
+        if self.alpha is not None:
+            base["alpha"] = self.alpha
+
+        return base
 
 
 @dataclass
@@ -38,6 +57,7 @@ class TextStyle:
     background_color: Optional[Color] = None
     bold: Optional[bool] = None
     italic: Optional[bool] = None
+    strikethrough: Optional[bool] = None
     small_caps: Optional[bool] = None
     underline: Optional[bool] = None
     link: str = None
@@ -81,6 +101,32 @@ class TextStyle:
 
         return ",".join(masks), base
 
+    def to_sheet_style(self) -> Tuple[list, Dict]:  # noqa: C901
+
+        base = {}
+        masks = []
+
+        if self.font_size is not None:
+            base["fontSize"] = {"magnitude": self.font_size, "unit": "PT"}
+            masks.append("fontSize")
+        if self.bold is not None:
+            base["bold"] = self.bold
+            masks.append("bold")
+        if self.italic is not None:
+            base["italic"] = self.italic
+            masks.append("italic")
+        if self.underline is not None:
+            base["underline"] = self.underline
+            masks.append("underline")
+        if self.color is not None:
+            base["foregroundColor"] = self.color.to_json()
+            masks.append("foregroundColor")
+        if self.font is not None:
+            base["fontFamily"] = self.font
+            masks.append("fontFamily")
+
+        return masks, base
+
 
 @dataclass
 class BorderStyle:
@@ -90,10 +136,10 @@ class BorderStyle:
     """
 
     BORDER_STYLES = ["NONE", "DOTTED", "DASHED", "SOLID", "SOLID_MEDIUM", "SOLID_THICK", "DOUBLE"]
+    COLOR_STYLES = ["rgbColor", "themeColor"]
 
     position: str
     style: str
-    # width: Optional[int] DEPRECATED by Google
     color: Color
     # TODO: if "themeColor" is given, we need to make color optional, etc.
     color_style: str = "rgbColor"
@@ -101,6 +147,7 @@ class BorderStyle:
     def to_json(self):
 
         assert self.style in self.BORDER_STYLES
+        assert self.color_style in self.COLOR_STYLES
 
         return {
             "style": self.style,
