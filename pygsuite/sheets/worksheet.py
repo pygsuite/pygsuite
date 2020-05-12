@@ -1,8 +1,9 @@
-# import pandas as pd
 from math import floor
-from string import ascii_letters, ascii_lowercase, ascii_uppercase
+from string import ascii_letters, ascii_uppercase
+from typing import Union
 
 from pygsuite.common.style import BorderStyle
+from pygsuite.sheets.cell import Cell
 
 
 def index_to_alphabet(idx):
@@ -76,6 +77,8 @@ class Worksheet(object):
         self, start_row_index, end_row_index, start_column_index, end_column_index, border_styles,
     ):
 
+        assert isinstance(border_styles, Union[list, BorderStyle])
+
         request = {
             "updateBorders": {
                 "range": {
@@ -97,6 +100,9 @@ class Worksheet(object):
     def format_cells(
         self, start_row_index, end_row_index, start_column_index, end_column_index, cell,
     ):
+
+        assert isinstance(cell, Cell)
+
         fields, cell_json = cell.to_json()
 
         request = {
