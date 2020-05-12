@@ -108,6 +108,7 @@ class Worksheet(object):
         end_column_index,
         cell,
     ):
+        fields, cell_json = cell.to_json()
 
         request = {
             "repeatCell": {
@@ -118,8 +119,8 @@ class Worksheet(object):
                     "startColumnIndex": start_column_index,
                     "endColumnIndex": end_column_index
                 },
-                "cell": cell.to_json(),
-                "fields": "userEnteredFormat(textFormat)"
+                "cell": cell_json,
+                "fields": fields
             }
         }
 
