@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Dict
+from typing import Optional, Tuple, Dict, Any
 
 
 def hex_to_rgb(input: str):
@@ -129,23 +129,32 @@ class BorderStyle:
 
     BORDER_STYLES = ["NONE", "DOTTED", "DASHED", "SOLID", "SOLID_MEDIUM", "SOLID_THICK", "DOUBLE"]
     COLOR_STYLES = ["rgbColor", "themeColor"]
+    THEME_COLOR_TYPES = ["TEXT", "BACKGROUND", "ACCENT1", "ACCENT2", "ACCENT3", "ACCENT4", "ACCENT5", "ACCENT6", "LINK"]
 
     position: str
     style: str
     color: Color
-    # TODO: if "themeColor" is given, we need to make color optional, etc.
-    color_style: str = "rgbColor"
+    color_style: Any = None
 
     def to_json(self):
 
         assert self.style in self.BORDER_STYLES
-        assert self.color_style in self.COLOR_STYLES
 
-        return {
+        base = {
             "style": self.style,
-            "color": self.color.to_json(),
-            # "colorStyle": self.color_style
+            "color": self.color.to_sheet_style(),
         }
+
+        if self.color_style is not None:
+            assert self.color_style in self.COLOR_STYLES
+            if self.color_style == "rgbColor":
+                assert isinstance(self.color_style, Color)
+                base["colorStyle"] = self.color_style.to_sheet_style()
+            elif self.color_style == "themeColor":
+                assert self.color_style in self.THEME_COLOR_TYPES
+                base["themeColor"] = self.color_style
+
+        return base
 
 
 class DefaultFonts:
