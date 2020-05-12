@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Optional, Tuple
 
-from pygsuite.common.style import BorderStyle, Color, TextStyle
+from pygsuite.common.style import Color, TextStyle
 
 
 @dataclass
