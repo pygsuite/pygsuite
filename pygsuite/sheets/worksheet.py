@@ -1,7 +1,9 @@
-import pandas as pd
 from math import floor
+from string import ascii_letters, ascii_uppercase
+from typing import Union
 
-ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+from pygsuite.common.style import BorderStyle
+from pygsuite.sheets.cell import Cell
 
 
 def index_to_alphabet(idx):
@@ -9,20 +11,35 @@ def index_to_alphabet(idx):
     count = floor(idx / 26)
     remainder = idx % 26
     if count:
-        out = ALPHABET[count - 1]
-    out += ALPHABET[remainder - 1]
+        out = ascii_uppercase[count - 1]
+    out += ascii_uppercase[remainder - 1]
     return out
 
 
+def alphabet_to_index(cell_ref):
+    idx = 0
+    for char in cell_ref:
+        if char in ascii_letters:
+            idx = idx * 26 + (ord(char.upper()) - ord("A")) + 1
+    return idx - 1
+
+
 class Worksheet(object):
-    def __init__(self, element, sheet):
-        self._worksheet = element
-        self._sheet = sheet
-        self._properties = self._worksheet._properties
+    def __init__(self, worksheet, spreadsheet):
+        self._worksheet = worksheet
+        self._spreadsheet = spreadsheet
+        self._properties = self._worksheet["properties"]
+
+    def __getitem__(self, cell_range):
+        return self.values_from_range(cell_range)
 
     @property
     def name(self):
         return self._properties["title"]
+
+    @property
+    def id(self):
+        return self._properties["sheetId"]
 
     @property
     def row_count(self):
@@ -32,35 +49,74 @@ class Worksheet(object):
     def column_count(self):
         return self._properties["gridProperties"]["columnCount"]
 
-    @property
-    def values(self):
-        return self._sheet.values_get(self.name)
-        # out = []
-        # for idx in range(1,self.row_count):
-        #     out.append(self._worksheet.row_values(idx))
-        # return out
+    def range_from_indexes(self, startcol, startrow, endcol, endrow):
 
-    def values_range(self, startcol, startrow, endcol, endrow):
         assert startcol <= endcol
         assert startrow <= endrow
+
         start_index = f"{index_to_alphabet(startcol)}{startrow}"
         end_index = f"{index_to_alphabet(endcol)}{endrow}"
         range_label = f"{self.name}!{start_index}:{end_index}"
-        return self._sheet.values_get(range_label)
+
+        return range_label
+
+    def values_from_range(self, cell_range):
+
+        worksheet_range = f"{self.name}!{cell_range}"
+        df_dict = self._spreadsheet.get_data_from_ranges(worksheet_range)
+        return df_dict[worksheet_range]
 
     @property
     def all_values(self):
-        output = self.values_range(1, 1, self.column_count, self.row_count)
-        return output["values"]
 
-    @property
-    def dataframe(self):
-        values = self.all_values
-        header = values[0]
-        processed = []
-        for row in values[1:]:
-            if len(row) < len(header):
-                diff = len(header) - len(row)
-                row += [""] * diff
-            processed.append(row)
-        return pd.DataFrame.from_records(processed, columns=header)
+        worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
+        values = self._spreadsheet.get_data_from_ranges(worksheet_range)
+        return values
+
+    def format_borders(
+        self, start_row_index, end_row_index, start_column_index, end_column_index, border_styles,
+    ):
+
+        # assert isinstance(border_styles, Union[list, BorderStyle])
+
+        request = {
+            "updateBorders": {
+                "range": {
+                    "sheetId": self.id,
+                    "startRowIndex": start_row_index,
+                    "endRowIndex": end_row_index,
+                    "startColumnIndex": start_column_index,
+                    "endColumnIndex": end_column_index,
+                }
+            }
+        }
+
+        for border_style in border_styles:
+
+            request["updateBorders"][border_style.position.value] = border_style.to_json()
+
+        self._spreadsheet._spreadsheets_update_queue.append(request)
+
+    def format_cells(
+        self, start_row_index, end_row_index, start_column_index, end_column_index, cell,
+    ):
+
+        assert isinstance(cell, Cell)
+
+        fields, cell_json = cell.to_json()
+
+        request = {
+            "repeatCell": {
+                "range": {
+                    "sheetId": self.id,
+                    "startRowIndex": start_row_index,
+                    "endRowIndex": end_row_index,
+                    "startColumnIndex": start_column_index,
+                    "endColumnIndex": end_column_index,
+                },
+                "cell": cell_json,
+                "fields": fields,
+            }
+        }
+
+        self._spreadsheet._spreadsheets_update_queue.append(request)
