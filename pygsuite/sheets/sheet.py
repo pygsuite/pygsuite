@@ -80,14 +80,14 @@ class Spreadsheet:
         elif isinstance(key, str):
             try:
                 return [worksheet for worksheet in self.worksheets if worksheet.name == key][0]
-            except ValueError:
-                raise ValueError(
+            except KeyError:
+                raise KeyError(
                     "No worksheet with the title '{key}' exists. The worksheets included in your spreadsheet are: {worksheets}".format(
                         key=key, worksheets=[worksheet.name for worksheet in self.worksheets]
                     )
                 )
         else:
-            raise ValueError("Please enter the sheet index or name you are trying to get.")
+            raise ValueError("The key must be a string or integer. Use a string to get a worksheet by name, and integer to get a worksheet by index.")
 
     @property
     def worksheets(self):
