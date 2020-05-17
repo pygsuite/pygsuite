@@ -3,7 +3,7 @@ from analytics_utility_core.secrets import secret_store
 from pygsuite.slides import Presentation
 
 if __name__ == "__main__":
-    auth = secret_store["bi-drive-automation"]
+    auth = secret_store["bi-gsuite-automation"]
 
     Clients.authorize_string(auth)
 
