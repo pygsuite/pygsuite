@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Dict, Any
+from enum import Enum
+from typing import Optional, Tuple, Dict, Union
 
 
 def hex_to_rgb(input: str):
@@ -18,7 +19,7 @@ class Color:
 
     def __post_init__(self):
 
-        assert self.hex or (self.red and self.blue and self.green)
+        assert self.hex or (self.red is not None and self.blue is not None and self.green is not None)
         if self.hex:
             self.red, self.green, self.blue = hex_to_rgb(self.hex)
 
@@ -120,8 +121,27 @@ class TextStyle:
         return masks, base
 
 
+class BorderStyle(Enum):
+    NONE = "NONE"
+    DOTTED = "DOTTED"
+    DASHED = "DASHED"
+    SOLID = "SOLID"
+    SOLID_MEDIUM = "SOLID_MEDIUM"
+    SOLID_THICK = "SOLID_THICK"
+    DOUBLE = "DOUBLE"
+
+
+class BorderPosition(Enum):
+    TOP = "top"
+    BOTTOM = "bottom"
+    LEFT = "left"
+    RIGHT = "right"
+    INNER_HORIZONTAL = "innerHorizontal"
+    INNER_VERTICAL = "innerVertical"
+
+
 @dataclass
-class BorderStyle:
+class Border:
     """Dataclass to represent a Border object for a border along a cell.
 
     Google documentation: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/cells#Border 
@@ -132,16 +152,16 @@ class BorderStyle:
     THEME_COLOR_TYPES = ["TEXT", "BACKGROUND", "ACCENT1", "ACCENT2", "ACCENT3", "ACCENT4", "ACCENT5", "ACCENT6", "LINK"]
 
     position: str
-    style: str
+    style: BorderStyle
     color: Color
-    color_style: Any = None
+    color_style: Optional[Union[str, Color]] = None
 
     def to_json(self):
 
-        assert self.style in self.BORDER_STYLES
+        # assert self.style in self.BORDER_STYLES
 
         base = {
-            "style": self.style,
+            "style": self.style.value,
             "color": self.color.to_sheet_style(),
         }
 

@@ -1,29 +1,53 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Dict, Optional, Tuple
 
 from pygsuite.common.style import Color, TextStyle
 
 
+class HorizontalAlign(Enum):
+    LEFT = "LEFT"
+    CENTER = "CENTER"
+    RIGHT = "RIGHT"
+
+
+class VerticalAlign(Enum):
+    TOP = "TOP"
+    MIDDLE = "MIDDLE"
+    BOTTOM = "BOTTOM"
+
+
+class WrapStrategy(Enum):
+    OVERFLOW_CELL = "OVERFLOW_CELL"
+    LEGACY_WRAP = "LEGACY_WRAP"
+    CLIP = "CLIP"
+    WRAP = "WRAP"
+
+
+class TextDirection(Enum):
+    LEFT_TO_RIGHT = "LEFT_TO_RIGHT"
+    RIGHT_TO_LEFT = "RIGHT_TO_LEFT"
+
+
+class HyperlinkDisplayType(Enum):
+    LINKED = "LINKED"
+    PLAIN_TEXT = "PLAIN_TEXT"
+
+
 @dataclass
 class CellFormat:
-
-    HORIZONTAL_ALIGNMENTS = ["LEFT", "CENTER", "RIGHT"]
-    VERTICAL_ALIGNMENTS = ["TOP", "MIDDLE", "BOTTOM"]
-    WRAP_STRATEGIES = ["OVERFLOW_CELL", "LEGACY_WRAP", "CLIP", "WRAP"]
-    TEXT_DIRECTIONS = ["LEFT_TO_RIGHT", "RIGHT_TO_LEFT"]
-    HYPERLINK_DISPLAY_TYPES = ["LINKED", "PLAIN_TEXT"]
 
     number_format: Optional[dict] = None
     background_color: Optional[Color] = None
     background_color_style: Optional[dict] = None
     borders: Optional[dict] = None
     padding: Optional[dict] = None
-    horizontal_alignment: Optional[str] = None
-    vertical_alignment: Optional[str] = None
-    wrap_strategy: Optional[str] = None
-    text_direction: Optional[str] = None
+    horizontal_alignment: Optional[HorizontalAlign] = None
+    vertical_alignment: Optional[VerticalAlign] = None
+    wrap_strategy: Optional[WrapStrategy] = None
+    text_direction: Optional[TextDirection] = None
     text_format: Optional[TextStyle] = None
-    hyperlink_display_type: Optional[str] = None
+    hyperlink_display_type: Optional[HyperlinkDisplayType] = None
     text_rotation: Optional[dict] = None
 
     def to_json(self) -> Tuple[list, Dict]:  # noqa: C901
@@ -47,28 +71,23 @@ class CellFormat:
             base["padding"] = self.padding
 
         if self.horizontal_alignment is not None:
-            assert self.horizontal_alignment in self.HORIZONTAL_ALIGNMENTS
-            base["horizontalAlignment"] = self.horizontal_alignment
+            base["horizontalAlignment"] = self.horizontal_alignment.value
 
         if self.vertical_alignment is not None:
-            assert self.vertical_alignment in self.VERTICAL_ALIGNMENTS
-            base["verticalAlignment"] = self.vertical_alignment
+            base["verticalAlignment"] = self.vertical_alignment.value
 
         if self.wrap_strategy is not None:
-            assert self.wrap_strategy in self.WRAP_STRATEGIES
-            base["wrapStrategy"] = self.wrap_strategy
+            base["wrapStrategy"] = self.wrap_strategy.value
 
         if self.text_direction is not None:
-            assert self.text_direction in self.TEXT_DIRECTIONS
-            base["textDirection"] = self.text_direction
+            base["textDirection"] = self.text_direction.value
 
         if self.text_format is not None:
             masks, base["textFormat"] = self.text_format.to_sheet_style()
             fields_mask.extend(["textFormat." + field for field in masks])
 
         if self.hyperlink_display_type is not None:
-            assert self.hyperlink_display_type in self.HYPERLINK_DISPLAY_TYPES
-            base["hyperlinkDisplayType"] = self.hyperlink_display_type
+            base["hyperlinkDisplayType"] = self.hyperlink_display_type.value
 
         if self.text_rotation is not None:
             base["textRotation"] = self.text_rotation

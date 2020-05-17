@@ -77,7 +77,7 @@ class Worksheet(object):
         self, start_row_index, end_row_index, start_column_index, end_column_index, border_styles,
     ):
 
-        assert isinstance(border_styles, Union[list, BorderStyle])
+        # assert isinstance(border_styles, Union[list, BorderStyle])
 
         request = {
             "updateBorders": {
@@ -93,7 +93,7 @@ class Worksheet(object):
 
         for border_style in border_styles:
 
-            request["updateBorders"][border_style.position] = border_style.to_json()
+            request["updateBorders"][border_style.position.value] = border_style.to_json()
 
         self._spreadsheet._spreadsheets_update_queue.append(request)
 

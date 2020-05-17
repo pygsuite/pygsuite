@@ -121,27 +121,29 @@ class Spreadsheet:
 
         response_dict = dict()
 
-        response_dict["spreadsheets_update_response"] = (
-            self.service.spreadsheets()
-            .batchUpdate(body={"requests": _spreadsheets_update_queue}, spreadsheetId=self.id)
-            .execute()  # ["responses"]
-        )
-
-        response_dict["values_update_response"] = (
-            self.service.spreadsheets()
-            .values()
-            .batchUpdate(
-                spreadsheetId=self.id,
-                body={
-                    "valueInputOption": value_input_option,
-                    "data": _values_update_queue,
-                    "includeValuesInResponse": include_values_in_response,
-                    "responseValueRenderOption": response_value_render_option,
-                    "responseDateTimeRenderOption": response_date_time_render_option,
-                },
+        if len(_spreadsheets_update_queue) > 0:
+            response_dict["spreadsheets_update_response"] = (
+                self.service.spreadsheets()
+                .batchUpdate(body={"requests": _spreadsheets_update_queue}, spreadsheetId=self.id)
+                .execute()  # ["responses"]
             )
-            .execute()  # ["responses"]
-        )
+
+        if len(_values_update_queue) > 0:
+            response_dict["values_update_response"] = (
+                self.service.spreadsheets()
+                .values()
+                .batchUpdate(
+                    spreadsheetId=self.id,
+                    body={
+                        "valueInputOption": value_input_option,
+                        "data": _values_update_queue,
+                        "includeValuesInResponse": include_values_in_response,
+                        "responseValueRenderOption": response_value_render_option,
+                        "responseDateTimeRenderOption": response_date_time_render_option,
+                    },
+                )
+                .execute()  # ["responses"]
+            )
 
         self._spreadsheets_update_queue = []
         self._values_update_queue = []
