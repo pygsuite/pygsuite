@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Dict
+from enum import Enum
+from typing import Optional, Tuple, Dict, Union
 
 
 def hex_to_rgb(input: str):
@@ -14,14 +15,30 @@ class Color:
     red: float = None
     blue: float = None
     green: float = None
+    alpha: float = None
 
     def __post_init__(self):
-        assert self.hex or (self.red and self.blue and self.green)
+
+        assert self.hex or (self.red is not None and self.blue is not None and self.green is not None)
         if self.hex:
             self.red, self.green, self.blue = hex_to_rgb(self.hex)
 
     def to_json(self):
+
         return {"color": {"rgbColor": {"red": self.red, "green": self.green, "blue": self.blue}}}
+
+    def to_sheet_style(self):
+
+        base = {
+            "red": self.red,
+            "green": self.green,
+            "blue": self.blue,
+        }
+
+        if self.alpha is not None:
+            base["alpha"] = self.alpha
+
+        return base
 
 
 @dataclass
@@ -33,6 +50,7 @@ class TextStyle:
     background_color: Optional[Color] = None
     bold: Optional[bool] = None
     italic: Optional[bool] = None
+    strikethrough: Optional[bool] = None
     small_caps: Optional[bool] = None
     underline: Optional[bool] = None
     link: str = None
@@ -75,6 +93,88 @@ class TextStyle:
             masks.append("weightedFontFamily.weight")
 
         return ",".join(masks), base
+
+    def to_sheet_style(self) -> Tuple[list, Dict]:  # noqa: C901
+
+        base = {}
+        masks = []
+
+        if self.font_size is not None:
+            base["fontSize"] = {"magnitude": self.font_size, "unit": "PT"}
+            masks.append("fontSize")
+        if self.bold is not None:
+            base["bold"] = self.bold
+            masks.append("bold")
+        if self.italic is not None:
+            base["italic"] = self.italic
+            masks.append("italic")
+        if self.underline is not None:
+            base["underline"] = self.underline
+            masks.append("underline")
+        if self.color is not None:
+            base["foregroundColor"] = self.color.to_json()
+            masks.append("foregroundColor")
+        if self.font is not None:
+            base["fontFamily"] = self.font
+            masks.append("fontFamily")
+
+        return masks, base
+
+
+class BorderStyle(Enum):
+    NONE = "NONE"
+    DOTTED = "DOTTED"
+    DASHED = "DASHED"
+    SOLID = "SOLID"
+    SOLID_MEDIUM = "SOLID_MEDIUM"
+    SOLID_THICK = "SOLID_THICK"
+    DOUBLE = "DOUBLE"
+
+
+class BorderPosition(Enum):
+    TOP = "top"
+    BOTTOM = "bottom"
+    LEFT = "left"
+    RIGHT = "right"
+    INNER_HORIZONTAL = "innerHorizontal"
+    INNER_VERTICAL = "innerVertical"
+
+
+@dataclass
+class Border:
+    """Dataclass to represent a Border object for a border along a cell.
+
+    Google documentation: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/cells#Border 
+    """
+
+    BORDER_STYLES = ["NONE", "DOTTED", "DASHED", "SOLID", "SOLID_MEDIUM", "SOLID_THICK", "DOUBLE"]
+    COLOR_STYLES = ["rgbColor", "themeColor"]
+    THEME_COLOR_TYPES = ["TEXT", "BACKGROUND", "ACCENT1", "ACCENT2", "ACCENT3", "ACCENT4", "ACCENT5", "ACCENT6", "LINK"]
+
+    position: str
+    style: BorderStyle
+    color: Color
+    color_style: Optional[Union[str, Color]] = None
+
+    def to_json(self):
+
+        # assert self.style in self.BORDER_STYLES
+
+        base = {
+            "style": self.style.value,
+            "color": self.color.to_sheet_style(),
+        }
+
+        if self.color_style is not None:
+            assert self.color_style in self.COLOR_STYLES
+            if self.color_style == "rgbColor":
+                assert isinstance(self.color_style, Color)
+                base["colorStyle"] = self.color_style.to_sheet_style()
+            elif self.color_style == "themeColor":
+                assert self.color_style in self.THEME_COLOR_TYPES
+                base["themeColor"] = self.color_style
+
+        return base
 
 
 class DefaultFonts:
