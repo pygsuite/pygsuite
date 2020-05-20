@@ -1,8 +1,12 @@
 from pygsuite import Clients
 from analytics_utility_core.secrets import secret_store
 from pygsuite.slides import Presentation
+from datetime import datetime
 
-if __name__ == "__main__":
+
+def update_data_infra_deck():
+    start = datetime.now()
+    date_string = start.strftime('%B %d, %Y')
     auth = secret_store["bi-gsuite-automation"]
 
     Clients.authorize_string(auth)
@@ -22,7 +26,7 @@ if __name__ == "__main__":
             "BODY_2": """    1. Cost
     2. Adoption
     3. Others""",
-            "TITLE_9": "April 21 2020",
+            "TITLE_9":  date_string,
         },
     )
 
@@ -39,6 +43,11 @@ if __name__ == "__main__":
         layout=deck.layouts["40.) Blank Slide"], placeholders={"TITLE": "Other Updates"}, index=0
     )
     deck.flush(reverse=True)
+
+
+
+if __name__ == "__main__":
+    update_data_infra_deck()
 
     #
     # print(document._document)

@@ -1,10 +1,12 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Union
 
 from jinja2 import Template, Environment, meta
 
 from .page_element import PageElement, Table, Shape, Image
-
+from pygsuite.slides.element_properties import ElementProperties
+from pygsuite.slides.enums import ShapeType
+from pygsuite.utility.guids import get_guid
 
 @dataclass
 class FancyFont:
@@ -97,3 +99,33 @@ class Slide(object):
                             )
 
         self._presentation._mutation(reqs=reqs)
+
+
+    def add_image(self, image, properties):
+        pass
+
+    def add_text(self, text):
+        raise NotImplementedError
+
+    def add_line(self, text):
+        raise NotImplementedError
+
+    def add_word_art(self, text):
+        raise NotImplementedError
+
+    def add_table(self, table):
+        raise NotImplementedError
+
+    def add_shape(self, shape:Union[str,ShapeType], properties:ElementProperties, id=None):
+        id = id or get_guid()
+        reqs = []
+        if isinstance(shape, ShapeType):
+            shape = shape.name
+        reqs.append({'createShape':{
+            "objectId": id,
+            "elementProperties": properties.to_slides_json(self.id),
+            "shapeType": shape
+        }})
+        self._presentation._mutation(reqs=reqs)
+        print(reqs)
+        return Shape.from_id(id=id, presentation=self._presentation)

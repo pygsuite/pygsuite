@@ -7,7 +7,7 @@ import pandas as pd
 
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
-
+from pygsuite.utility.collections import KeyList
 
 class ValueInputOption(Enum):
     """ValueInputOption: Determines how data should be interpreted.
@@ -130,7 +130,8 @@ class Spreadsheet:
     def worksheets(self):
         """List of Worksheet objects for each worksheet in the Spreadsheet.
         """
-        return [Worksheet(sheet, self) for sheet in self._spreadsheet.get("sheets")]
+        built = [Worksheet(sheet, self) for sheet in self._spreadsheet.get("sheets")]
+        return KeyList(keys= [sheet.name for sheet in built], values=built)
 
     def refresh(self):
         """Method to refresh the spreadsheets API connection.

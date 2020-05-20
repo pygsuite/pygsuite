@@ -21,3 +21,5 @@ class DocElement(object):
             return SectionBreak(element, document, last)
         else:
             return BaseElement(element, document, last)
+
+

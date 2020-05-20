@@ -48,7 +48,7 @@ class Presentation:
     def slides(self):
         return [Slide(slide, self) for slide in self._presentation.get("slides")]
 
-    def get_slide(self, id):
+    def get_slide(self, id:str):
         return Slide.from_id(id, self)
 
     @property
@@ -95,7 +95,7 @@ class Presentation:
         # always flush
         out = self._mutation([reqs], flush=flush)
         if flush:
-            return out[0]["createSlide"]["objectId"]
+            return self.get_slide(out[-1]["createSlide"]["objectId"])
         # self.refresh()
         # return self.get_slide(created)
 
