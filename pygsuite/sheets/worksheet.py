@@ -1,12 +1,11 @@
 from math import floor
 from string import ascii_letters, ascii_uppercase
-from typing import Union
 
-from pygsuite.common.style import BorderStyle
+from pygsuite.common.style import Border
 from pygsuite.sheets.cell import Cell
 
 
-def index_to_alphabet(idx):
+def index_to_alphabet(idx: int):
     out = ""
     count = floor(idx / 26)
     remainder = idx % 26
@@ -16,7 +15,7 @@ def index_to_alphabet(idx):
     return out
 
 
-def alphabet_to_index(cell_ref):
+def alphabet_to_index(cell_ref: str):
     idx = 0
     for char in cell_ref:
         if char in ascii_letters:
@@ -25,13 +24,23 @@ def alphabet_to_index(cell_ref):
 
 
 class Worksheet(object):
+    """Worksheet object for the worksheets within a Spreadsheet
+    """
+
     def __init__(self, worksheet, spreadsheet):
+        """Method to initialize the class.
+
+        Args:
+            worksheet ():
+            spreadsheet (pygsuite.sheets.Spreadsheet): the Google Spreadsheet object containing the Worksheet.
+        """
+
         self._worksheet = worksheet
         self._spreadsheet = spreadsheet
         self._properties = self._worksheet["properties"]
 
     def __getitem__(self, cell_range):
-        return self.values_from_range(cell_range)
+        return self.values_from_range(cell_range).to_list()
 
     @property
     def name(self):
@@ -49,7 +58,7 @@ class Worksheet(object):
     def column_count(self):
         return self._properties["gridProperties"]["columnCount"]
 
-    def range_from_indexes(self, startcol, startrow, endcol, endrow):
+    def range_from_indexes(self, startcol: str, startrow: int, endcol: str, endrow: int):
 
         assert startcol <= endcol
         assert startrow <= endrow
@@ -60,24 +69,34 @@ class Worksheet(object):
 
         return range_label
 
-    def values_from_range(self, cell_range):
+    def values_from_range(self, cell_range: str):
 
         worksheet_range = f"{self.name}!{cell_range}"
-        df_dict = self._spreadsheet.get_data_from_ranges(worksheet_range)
-        return df_dict[worksheet_range]
-
-    @property
-    def all_values(self):
-
-        worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
-        values = self._spreadsheet.get_data_from_ranges(worksheet_range)
+        values = self._spreadsheet.get_values_from_range(worksheet_range).to_list()
         return values
 
-    def format_borders(
-        self, start_row_index, end_row_index, start_column_index, end_column_index, border_styles,
-    ):
+    @property
+    def values(self):
 
-        # assert isinstance(border_styles, Union[list, BorderStyle])
+        worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
+        values = self._spreadsheet.get_values_from_range(worksheet_range).to_list()
+        return values
+
+    @property
+    def dataframe(self):
+
+        worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
+        df = self._spreadsheet.get_values_from_range(worksheet_range).to_df()
+        return df
+
+    def format_borders(
+        self,
+        start_row_index: int,
+        end_row_index: int,
+        start_column_index: int,
+        end_column_index: int,
+        borders: Border,
+    ):
 
         request = {
             "updateBorders": {
@@ -91,17 +110,20 @@ class Worksheet(object):
             }
         }
 
-        for border_style in border_styles:
+        for border in borders:
 
-            request["updateBorders"][border_style.position.value] = border_style.to_json()
+            request["updateBorders"][border.position.value] = border.to_json()
 
         self._spreadsheet._spreadsheets_update_queue.append(request)
 
     def format_cells(
-        self, start_row_index, end_row_index, start_column_index, end_column_index, cell,
+        self,
+        start_row_index: int,
+        end_row_index: int,
+        start_column_index: int,
+        end_column_index: int,
+        cell: Cell,
     ):
-
-        assert isinstance(cell, Cell)
 
         fields, cell_json = cell.to_json()
 
