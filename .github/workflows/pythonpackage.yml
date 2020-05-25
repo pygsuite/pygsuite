@@ -27,6 +27,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install wheel
+        pip install codecov
         pip install -r requirements.txt
         pip install -r requirements-test.txt
     - name: Lint with flake8
@@ -46,4 +47,5 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        pytest --ignore=docs_src/ --cov --cov-report=xml --cov-report=html
+        pytest --ignore=docs_src/ --cov=./ --cov-report=xml --cov-report=html
+        codecov --token=${{ secrets.CODECOV_TOKEN }}
