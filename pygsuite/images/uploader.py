@@ -40,8 +40,6 @@ class ImageUploader:
             else self._generate_client(account_info)
         )
 
-        print(self._client)
-        print(self._project)
         self.client = Client(credentials=self._client, project=self._project)
         self.bucket = self.client.bucket(bucket)
 
