@@ -39,6 +39,7 @@ class ImageUploader:
             if isinstance(account_info, Client)
             else self._generate_client(account_info)
         )
+        print(account_info)
         self.client = Client(credentials=self._client)
         self.bucket = self.client.bucket(bucket)
 

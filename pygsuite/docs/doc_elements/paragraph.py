@@ -1,4 +1,5 @@
 from pygsuite.docs.doc_elements import BaseElement
+from pygsuite.common.style import TextStyle
 
 from .paragraph_elements import (
     AutoText,
@@ -78,7 +79,7 @@ class Paragraph(BaseElement):
 
     @property
     def style(self):
-        return self._paragraph.get("paragraphStyle")
+        return TextStyle.from_docs(**self._paragraph.get("paragraphStyle"))
 
     #
     def delete(self):

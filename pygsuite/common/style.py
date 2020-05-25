@@ -2,12 +2,31 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Tuple, Dict, Union
 
+@dataclass
+class Link:
+    url:str
+    bookmark_id:str
+    heading_id:str
 
 def hex_to_rgb(input: str):
     if input.startswith("#"):
         input = input[1:]
     return tuple(int(input[i : i + 2], 16) / 255.0 for i in (0, 2, 4))
 
+
+def doc_color_to_color(info:dict):
+    base = info.get('color')
+    if not base:
+        return None
+    base = base.get('rgbColor')
+    if not base:
+        return
+    return Color(red = base['red'], green=base['green'], blue=base['blue'])
+
+def doc_link_to_link(info:dict):
+    #TODO: identify link format for these:
+    #info.get('bookmarkId'), info.get('headingId')
+    return info.get('url')# Link(info.get('url'), info.get('bookmarkId'), info.get('headingId'))
 
 @dataclass
 class Color:
@@ -118,6 +137,19 @@ class TextStyle:
 
         return masks, base
 
+    @classmethod
+    def from_docs_style(cls, info):
+        return TextStyle(    font_size= info.get('fontSize'),
+        font= info.get('fontSize'),
+        font_weight= info.get('fontSize'),
+        color= doc_color_to_color(info.get('color')),
+        background_color= doc_color_to_color(info.get('backgroundColor')),
+        bold= info.get('bold'),
+        italic= info.get('italic'),
+        strikethrough= info.get('strikethrough'),
+        small_caps= info.get('smallCaps'),
+        underline=info.get('underline'),
+        link=doc_link_to_link(info.get('link')))
 
 class BorderStyle(Enum):
     NONE = "NONE"
