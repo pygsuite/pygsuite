@@ -17,5 +17,5 @@ __all__ = [
     TextStyle,
     Color,
     ImageUploader,
-    Drive
+    Drive,
 ]  # type: ignore

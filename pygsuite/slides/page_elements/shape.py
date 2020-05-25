@@ -32,11 +32,21 @@ class Shape(BaseElement):
 
     @property
     def text(self):
-        text = self._details.get("text")
+        text = self._element.get("text")
         if text:
             return Text(text).text
         else:
             return None
+
+    @text.setter
+    def text(self, text: str):
+        self.delete_text()
+        self.add_text(text)
+
+    def delete_text(self):
+        if self.text:
+            reqs = [{"deleteText": {"objectId": self.id, "textRange": {"type": "ALL"}}}]
+            self._presentation._mutation(reqs=reqs)
 
     def add_text(self, text):
         reqs = [{"insertText": {"objectId": self.id, "insertionIndex": 0, "text": text}}]

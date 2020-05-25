@@ -1,8 +1,5 @@
 from typing import Dict, Union
 
-from googleapiclient.errors import HttpError
-
-from pygsuite.utility.decorators import retry
 from .layout import Layout
 from .slide import Slide
 
@@ -17,10 +14,10 @@ class Presentation:
         if files:
             return Presentation(id=files[0]["id"], client=client)
         else:
-            client = client or Clients.docs_client
+            client = client or Clients.slides_client
             body = {"title": title}
-            new = client.documents().create(body=body).execute()
-            return Presentation(id=new.get("documentId"), client=client)
+            new = client.presentations().create(body=body).execute()
+            return Presentation(id=new.get("presentationId"), client=client)
 
     def __init__(self, id, client=None):
         from pygsuite import Clients
@@ -30,7 +27,14 @@ class Presentation:
         self._presentation = self.service.presentations().get(presentationId=id).execute()
         self._change_queue = []
 
-    @retry((HttpError), tries=3, delay=10, backoff=5)
+    def __getitem__(self, item):
+        return self.slides[item]
+
+    def __setitem__(self, index, value: Slide, style=None):
+        self._mutation([{"slideObjectIds": [Slide.id], "insertionIndex": index}])
+        self.flush()
+
+    # @retry((HttpError), tries=3, delay=5, backoff=3)
     def flush(self, reverse=False):
         if reverse:
             base = reversed(self._change_queue)
