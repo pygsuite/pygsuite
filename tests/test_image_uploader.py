@@ -12,6 +12,7 @@ def get_test_image():
 
 
 def test_from_string():
+    assert environ["TEST_BUCKET"] and environ["TEST_GCS_ACCOUNT"]
     uploader = ImageUploader(
         bucket=environ["TEST_BUCKET"], account_info=environ["TEST_GCS_ACCOUNT"]
     )
