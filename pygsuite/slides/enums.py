@@ -144,4 +144,3 @@ class ShapeType(Enum):
     ELLIPSE_RIBBON = 139
     ELLIPSE_RIBBON_2 = 140
     CLOUD_CALLOUT = 141
-

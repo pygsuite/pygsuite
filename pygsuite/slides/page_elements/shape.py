@@ -18,10 +18,9 @@ class Text:
 
 
 class Shape(BaseElement):
-
     @classmethod
     def from_id(cls, id, presentation):
-        return cls(element = {'shape':{},'objectId':id}, presentation=presentation)
+        return cls(element={"shape": {}, "objectId": id}, presentation=presentation)
 
     def __init__(self, element, presentation):
         BaseElement.__init__(self, element, presentation)
@@ -40,11 +39,5 @@ class Shape(BaseElement):
             return None
 
     def add_text(self, text):
-        reqs = [{
-            'insertText': {
-                'objectId': self.id,
-                'insertionIndex': 0,
-                'text': text
-            }
-        }]
+        reqs = [{"insertText": {"objectId": self.id, "insertionIndex": 0, "text": text}}]
         self._presentation._mutation(reqs=reqs)

@@ -3,6 +3,7 @@ from pygsuite.common.style import DefaultFonts, TextStyle, Color
 from pygsuite.docs import Document
 from pygsuite.sheets import Spreadsheet
 from pygsuite.slides import Presentation
+from pygsuite.images import ImageUploader
 
 __version__ = "0.0.1"
 __author__ = "Ethan Dickinson <ethan.dickinson@gmail.com>"

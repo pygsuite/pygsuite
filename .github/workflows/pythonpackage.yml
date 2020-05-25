@@ -28,6 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install wheel
         pip install -r requirements.txt
+        pip install -r requirements-test.txt
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -36,6 +37,13 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      env:
+        TEST_IMAGE: ${{ secrets.TEST_IMAGE }}
+        TEST_GCS_BUCKET: ${{ secrets.TEST_GCS_BUCKET }}
+        TEST_GCS_ACCOUNT: ${{ secrets.TEST_GCS_ACCOUNT }}
+        TEST_DOCUMENT: ${{ secrets.TEST_DOCUMENT }}
+        TEST_BUCKET: ${{ secrets.TEST_BUCKET }}
+        TEST_AUTH: ${{ secrets.TEST_AUTH }}
       run: |
         pip install pytest
         pytest

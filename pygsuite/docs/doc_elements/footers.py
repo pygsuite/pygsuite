@@ -6,7 +6,6 @@ class Footers(BaseElement):
         BaseElement.__init__(self, element=element, document=document, last=last)
         self._paragraph = self._element.get("footers")
 
-
     @property
     def section_style(self):
         return self._element.get("sectionStyle")

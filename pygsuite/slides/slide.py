@@ -8,6 +8,7 @@ from pygsuite.slides.element_properties import ElementProperties
 from pygsuite.slides.enums import ShapeType
 from pygsuite.utility.guids import get_guid
 
+
 @dataclass
 class FancyFont:
     lines: List
@@ -100,7 +101,6 @@ class Slide(object):
 
         self._presentation._mutation(reqs=reqs)
 
-
     def add_image(self, image, properties):
         pass
 
@@ -116,16 +116,20 @@ class Slide(object):
     def add_table(self, table):
         raise NotImplementedError
 
-    def add_shape(self, shape:Union[str,ShapeType], properties:ElementProperties, id=None):
+    def add_shape(self, shape: Union[str, ShapeType], properties: ElementProperties, id=None):
         id = id or get_guid()
         reqs = []
         if isinstance(shape, ShapeType):
             shape = shape.name
-        reqs.append({'createShape':{
-            "objectId": id,
-            "elementProperties": properties.to_slides_json(self.id),
-            "shapeType": shape
-        }})
+        reqs.append(
+            {
+                "createShape": {
+                    "objectId": id,
+                    "elementProperties": properties.to_slides_json(self.id),
+                    "shapeType": shape,
+                }
+            }
+        )
         self._presentation._mutation(reqs=reqs)
         print(reqs)
         return Shape.from_id(id=id, presentation=self._presentation)

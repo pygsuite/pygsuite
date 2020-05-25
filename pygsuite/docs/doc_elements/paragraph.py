@@ -40,7 +40,6 @@ class Paragraph(BaseElement):
         BaseElement.__init__(self, element=element, document=document, last=last)
         self._paragraph = self._element.get("paragraph")
 
-
     @property
     def elements(self):
         return [ParagraphElement(elem, self._document) for elem in self._paragraph.get("elements")]

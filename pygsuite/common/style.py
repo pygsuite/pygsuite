@@ -19,7 +19,9 @@ class Color:
 
     def __post_init__(self):
 
-        assert self.hex or (self.red is not None and self.blue is not None and self.green is not None)
+        assert self.hex or (
+            self.red is not None and self.blue is not None and self.green is not None
+        )
         if self.hex:
             self.red, self.green, self.blue = hex_to_rgb(self.hex)
 
@@ -29,11 +31,7 @@ class Color:
 
     def to_sheet_style(self):
 
-        base = {
-            "red": self.red,
-            "green": self.green,
-            "blue": self.blue,
-        }
+        base = {"red": self.red, "green": self.green, "blue": self.blue}
 
         if self.alpha is not None:
             base["alpha"] = self.alpha
@@ -149,7 +147,17 @@ class Border:
 
     BORDER_STYLES = ["NONE", "DOTTED", "DASHED", "SOLID", "SOLID_MEDIUM", "SOLID_THICK", "DOUBLE"]
     COLOR_STYLES = ["rgbColor", "themeColor"]
-    THEME_COLOR_TYPES = ["TEXT", "BACKGROUND", "ACCENT1", "ACCENT2", "ACCENT3", "ACCENT4", "ACCENT5", "ACCENT6", "LINK"]
+    THEME_COLOR_TYPES = [
+        "TEXT",
+        "BACKGROUND",
+        "ACCENT1",
+        "ACCENT2",
+        "ACCENT3",
+        "ACCENT4",
+        "ACCENT5",
+        "ACCENT6",
+        "LINK",
+    ]
 
     position: str
     style: BorderStyle
@@ -160,10 +168,7 @@ class Border:
 
         # assert self.style in self.BORDER_STYLES
 
-        base = {
-            "style": self.style.value,
-            "color": self.color.to_sheet_style(),
-        }
+        base = {"style": self.style.value, "color": self.color.to_sheet_style()}
 
         if self.color_style is not None:
             assert self.color_style in self.COLOR_STYLES

@@ -26,7 +26,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=[install_requires],
-    extras_require={},
+    extras_require={'images':['google-cloud-storage', 'pyopenssl']},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python",

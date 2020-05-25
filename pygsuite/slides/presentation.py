@@ -48,7 +48,7 @@ class Presentation:
     def slides(self):
         return [Slide(slide, self) for slide in self._presentation.get("slides")]
 
-    def get_slide(self, id:str):
+    def get_slide(self, id: str):
         return Slide.from_id(id, self)
 
     @property
