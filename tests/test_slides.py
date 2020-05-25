@@ -15,9 +15,9 @@ def test_documents(auth_test_clients):
     )
     # image source: create commons: https://commons.wikimedia.org/wiki/File:Cisticola_exilis.jpg
     docbody.newline(count=2)
-    docbody.add_text("A Report on Birds", style=DefaultFonts.title)
+    docbody.add_text("A Report on Birds", style=DefaultFonts.TITLE)
     docbody.newline()
     docbody.add_image("https://upload.wikimedia.org/wikipedia/commons/0/0d/Cisticola_exilis.jpg")
     docbody.newline()
-    docbody.add_text("Birds are a...", style=DefaultFonts.normal)
+    docbody.add_text("Birds are a...", style=DefaultFonts.NORMAL_TEXT)
     document.flush()

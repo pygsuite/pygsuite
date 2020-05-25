@@ -1,5 +1,5 @@
 from pygsuite.docs.doc_elements import BaseElement
-from pygsuite.common.style import TextStyle
+from pygsuite.common.style import TextStyle, ParagraphStyle
 
 from .paragraph_elements import (
     AutoText,
@@ -50,38 +50,54 @@ class Paragraph(BaseElement):
 
     @property
     def text(self):
-        return "".join(
-            [element.content for element in self.elements if isinstance(element, TextRun)]
-        )
+        return "".join([element.text for element in self.elements if isinstance(element, TextRun)])
 
     @text.setter
     def text(self, text: str):
         self.delete()
+        # TODO: combine with parent?
         self._document._mutation(
             [
+                # {
+                #     "deleteContentRange": {
+                #         "range": {
+                #             "segmentId": None,
+                #             "startIndex": self.start_index,
+                #             "endIndex": self.end_index - 1 if self._last else self.end_index,
+                #         }
+                #     }
+                # },
                 {
-                    "deleteContentRange": {
-                        "range": {
-                            "segmentId": None,
-                            "startIndex": self.start_index,
-                            "endIndex": self.end_index - 1 if self._last else self.end_index,
-                        }
-                    }
-                },
-                {
-                    "insertTextRequest": {
+                    "insertText": {
                         "text": text,
                         "location": {"segmentId": None, "index": self.start_index},
                     }
-                },
+                }
             ]
         )
 
     @property
     def style(self):
-        return TextStyle.from_docs(**self._paragraph.get("paragraphStyle"))
+        return TextStyle.from_doc_style(self._paragraph.get("paragraphStyle"))
 
-    #
+    @style.setter
+    def style(self, style: ParagraphStyle = None):
+        fields, style = style.to_doc_style("paragraph")
+        self._document._mutation(
+            [
+                {
+                    "updateParagraphStyle": {
+                        "range": {
+                            "startIndex": self.start_index,
+                            "endIndex": self.end_index - 1 if self._last else self.end_index,
+                        },
+                        "paragraphStyle": style,
+                        "fields": fields,
+                    }
+                }
+            ]
+        )
+
     def delete(self):
         end_index = self.end_index - 1 if self._last else self.end_index
         if self.start_index == end_index:

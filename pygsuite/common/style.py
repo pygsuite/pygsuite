@@ -16,7 +16,9 @@ def hex_to_rgb(input: str):
     return tuple(int(input[i : i + 2], 16) / 255.0 for i in (0, 2, 4))
 
 
-def doc_color_to_color(info: dict):
+def doc_color_to_color(info: Optional[dict]):
+    if not info:
+        return None
     base = info.get("color")
     if not base:
         return None
@@ -27,6 +29,8 @@ def doc_color_to_color(info: dict):
 
 
 def doc_link_to_link(info: dict):
+    if not info:
+        return None
     # TODO: identify link format for these:
     # info.get('bookmarkId'), info.get('headingId')
     return info.get("url")  # Link(info.get('url'), info.get('bookmarkId'), info.get('headingId'))
@@ -75,6 +79,7 @@ class TextStyle:
     small_caps: Optional[bool] = None
     underline: Optional[bool] = None
     link: str = None
+    font_unit: Optional[str] = "PT"
 
     def to_doc_style(self) -> Tuple[str, Dict]:  # noqa: C901
         base = {}
@@ -142,11 +147,14 @@ class TextStyle:
         return masks, base
 
     @classmethod
-    def from_docs_style(cls, info):
+    def from_doc_style(cls, info):
+        if info.get("namedStyleType"):
+            return DefaultFonts[info.get("namedStyleType")]
         return TextStyle(
-            font_size=info.get("fontSize"),
-            font=info.get("fontSize"),
-            font_weight=info.get("fontSize"),
+            font_size=info.get("fontSize").get("magnitude"),
+            font_unit=info.get("fontSize").get("unit"),
+            font=info.get("font"),
+            font_weight=info.get("fonWeight"),
             color=doc_color_to_color(info.get("color")),
             background_color=doc_color_to_color(info.get("backgroundColor")),
             bold=info.get("bold"),
@@ -221,13 +229,66 @@ class Border:
         return base
 
 
-class DefaultFonts:
-    normal = TextStyle(font_size=11, font="arial", color=Color(hex="#000000"))
-    title = TextStyle(font_size=26, font="arial", color=Color(hex="#000000"))
-    subtitle = TextStyle(font_size=15, font="arial", color=Color(hex="#666666"))
-    heading1 = TextStyle(font_size=20, font="arial", color=Color(hex="#000000"))
-    heading2 = TextStyle(font_size=16, font="arial", color=Color(hex="#666666"))
-    heading3 = TextStyle(font_size=14, font="arial", color=Color(hex="#434343"))
-    heading4 = TextStyle(font_size=12, font="arial", color=Color(hex="#666666"))
-    heading5 = TextStyle(font_size=11, font="arial", color=Color(hex="#666666"))
-    heading6 = TextStyle(font_size=11, font="arial", italic=True, color=Color(hex="#666666"))
+class DefaultFonts(Enum):
+    NORMAL_TEXT = TextStyle(font_size=11, font="arial", color=Color(hex="#000000"))
+    TITLE = TextStyle(font_size=26, font="arial", color=Color(hex="#000000"))
+    SUBTITLE = TextStyle(font_size=15, font="arial", color=Color(hex="#666666"))
+    HEADING1 = TextStyle(font_size=20, font="arial", color=Color(hex="#000000"))
+    HEADING2 = TextStyle(font_size=16, font="arial", color=Color(hex="#666666"))
+    HEADING3 = TextStyle(font_size=14, font="arial", color=Color(hex="#434343"))
+    HEADING4 = TextStyle(font_size=12, font="arial", color=Color(hex="#666666"))
+    HEADING5 = TextStyle(font_size=11, font="arial", color=Color(hex="#666666"))
+    HEADING6 = TextStyle(font_size=11, font="arial", italic=True, color=Color(hex="#666666"))
+
+
+@dataclass
+class ParagraphStyle:
+    alignment: str
+    line_space: int
+    direction: str
+    spacing_mode: str
+    space_above: str
+    space_below: str
+    border_between: str
+    border_top: BorderStyle
+    keep_lines_together: bool
+    keep_with_next: bool
+    avoid_widow_and_orphan: bool
+    shading: str
+
+    def to_doc_style(self) -> Tuple[str, Dict]:  # noqa: C901
+        base = {}
+        masks = []
+        if self.alignment is not None:
+            base["alignment"] = {"alignment": self.alignment}
+            masks.append("alignment")
+        # TODO: validate all of these
+        for attr in [
+            "line_space",
+            "direction",
+            "spacing_mode",
+            "space_above",
+            "space_below",
+            "border_between",
+            "border_top",
+            "keep_lines",
+            "keep_with_next",
+            "avoid_widow_and_orphan",
+            "shading",
+        ]:
+            test = getattr(self, attr)
+            if test:
+                components = attr.split("_")
+                name = components[0] + "".join([component.title() for component in components])
+                base[name] = {name: test}
+                masks.append(name)
+        return ",".join(masks), base
+
+    def to_sheet_style(self) -> Tuple[list, Dict]:  # noqa: C901
+        raise NotImplementedError
+
+    @classmethod
+    def from_doc_style(cls, info):
+        if info.get("namedStyleType"):
+            return DefaultFonts[info.get("namedStyleType")]
+        return ParagraphStyle(**info)

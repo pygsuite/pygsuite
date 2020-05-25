@@ -124,5 +124,10 @@ class Clients(object):
         self.validate()
         return build("drive", "v2", credentials=self.auth)
 
+    @lazy_property
+    def drive_client_v3(self):
+        self.validate()
+        return build("drive", "v3", credentials=self.auth)
+
 
 Clients = Clients()

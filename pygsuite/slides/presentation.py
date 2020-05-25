@@ -8,6 +8,20 @@ from .slide import Slide
 
 
 class Presentation:
+    @classmethod
+    def get_safe(cls, title: str, client=None):
+        from pygsuite import Clients
+        from pygsuite.drive import Drive, FileTypes
+
+        files = Drive(client=client).find_files(FileTypes.SLIDES, name=title)
+        if files:
+            return Presentation(id=files[0]["id"], client=client)
+        else:
+            client = client or Clients.docs_client
+            body = {"title": title}
+            new = client.documents().create(body=body).execute()
+            return Presentation(id=new.get("documentId"), client=client)
+
     def __init__(self, id, client=None):
         from pygsuite import Clients
 

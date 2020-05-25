@@ -20,3 +20,5 @@ def test_document(auth_test_clients):
     from pygsuite import Document
 
     yield Document.get_safe(title=f"test-{uuid4()}")
+
+    # yield Document.get_safe(title=f"test-static")

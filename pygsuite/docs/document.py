@@ -22,9 +22,12 @@ def parse_id(input_id: str) -> str:
 class Document:
     @classmethod
     def get_safe(cls, title: str, client=None):
-        try:
-            return Document(id=title, client=client)
-        except Exception as e:
+        from pygsuite.drive import Drive, FileTypes
+
+        files = Drive(client=client).find_files(FileTypes.DOCS, name=title)
+        if files:
+            return Document(id=files[0]["id"], client=client)
+        else:
             client = client or Clients.docs_client
             body = {"title": title}
             new = client.documents().create(body=body).execute()
@@ -38,6 +41,7 @@ class Document:
         self.id = parse_id(id) if id else None
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
+        self.auto_sync = False
 
     def id(self):
         return self._document["id"]
@@ -46,10 +50,10 @@ class Document:
         if not reqs:
             return None
         self._change_queue += reqs
-        if flush:
+        if flush or self.auto_sync:
             return self.flush()
 
-    @retry((HttpError), tries=3, delay=10, backoff=5)
+    # @retry(HttpError, tries=3, delay=10, backoff=5)
     def flush(self, reverse=False):
         if reverse:
             base = reversed(self._change_queue)
@@ -90,19 +94,19 @@ class Document:
 
     @property
     def footers(self):
-        return [Footers(item, self._sheet) for item in self._sheet.footers()]
+        return [Footers(item, self) for item in self._document.get("footers")]
 
     @property
     def footnotes(self):
-        return [Footnotes(item, self._sheet) for item in self._sheet.footnotes()]
+        return [Footnotes(item, self) for item in self._document.get("footnotes")]
 
     @property
     def headers(self):
-        return [Headers(item, self._sheet) for item in self._sheet.headers()]
+        return [Headers(item, self) for item in self._document.get("headers")]
 
     @property
     def title(self):
-        return self._document.get("title")
+        return self._document.get("TITLE")
 
     @title.setter
     def title(self, title: str):
