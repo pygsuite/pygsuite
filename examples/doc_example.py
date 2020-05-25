@@ -25,3 +25,5 @@ if __name__ == "__main__":
     docbody.newline()
     docbody.add_text('Birds are a...', style=DefaultFonts.normal)
     document.flush()
+    for item in document.body:
+        print(item)

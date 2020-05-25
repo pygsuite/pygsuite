@@ -8,9 +8,13 @@ class TextRun(BaseParagraphElement):
         BaseParagraphElement.__init__(self, element, presentation)
         self._detail = element.get("textRun")
 
+    def __repr__(self):
+        return f"<TextRun: {self.content[0:10]}/>"
+
     @property
     def content(self):
         return self._detail.get("content")
 
+    @property
     def style(self):
-        return self._detail.get("style")
+        return self._detail.get("textStyle")

@@ -40,6 +40,9 @@ class Paragraph(BaseElement):
         BaseElement.__init__(self, element=element, document=document, last=last)
         self._paragraph = self._element.get("paragraph")
 
+    def __repr__(self):
+        return f"<Paragraph: {self.text[0:10]}.../>"
+
     @property
     def elements(self):
         return [ParagraphElement(elem, self._document) for elem in self._paragraph.get("elements")]
@@ -49,6 +52,10 @@ class Paragraph(BaseElement):
         return "".join(
             [element.content for element in self.elements if isinstance(element, TextRun)]
         )
+
+    @property
+    def style(self):
+        return self._paragraph.get("paragraphStyle")
 
     #
     def delete(self):

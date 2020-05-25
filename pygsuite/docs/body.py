@@ -92,13 +92,10 @@ class Body(object):
             if position is None:
                 if not self.content:
                     start = 1
-
-                    end = start + len(text)
                 else:
                     start = self.content[-1].end_index - 1
 
-                    end = start + len(text)
-
+            end = start + len(text)
             fields, style = style.to_doc_style()
             queued.append(
                 {

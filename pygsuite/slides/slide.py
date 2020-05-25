@@ -131,5 +131,4 @@ class Slide(object):
             }
         )
         self._presentation._mutation(reqs=reqs)
-        print(reqs)
         return Shape.from_id(id=id, presentation=self._presentation)

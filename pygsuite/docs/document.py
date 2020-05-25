@@ -41,7 +41,6 @@ class Document:
 
     @retry((HttpError), tries=3, delay=10, backoff=5)
     def flush(self, reverse=False):
-        print(self._change_queue)
         if reverse:
             base = reversed(self._change_queue)
         else:
