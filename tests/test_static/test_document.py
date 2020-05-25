@@ -1,5 +1,5 @@
-def test_document_parsing(test_document):
-    assert test_document.title == "Test Document"
+def test_document_parsing(static_test_document):
+    assert static_test_document.title == "Test Document"
 
 
 def test_document_body(static_test_document):
