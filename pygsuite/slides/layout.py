@@ -49,6 +49,7 @@ class Layout(object):
     def build_reference_map(self, key, val) -> Tuple[Dict, Dict]:
 
         if "_" in key:
+            print(self.placeholders)
             details = self.placeholders[key]
         else:
             details = self._get_smart_placeholder(key)
@@ -69,4 +70,4 @@ class Layout(object):
     def placeholders(self) -> Dict[str, Placeholder]:
         base = [obj.placeholder for obj in self.elements if obj.placeholder]
 
-        return {f"{obj.type}_{obj.index}": obj for obj in base}
+        return {str(obj): obj for obj in base}

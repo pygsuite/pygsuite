@@ -93,17 +93,9 @@ class Clients(object):
         return build("docs", "v1", credentials=self.auth)
 
     @lazy_property
-    def local_docs_client(self):
-        return build("docs", "v1", credentials=self.auth)
-
-    @lazy_property
     def sheets_client(self):
         self.validate()
         return build("sheets", "v4", credentials=self.auth)
-
-    @lazy_property
-    def _local_sheets_client(self):
-        return build("docs", "v1", credentials=self.auth)
 
     @lazy_property
     def slides_client(self):
@@ -111,13 +103,20 @@ class Clients(object):
         return build("slides", "v1", credentials=self.auth)
 
     @lazy_property
+    def _local_sheets_client(self):
+        return build("sheets", "v4", credentials=self.auth)
+
+    @lazy_property
+    def local_docs_client(self):
+        return build("docs", "v1", credentials=self.auth)
+
+    @lazy_property
     def _local_slides_client(self):
         return build("slides", "v1", credentials=self.auth)
 
     @lazy_property
     def drive_client(self):
-        self.validate()
-        return build("drive", "v3", credentials=self.auth)
+        return self.drive_client_v3
 
     @lazy_property
     def drive_client_v2(self):

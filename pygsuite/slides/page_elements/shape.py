@@ -30,6 +30,13 @@ class Shape(BaseElement):
     def id(self):
         return self._element["objectId"]
 
+    def __repr__(self):
+        return f'<Shape type:{self.type}>'
+
+    @property
+    def type(self):
+        return self._details.get("shapeType")
+
     @property
     def text(self):
         text = self._details.get("text")
