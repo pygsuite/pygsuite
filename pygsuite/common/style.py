@@ -240,6 +240,9 @@ class DefaultFonts(Enum):
     HEADING5 = TextStyle(font_size=11, font="arial", color=Color(hex="#666666"))
     HEADING6 = TextStyle(font_size=11, font="arial", italic=True, color=Color(hex="#666666"))
 
+    def to_doc_style(self):
+        return self.value.to_doc_style()
+
 
 @dataclass
 class ParagraphStyle:

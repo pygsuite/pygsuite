@@ -9,6 +9,6 @@ script_dir = os.path.dirname(__file__)
 
 
 @pytest.fixture
-def test_document():
+def static_test_document():
     with open(os.path.join(script_dir, "test_document.json_capture")) as file:
         return Document(_document=literal_eval(file.read()), local=True)

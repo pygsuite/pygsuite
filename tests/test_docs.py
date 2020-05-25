@@ -22,7 +22,7 @@ def test_text(test_document):
     assert text[0].text.strip() == "TEST_INDEX"
     assert text[2].text.strip() == "TEST_DEFAULT"
     # TODO: return style objects
-    assert text[1].elements[0].style["fontSize"] == {"magnitude": 18, "unit": "PT"}
+    assert text[1].elements[0].style.font_size == 18
 
 
 def test_paragraph(test_document):
