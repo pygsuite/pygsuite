@@ -29,7 +29,13 @@ class LineProperties:
                               info.get('endArrow'), info.get('link'),
                               info.get('startConnection'),
                               info.get('endConnection'))
+@dataclass
+class LineConnection:
+    object_id:str
+    conn_index:int
 
+    def to_api_repr(self):
+        return {'connectedObjectId':self.object_id, 'connectionSiteIndex':self.conn_index}
 
 class Line(BaseElement):
     @classmethod
@@ -58,3 +64,35 @@ class Line(BaseElement):
     @property
     def properties(self):
         return LineProperties(self._details.get("lineProperties"))
+
+    @property
+    def start_connection(self):
+        base = self._details.get("lineProperties").get('startConnection')
+        if not base:
+            return None
+        else:
+            return LineConnection(base.get('connectedObjectId'), base.get('connectionSiteIndex'))
+
+    @start_connection.setter
+    def start_connection(self, conn:LineConnection):
+        reqs = [{"updateLineProperties": {"objectId": self.id, "fields":'startConnection',
+                                          "lineProperties":{
+                                              "startConnection": conn.to_api_repr()
+                                          }}}]
+        self._presentation._mutation(reqs=reqs)
+
+    @property
+    def end_connection(self):
+        base = self._details.get("lineProperties").get('endConnection')
+        if not base:
+            return None
+        else:
+            return LineConnection(base.get('connectedObjectId'), base.get('connectionSiteIndex'))
+
+    @end_connection.setter
+    def end_connection(self, conn:LineConnection):
+        reqs = [{"updateLineProperties": {"objectId": self.id, "fields":'endConnection',
+                                          "lineProperties":{
+                                              "endConnection": conn.to_api_repr()
+                                          }}}]
+        self._presentation._mutation(reqs=reqs)
