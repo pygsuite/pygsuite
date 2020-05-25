@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import Union, Dict
+from typing import Union, Dict, Tuple
 from uuid import uuid4
 
 from google.cloud.storage import Client
@@ -34,16 +34,18 @@ class ImageUploader:
     def __init__(self, bucket: str, account_info: Union[Client, str, Dict], timeout: int = 15):
         self.account_info = account_info
         self.timeout = timeout
-        self._client = (
-            account_info
+        self._client, self._project = (
+            (account_info, None)
             if isinstance(account_info, Client)
             else self._generate_client(account_info)
         )
-        print(account_info)
-        self.client = Client(credentials=self._client)
+
+        print(self._client)
+        print(self._project)
+        self.client = Client(credentials=self._client, project=self._project)
         self.bucket = self.client.bucket(bucket)
 
-    def _generate_client(self, info: Union[Dict, str]) -> Client:
+    def _generate_client(self, info: Union[Dict, str]) -> Tuple[Client, str]:
         if not isinstance(info, dict):
             info = json.loads(info)
 
@@ -57,7 +59,7 @@ class ImageUploader:
 
         from google.oauth2 import service_account
 
-        return service_account.Credentials.from_service_account_info(info)
+        return service_account.Credentials.from_service_account_info(info), info.get("project_id")
 
     def _get_signed_url(self, obj: str):
         return generate_download_signed_url_v4(self.bucket, obj, self.timeout)
