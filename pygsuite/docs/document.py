@@ -106,7 +106,7 @@ class Document:
 
     @property
     def title(self):
-        return self._document.get("TITLE")
+        return self._document.get("title")
 
     @title.setter
     def title(self, title: str):
