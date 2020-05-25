@@ -6,8 +6,8 @@ from pygsuite.docs.doc_elements.paragraph import Paragraph
 BRIGHT_GREEN_HEX = "#72FF33"
 
 
-def test_text(auth_test_clients):
-    document = Document(id=environ["TEST_DOCUMENT"])
+def test_text(test_document):
+    document = test_document
     docbody = document.body
     docbody.delete()
     docbody.add_text(

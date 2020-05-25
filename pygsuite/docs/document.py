@@ -5,6 +5,7 @@ from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
 from pygsuite.utility.decorators import retry
+from pygsuite import Clients
 
 
 def parse_id(input_id: str) -> str:
@@ -19,8 +20,17 @@ def parse_id(input_id: str) -> str:
 
 
 class Document:
+    @classmethod
+    def get_safe(cls, title: str, client=None):
+        try:
+            return Document(id=title, client=client)
+        except Exception as e:
+            client = client or Clients.docs_client
+            body = {"title": title}
+            new = client.documents().create(body=body).execute()
+            return Document(id=new.get("documentId"), client=client)
+
     def __init__(self, id=None, name=None, client=None, _document=None, local=False):
-        from pygsuite import Clients
 
         if not local:
             client = client or Clients.docs_client
@@ -95,7 +105,7 @@ class Document:
         return self._document.get("title")
 
     @title.setter
-    def title(self, x):
+    def title(self, title: str):
         raise NotImplementedError
 
     def refresh(self):

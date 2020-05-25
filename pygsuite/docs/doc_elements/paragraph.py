@@ -53,6 +53,29 @@ class Paragraph(BaseElement):
             [element.content for element in self.elements if isinstance(element, TextRun)]
         )
 
+    @text.setter
+    def text(self, text: str):
+        self.delete()
+        self._document._mutation(
+            [
+                {
+                    "deleteContentRange": {
+                        "range": {
+                            "segmentId": None,
+                            "startIndex": self.start_index,
+                            "endIndex": self.end_index - 1 if self._last else self.end_index,
+                        }
+                    }
+                },
+                {
+                    "insertTextRequest": {
+                        "text": text,
+                        "location": {"segmentId": None, "index": self.start_index},
+                    }
+                },
+            ]
+        )
+
     @property
     def style(self):
         return self._paragraph.get("paragraphStyle")
