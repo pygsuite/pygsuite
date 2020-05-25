@@ -32,7 +32,7 @@ class Shape(BaseElement):
 
     @property
     def text(self):
-        text = self._element.get("text")
+        text = self._details.get("text")
         if text:
             return Text(text).text
         else:
