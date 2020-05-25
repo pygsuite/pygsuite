@@ -3,7 +3,7 @@ from typing import List, Union
 
 from jinja2 import Template, Environment, meta
 
-from .page_element import PageElement, Table, Shape, Image
+from .page_element import PageElement, Table, Shape, Image, Line
 from pygsuite.slides.element_properties import ElementProperties
 from pygsuite.slides.enums import ShapeType
 from pygsuite.utility.guids import get_guid
@@ -101,14 +101,41 @@ class Slide(object):
 
         self._presentation._mutation(reqs=reqs)
 
-    def add_image(self, image, properties):
-        pass
+    def add_image(self, url:str, properties: ElementProperties, id=None):
+        id = id or get_guid()
+        reqs = []
 
-    def add_text(self, text):
-        raise NotImplementedError
+        reqs.append(
+            {
+                "createImage": {
+                    "objectId": id,
+                    "elementProperties": properties.to_slides_json(self.id),
+                    "url":url
+                }
+            }
+        )
+        self._presentation._mutation(reqs=reqs)
+        return Image.from_id(id=id, presentation=self._presentation)
 
-    def add_line(self, text):
-        raise NotImplementedError
+    #
+    # def add_text(self, text):
+    #     raise NotImplementedError
+
+    def add_line(self, category, properties: ElementProperties, id=None):
+        id = id or get_guid()
+        reqs = []
+
+        reqs.append(
+            {
+                "createLine": {
+                    "objectId": id,
+                    "elementProperties": properties.to_slides_json(self.id),
+                    "category":category
+                }
+            }
+        )
+        self._presentation._mutation(reqs=reqs)
+        return Line.from_id(id=id, presentation=self._presentation)
 
     def add_word_art(self, text):
         raise NotImplementedError

@@ -49,7 +49,6 @@ class Layout(object):
     def build_reference_map(self, key, val) -> Tuple[Dict, Dict]:
 
         if "_" in key:
-            print(self.placeholders)
             details = self.placeholders[key]
         else:
             details = self._get_smart_placeholder(key)

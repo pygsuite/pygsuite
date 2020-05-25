@@ -65,6 +65,15 @@ class Color:
 
         return base
 
+    def to_slide_style(self):
+
+        base = {"color": {"rgbColor": {"red": self.red, "green": self.green, "blue": self.blue}} }
+
+        if self.alpha is not None:
+            base["alpha"] = self.alpha
+
+        return base
+
 
 @dataclass
 class TextStyle:

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Union
+from typing import Union, Optional
 
 
 class MeasurementUnit(Enum):
@@ -29,10 +29,10 @@ def process_dimension(dim, FULL):
 
 @dataclass
 class ElementProperties:
-    x: Union[int, str]
-    y: Union[int, str]
-    width: Union[int, str]
-    height: Union[int, str]
+    x: Union[int, str, float]
+    y: Union[int, str, float]
+    width: Optional[Union[int, str, float]] = None
+    height: Optional[Union[int, str, float]] = None
     object_id = None
     unit_type = "PT"
 
@@ -45,10 +45,7 @@ class ElementProperties:
     def to_slides_json(self, page_id):
         base = {
             "pageObjectId": page_id,
-            "size": {
-                "width": {"magnitude": self.width, "unit": "PT"},
-                "height": {"magnitude": self.height, "unit": self.unit_type},
-            },
+
             "transform": {
                 "scaleX": 1,
                 "scaleY": 1,
@@ -60,4 +57,16 @@ class ElementProperties:
             },
         }
 
+        if self.width or self.height:
+            if not self.width and self.height:
+                raise ValueError('Must set both height and width when setting either')
+            base["size"] = {}
+        if self.width:
+            base["size"]["width"] = {"magnitude": self.width, "unit": self.unit_type}
+        if self.height:
+            base["size"]["height"] = {"magnitude": self.height, "unit": self.unit_type}
+
         return base
+
+ElementProperties.base_width = SLIDE_WIDTH
+ElementProperties.base_height = SLIDE_HEIGHT
