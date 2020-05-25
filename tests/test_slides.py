@@ -14,4 +14,4 @@ def test_presentation(test_presentation):
         ShapeType.TEXT_BOX, ElementProperties(x=0, y=0, height=50, width="100%")
     ).text = "test"
     prez.flush()
-    assert prez[1].shapes[0].text == "test"
+    assert prez[1].shapes[0].text.strip() == "test"
