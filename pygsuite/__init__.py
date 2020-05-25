@@ -16,4 +16,6 @@ __all__ = [
     Presentation,
     TextStyle,
     Color,
+    ImageUploader,
+    Drive
 ]  # type: ignore

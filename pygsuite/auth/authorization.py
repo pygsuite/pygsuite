@@ -45,7 +45,7 @@ class Clients(object):
 
     def validate(self):
         if not self.auth:
-            raise ValueError(f"Need to provide credential path or credential text or auth object.")
+            raise ValueError("Need to provide credential path or credential text or auth object.")
 
     def auth_default(self):
         import google.auth

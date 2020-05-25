@@ -5,7 +5,7 @@ from pygsuite import DefaultFonts, Document, TextStyle, Color
 BRIGHT_GREEN_HEX = "#72FF33"
 
 
-def test_documents(auth_test_clients):
+def test_presentation(test_presentation):
     document = Document(id=environ["TEST_DOCUMENT"])
     docbody = document.body
     docbody.delete()

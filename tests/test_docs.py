@@ -1,6 +1,4 @@
-from os import environ
-
-from pygsuite import DefaultFonts, Document, TextStyle, Color
+from pygsuite import DefaultFonts, TextStyle, Color
 from pygsuite.docs.doc_elements.paragraph import Paragraph
 
 BRIGHT_GREEN_HEX = "#72FF33"

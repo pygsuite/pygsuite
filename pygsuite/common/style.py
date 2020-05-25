@@ -189,7 +189,7 @@ class BorderPosition(Enum):
 class Border:
     """Dataclass to represent a Border object for a border along a cell.
 
-    Google documentation: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/cells#Border 
+    Google documentation: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/cells#Border
     """
 
     BORDER_STYLES = ["NONE", "DOTTED", "DASHED", "SOLID", "SOLID_MEDIUM", "SOLID_THICK", "DOUBLE"]

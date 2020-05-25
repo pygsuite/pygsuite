@@ -22,6 +22,6 @@ def test_from_string():
 
 
 def test_from_dict():
-    uploader = ImageUploader(
+    ImageUploader(
         bucket=environ["TEST_BUCKET"], account_info=loads(environ["TEST_GCS_ACCOUNT"])
     )
