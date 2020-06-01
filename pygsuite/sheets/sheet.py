@@ -201,7 +201,7 @@ class Spreadsheet:
 
     def create_sheet(self, sheet_properties: Optional[SheetProperties] = None):
 
-        base = {"addSheet": sheet_properties}
+        base = {"addSheet": sheet_properties.to_json()}
         self._spreadsheets_update_queue.append(base)
 
         return self
