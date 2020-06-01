@@ -173,7 +173,7 @@ class Spreadsheet:
             response_dict["spreadsheets_update_response"] = (
                 self.service.spreadsheets()
                 .batchUpdate(body={"requests": _spreadsheets_update_queue}, spreadsheetId=self.id)
-                .execute()["responses"]
+                .execute()  # ["responses"]
             )
 
         if len(_values_update_queue) > 0:
@@ -190,7 +190,7 @@ class Spreadsheet:
                         "responseDateTimeRenderOption": response_date_time_render_option.value,
                     },
                 )
-                .execute()["responses"]
+                .execute()  # ["responses"]
             )
 
         self._spreadsheets_update_queue = []
