@@ -5,9 +5,9 @@ from googleapiclient.discovery import Resource
 from googleapiclient.errors import HttpError
 import pandas as pd
 
+from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
-from pygsuite.utility.collections import KeyList
 
 
 class ValueInputOption(Enum):
@@ -81,7 +81,9 @@ class Spreadsheet:
     """Base class for the GSuite Spreadsheets API.
     """
 
-    def __init__(self, id: str, client: Optional[Resource] = None):
+    def __init__(
+        self, id: str, client: Optional[Resource] = None,
+    ):
         """Method to initialize the class.
 
         The __init__ method accepts a client connection to the Google API, which it uses to retrieve the properties
@@ -129,8 +131,7 @@ class Spreadsheet:
     def worksheets(self):
         """List of Worksheet objects for each worksheet in the Spreadsheet.
         """
-        built = [Worksheet(sheet, self) for sheet in self._spreadsheet.get("sheets")]
-        return KeyList(keys=[sheet.name for sheet in built], values=built)
+        return [Worksheet(sheet, self) for sheet in self._spreadsheet.get("sheets")]
 
     def refresh(self):
         """Method to refresh the spreadsheets API connection.
@@ -198,11 +199,16 @@ class Spreadsheet:
 
         return response_dict
 
-    def create_sheet(self):
+    def create_sheet(self, sheet_properties: Optional[SheetProperties] = None):
 
-        pass
+        base = {"addSheet": sheet_properties}
+        self._spreadsheets_update_queue.append(base)
 
-    def get_values_from_range(self, cell_range: str):
+        return self
+
+    def get_values_from_range(
+        self, cell_range: str,
+    ):
         """Method to get data from a Spreadsheet range.
 
         Args:
@@ -226,7 +232,7 @@ class Spreadsheet:
 
         return self
 
-    def to_list(self,):
+    def to_list(self,) -> list:
         """Method to use with self.get_values_from_range(self, cell_range) to return a list of values.
 
         Returns:
@@ -237,7 +243,9 @@ class Spreadsheet:
 
         return self._values
 
-    def to_df(self, header: bool = True):
+    def to_df(
+        self, header: bool = True,
+    ) -> pd.DataFrame:
         """Method to use with self.get_values_from_range(self, cell_range) to return a pandas.DataFrame of values.
 
         Returns:
@@ -257,7 +265,7 @@ class Spreadsheet:
         return df
 
     def insert_data(
-        self, insert_range: str, values: list, major_dimension: Dimension = Dimension.ROWS
+        self, insert_range: str, values: list, major_dimension: Dimension = Dimension.ROWS,
     ):
         """Method to insert data from a list into a given range in the Spreadsheet.
 
@@ -281,7 +289,7 @@ class Spreadsheet:
         return self
 
     def insert_data_from_df(
-        self, df: pd.DataFrame, insert_range: str, major_dimension: Dimension = Dimension.ROWS
+        self, df: pd.DataFrame, insert_range: str, major_dimension: Dimension = Dimension.ROWS,
     ):
         """Method to insert data from a pd.DataFrame into a given range in the Spreadsheet.
 
@@ -305,6 +313,8 @@ class Spreadsheet:
             values.append(header)
         values.extend(data)
 
-        self.insert_data(insert_range=insert_range, values=values, major_dimension=major_dimension)
+        self.insert_data(
+            insert_range=insert_range, values=values, major_dimension=major_dimension,
+        )
 
         return self

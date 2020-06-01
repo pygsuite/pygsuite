@@ -147,7 +147,7 @@ class TextStyle:
             base["underline"] = self.underline
             masks.append("underline")
         if self.color is not None:
-            base["foregroundColor"] = self.color.to_json()
+            base["foregroundColor"] = self.color.to_sheet_style()
             masks.append("foregroundColor")
         if self.font is not None:
             base["fontFamily"] = self.font
