@@ -1,3 +1,3 @@
-from .drive import Drive, FileTypes
+from .drive import Drive, FileTypes, UserType, PermissionType
 
-__all__ = ["Drive", "FileTypes"]
+__all__ = ["Drive", "FileTypes", "UserType", "PermissionType"]
