@@ -45,7 +45,6 @@ class ElementProperties:
     def to_slides_json(self, page_id):
         base = {
             "pageObjectId": page_id,
-
             "transform": {
                 "scaleX": 1,
                 "scaleY": 1,
@@ -59,7 +58,7 @@ class ElementProperties:
 
         if self.width or self.height:
             if not self.width and self.height:
-                raise ValueError('Must set both height and width when setting either')
+                raise ValueError("Must set both height and width when setting either")
             base["size"] = {}
         if self.width:
             base["size"]["width"] = {"magnitude": self.width, "unit": self.unit_type}
@@ -67,6 +66,7 @@ class ElementProperties:
             base["size"]["height"] = {"magnitude": self.height, "unit": self.unit_type}
 
         return base
+
 
 ElementProperties.base_width = SLIDE_WIDTH
 ElementProperties.base_height = SLIDE_HEIGHT

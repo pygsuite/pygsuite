@@ -81,6 +81,10 @@ class Presentation:
         if flush:
             return self.flush()
 
+    @property
+    def url(self):
+        return f"https://docs.google.com/slides/d/{self.id}"
+
     def add_slide(
         self,
         layout: Union[str, Layout] = None,

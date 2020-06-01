@@ -16,7 +16,7 @@ class Placeholder:
 
     def __str__(self):
         if self.index:
-            return f'{self.type}_{self.index}'
+            return f"{self.type}_{self.index}"
         else:
             return self.type
 

@@ -101,7 +101,7 @@ class Slide(object):
 
         self._presentation._mutation(reqs=reqs)
 
-    def add_image(self, url:str, properties: ElementProperties, id=None):
+    def add_image(self, url: str, properties: ElementProperties, id=None):
         id = id or get_guid()
         reqs = []
 
@@ -110,7 +110,7 @@ class Slide(object):
                 "createImage": {
                     "objectId": id,
                     "elementProperties": properties.to_slides_json(self.id),
-                    "url":url
+                    "url": url,
                 }
             }
         )
@@ -130,7 +130,7 @@ class Slide(object):
                 "createLine": {
                     "objectId": id,
                     "elementProperties": properties.to_slides_json(self.id),
-                    "category":category
+                    "category": category,
                 }
             }
         )

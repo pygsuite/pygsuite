@@ -24,7 +24,8 @@ class Document:
     def get_safe(cls, title: str, client=None):
         from pygsuite.drive import Drive, FileTypes
 
-        files = Drive(client=client).find_files(FileTypes.DOCS, name=title)
+        file_client = client or Clients.drive_client_v3
+        files = Drive(client=file_client).find_files(FileTypes.DOCS, name=title)
         if files:
             return Document(id=files[0]["id"], client=client)
         else:
@@ -115,3 +116,7 @@ class Document:
     def refresh(self):
         self._document = self.service.documents().get(documentId=self.id).execute()
         self.body._pending = []
+
+    @property
+    def url(self):
+        return f"https://docs.google.com/docs/d/{self.id}"

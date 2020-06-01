@@ -1,41 +1,51 @@
 from dataclasses import dataclass
 from typing import Dict
 from enum import Enum
-
+from pygsuite.slides.page_elements.common import Text
 
 from .base_element import BaseElement
 
+
 class LineType(Enum):
-    STRAIGHT:str
-    BENT:str
-    CURVED:str
-    LINE_CATEGORY_UNSPECIFIED:str
+    STRAIGHT: str
+    BENT: str
+    CURVED: str
+    LINE_CATEGORY_UNSPECIFIED: str
+
 
 @dataclass
 class LineProperties:
-    line_fill:str
-    weight:str
+    line_fill: str
+    weight: str
     dash_style: str
-    start_arrow:str
-    end_arrow:str
-    link:str
-    start_connection:str
-    end_connection:str
+    start_arrow: str
+    end_arrow: str
+    link: str
+    start_connection: str
+    end_connection: str
 
     @classmethod
     def from_api(cls, info):
-        return LineProperties(info.get('lineFill'), info.get('weight'),
-                              info.get('dashStyle'), info.get('startArrow'),
-                              info.get('endArrow'), info.get('link'),
-                              info.get('startConnection'),
-                              info.get('endConnection'))
+        return LineProperties(
+            info.get("lineFill"),
+            info.get("weight"),
+            info.get("dashStyle"),
+            info.get("startArrow"),
+            info.get("endArrow"),
+            info.get("link"),
+            info.get("startConnection"),
+            info.get("endConnection"),
+        )
+
+
 @dataclass
 class LineConnection:
-    object_id:str
-    conn_index:int
+    object_id: str
+    conn_index: int
 
     def to_api_repr(self):
-        return {'connectedObjectId':self.object_id, 'connectionSiteIndex':self.conn_index}
+        return {"connectedObjectId": self.object_id, "connectionSiteIndex": self.conn_index}
+
 
 class Line(BaseElement):
     @classmethod
@@ -51,7 +61,7 @@ class Line(BaseElement):
         return self._element["objectId"]
 
     def __repr__(self):
-        return f'<Line type:{self.type}>'
+        return f"<Line type:{self.type}>"
 
     @property
     def type(self):
@@ -67,32 +77,50 @@ class Line(BaseElement):
 
     @property
     def start_connection(self):
-        base = self._details.get("lineProperties").get('startConnection')
+        base = self._details.get("lineProperties").get("startConnection")
         if not base:
             return None
         else:
-            return LineConnection(base.get('connectedObjectId'), base.get('connectionSiteIndex'))
+            return LineConnection(base.get("connectedObjectId"), base.get("connectionSiteIndex"))
 
     @start_connection.setter
-    def start_connection(self, conn:LineConnection):
-        reqs = [{"updateLineProperties": {"objectId": self.id, "fields":'startConnection',
-                                          "lineProperties":{
-                                              "startConnection": conn.to_api_repr()
-                                          }}}]
+    def start_connection(self, conn: LineConnection):
+        reqs = [
+            {
+                "updateLineProperties": {
+                    "objectId": self.id,
+                    "fields": "startConnection",
+                    "lineProperties": {"startConnection": conn.to_api_repr()},
+                }
+            }
+        ]
         self._presentation._mutation(reqs=reqs)
 
     @property
     def end_connection(self):
-        base = self._details.get("lineProperties").get('endConnection')
+        base = self._details.get("lineProperties").get("endConnection")
         if not base:
             return None
         else:
-            return LineConnection(base.get('connectedObjectId'), base.get('connectionSiteIndex'))
+            return LineConnection(base.get("connectedObjectId"), base.get("connectionSiteIndex"))
 
     @end_connection.setter
-    def end_connection(self, conn:LineConnection):
-        reqs = [{"updateLineProperties": {"objectId": self.id, "fields":'endConnection',
-                                          "lineProperties":{
-                                              "endConnection": conn.to_api_repr()
-                                          }}}]
+    def end_connection(self, conn: LineConnection):
+        reqs = [
+            {
+                "updateLineProperties": {
+                    "objectId": self.id,
+                    "fields": "endConnection",
+                    "lineProperties": {"endConnection": conn.to_api_repr()},
+                }
+            }
+        ]
         self._presentation._mutation(reqs=reqs)
+
+    @property
+    def text(self):
+        text = self._details.get("text")
+        if text:
+            return Text(text).text
+        else:
+            return None

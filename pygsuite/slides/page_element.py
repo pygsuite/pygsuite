@@ -4,6 +4,7 @@ from .page_elements.shape import Shape
 from .page_elements.table import Table
 from .page_elements.line import Line
 
+
 class PageElement(object):
     def __init__(self, element, presentation):
         self._element = element
@@ -16,7 +17,7 @@ class PageElement(object):
             return Table(element, presentation)
         elif element.get("image"):
             return Image(element, presentation)
-        elif element.get('line'):
+        elif element.get("line"):
             return Line(element, presentation)
         else:
             return BaseElement(element, presentation)

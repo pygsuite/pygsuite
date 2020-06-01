@@ -1,56 +1,51 @@
 from dataclasses import dataclass
-from typing import Dict
+
 from pygsuite.common.style import Color
+from pygsuite.slides.page_elements.common import Text
 from .base_element import BaseElement
+
 
 @dataclass
 class BackgroundFill:
-    state:str
+    state: str
     solid_fill: Color
 
-@dataclass
-class Text:
-    base: Dict
-
-    @property
-    def text(self):
-        base = ""
-        for el in self.base.get("textElements") or []:
-            if el.get("textRun"):
-                base += el.get("textRun")["content"]
-        return base
 
 @dataclass
 class ShapeProperties:
-    shape_background_fill:Color = None
-    outline:str =None
-    shadow:str = None
-    link:str = None
-    content_alignment:str =None
+    shape_background_fill: Color = None
+    outline: str = None
+    shadow: str = None
+    link: str = None
+    content_alignment: str = None
 
     # def __post_init__(self):
     #     if isinstance(self.shape_background_fill):
 
-
     @classmethod
-    def from_api_repr(cls, info:dict):
+    def from_api_repr(cls, info: dict):
         if not info:
             return ShapeProperties()
-        return ShapeProperties(info.get('shapeBackgroundFill'),
-                                        info.get('outline'),
-                                        info.get('shadow'),
-                                        info.get('link'),
-                                        info.get('contentAlignment'))
+        return ShapeProperties(
+            info.get("shapeBackgroundFill"),
+            info.get("outline"),
+            info.get("shadow"),
+            info.get("link"),
+            info.get("contentAlignment"),
+        )
+
     def to_api_repr(self):
         base = {}
         masks = []
 
         if self.shape_background_fill is not None:
-            base["shapeBackgroundFill"] = {'propertyState': "RENDERED",
-                                           'solidFill':self.shape_background_fill.to_slide_style()}
+            base["shapeBackgroundFill"] = {
+                "propertyState": "RENDERED",
+                "solidFill": self.shape_background_fill.to_slide_style(),
+            }
             masks.append("shapeBackgroundFill")
         else:
-            base["shapeBackgroundFill"] = {'propertyState': "NOT_RENDERED",}
+            base["shapeBackgroundFill"] = {"propertyState": "NOT_RENDERED"}
             masks.append("shapeBackgroundFill")
 
         if self.outline is not None:
@@ -62,7 +57,7 @@ class ShapeProperties:
         if self.link is not None:
             base["link"] = self.link
             masks.append("link")
-        masks = ','.join(masks)
+        masks = ",".join(masks)
         return masks, base
 
 
@@ -80,7 +75,7 @@ class Shape(BaseElement):
         return self._element["objectId"]
 
     def __repr__(self):
-        return f'<Shape type:{self.type}>'
+        return f"<Shape type:{self.type}>"
 
     @property
     def type(self):
@@ -110,14 +105,20 @@ class Shape(BaseElement):
 
     @property
     def properties(self):
-        return ShapeProperties.from_api_repr(self._details.get('shapeProperties'))
+        return ShapeProperties.from_api_repr(self._details.get("shapeProperties"))
 
     @properties.setter
-    def properties(self, value:ShapeProperties):
+    def properties(self, value: ShapeProperties):
         masks, props = value.to_api_repr()
-        reqs = [{"updateShapeProperties": {"objectId": self.id,
-                                           "fields":masks,
-                                           "shapeProperties":props}}]
+        reqs = [
+            {
+                "updateShapeProperties": {
+                    "objectId": self.id,
+                    "fields": masks,
+                    "shapeProperties": props,
+                }
+            }
+        ]
         self._presentation._mutation(reqs=reqs)
 
     @property
@@ -125,7 +126,15 @@ class Shape(BaseElement):
         return self.properties.shape_background_fill
 
     @background_color.setter
-    def background_color(self, color:Color):
+    def background_color(self, color: Color):
         new = self.properties
         new.shape_background_fill = color
         self.properties = new
+
+    @property
+    def text_style(self):
+        return
+
+    @text_style.setter
+    def text_style(self, val):
+        pass

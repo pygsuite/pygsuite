@@ -4,24 +4,26 @@ from dataclasses import dataclass
 CENTER_INSIDE = "CENTER_INSIDE"
 CENTER_CROP = "CENTER_CROP"
 
+
 @dataclass
 class CropProperties:
     left_offset: float
     right_offset: float
     top_offset: float
     bottom_offset: float
-    angle:float
+    angle: float
+
 
 @dataclass
 class ImageProperties:
-    crop_properties:str
+    crop_properties: str
     transparency: float
-    brightness:float
-    contrast:float
-    recolor:str
-    outline:str
-    shadow:str
-    link:str
+    brightness: float
+    contrast: float
+    recolor: str
+    outline: str
+    shadow: str
+    link: str
 
 
 class Image(BaseElement):

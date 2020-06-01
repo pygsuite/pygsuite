@@ -67,7 +67,7 @@ class Color:
 
     def to_slide_style(self):
 
-        base = {"color": {"rgbColor": {"red": self.red, "green": self.green, "blue": self.blue}} }
+        base = {"color": {"rgbColor": {"red": self.red, "green": self.green, "blue": self.blue}}}
 
         if self.alpha is not None:
             base["alpha"] = self.alpha

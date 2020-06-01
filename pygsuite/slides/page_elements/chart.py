@@ -19,7 +19,7 @@ class Chart(BaseElement):
         return self._element["objectId"]
 
     def __repr__(self):
-        return f'<Chart >'
+        return f"<Chart >"
 
     @property
     def spreadsheet_id(self):
