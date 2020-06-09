@@ -81,9 +81,23 @@ class Spreadsheet:
     """Base class for the GSuite Spreadsheets API.
     """
 
-    def __init__(
-        self, id: str, client: Optional[Resource] = None,
-    ):
+    @classmethod
+    def get_safe(cls, title: str, client=None):
+        from pygsuite import Clients
+        from pygsuite.drive import Drive, FileTypes
+
+        file_client = client or Clients.drive_client_v3
+        files = Drive(client=file_client).find_files(FileTypes.SHEETS, name=title)
+        client = client or Clients.sheets_client
+        if files:
+            return Spreadsheet(id=files[0]["id"], client=client)
+        else:
+
+            body = {"properties": {"title": title}}
+            new = client.spreadsheets().create(body=body).execute()
+            return Spreadsheet(id=new.get("spreadsheetId"), client=client)
+
+    def __init__(self, id: str, client: Optional[Resource] = None):
         """Method to initialize the class.
 
         The __init__ method accepts a client connection to the Google API, which it uses to retrieve the properties
@@ -173,7 +187,8 @@ class Spreadsheet:
             response_dict["spreadsheets_update_response"] = (
                 self.service.spreadsheets()
                 .batchUpdate(body={"requests": _spreadsheets_update_queue}, spreadsheetId=self.id)
-                .execute()["responses"]
+                .execute()
+                .get("responses")
             )
 
         if len(_values_update_queue) > 0:
@@ -190,7 +205,8 @@ class Spreadsheet:
                         "responseDateTimeRenderOption": response_date_time_render_option.value,
                     },
                 )
-                .execute()["responses"]
+                .execute()
+                .get("responses")
             )
 
         self._spreadsheets_update_queue = []
@@ -200,15 +216,14 @@ class Spreadsheet:
         return response_dict
 
     def create_sheet(self, sheet_properties: Optional[SheetProperties] = None):
-
-        base = {"addSheet": sheet_properties}
+        # original
+        # base = {"addSheet": sheet_properties}
+        base = {"addSheet": {"properties": sheet_properties.to_json()}}
         self._spreadsheets_update_queue.append(base)
 
         return self
 
-    def get_values_from_range(
-        self, cell_range: str,
-    ):
+    def get_values_from_range(self, cell_range: str):
         """Method to get data from a Spreadsheet range.
 
         Args:
@@ -243,9 +258,7 @@ class Spreadsheet:
 
         return self._values
 
-    def to_df(
-        self, header: bool = True,
-    ) -> pd.DataFrame:
+    def to_df(self, header: bool = True) -> pd.DataFrame:
         """Method to use with self.get_values_from_range(self, cell_range) to return a pandas.DataFrame of values.
 
         Returns:
@@ -265,7 +278,7 @@ class Spreadsheet:
         return df
 
     def insert_data(
-        self, insert_range: str, values: list, major_dimension: Dimension = Dimension.ROWS,
+        self, insert_range: str, values: list, major_dimension: Dimension = Dimension.ROWS
     ):
         """Method to insert data from a list into a given range in the Spreadsheet.
 
@@ -289,7 +302,7 @@ class Spreadsheet:
         return self
 
     def insert_data_from_df(
-        self, df: pd.DataFrame, insert_range: str, major_dimension: Dimension = Dimension.ROWS,
+        self, df: pd.DataFrame, insert_range: str, major_dimension: Dimension = Dimension.ROWS
     ):
         """Method to insert data from a pd.DataFrame into a given range in the Spreadsheet.
 
@@ -313,8 +326,10 @@ class Spreadsheet:
             values.append(header)
         values.extend(data)
 
-        self.insert_data(
-            insert_range=insert_range, values=values, major_dimension=major_dimension,
-        )
+        self.insert_data(insert_range=insert_range, values=values, major_dimension=major_dimension)
 
         return self
+
+    @property
+    def url(self):
+        return f"https://docs.google.com/spreadsheets/d/{self.id}"

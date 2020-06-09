@@ -1,8 +1,12 @@
 from math import floor
 from string import ascii_letters, ascii_uppercase
 
+import re
+
 from pygsuite.common.style import Border
 from pygsuite.sheets.cell import Cell
+
+# INDEX_SPLITTER = re.compile('(\d+)',s)
 
 
 def index_to_alphabet(idx: int):
@@ -142,3 +146,31 @@ class Worksheet(object):
         }
 
         self._spreadsheet._spreadsheets_update_queue.append(request)
+
+    def insert_data(
+        self,
+        values: list,
+        insert_range: str = None,
+        anchor: str = None,
+        # major_dimension: Dimension = Dimension.ROWS
+        # commented out because you'll need to move this to avoid circular imports
+    ):
+        # DO some input validation here
+        anchor = insert_range.split(":")[0] if insert_range else anchor if anchor else "A1"
+
+        split = re.split("(\d+)", anchor)
+        x_raw = split[0]
+        x = alphabet_to_index(x_raw)
+        y = int(split[1])
+
+        values_x = x + len(values[0])
+        values_y = len(values) + y
+
+        top_left = anchor
+        bottom_right = index_to_alphabet(values_x) + str(values_y)
+
+        # do some validation that it fits in rage if insert_rang was provided
+
+        range = f"{self.name}!{top_left}:{bottom_right}"
+        print(range)
+        self._spreadsheet.insert_data(insert_range=range, values=values)

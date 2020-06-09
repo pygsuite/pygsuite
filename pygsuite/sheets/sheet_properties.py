@@ -10,6 +10,7 @@ class SheetType(Enum):
 
     Google Docs: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/sheets#SheetType
     """
+
     GRID = "GRID"
     OBJECT = "OBJECT"
 
@@ -66,7 +67,8 @@ class SheetProperties:
     def __post_init__(self):
 
         # sheetId must be non-negative
-        assert self.sheet_id >= 0
+        if self.sheet_id:
+            assert self.sheet_id >= 0
 
     def to_json(self):  # noqa: C901
 
