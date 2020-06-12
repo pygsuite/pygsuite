@@ -143,7 +143,11 @@ class Slide(object):
     def add_table(self, table):
         raise NotImplementedError
 
-    def add_shape(self, shape: Union[str, ShapeType], properties: ElementProperties, id=None):
+    def add_shape(
+        self, shape: Union[str, ShapeType], properties: ElementProperties = None, id=None, **kwargs
+    ):
+        if not properties:
+            properties = ElementProperties(**kwargs)
         id = id or get_guid()
         reqs = []
         if isinstance(shape, ShapeType):

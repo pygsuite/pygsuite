@@ -110,14 +110,16 @@ class Presentation:
             ]
             base["placeholderIdMappings"] = [map[1] for map in placeholder_mappings]
         reqs = [{"createSlide": base}]
+        base_idx = -1
         for map in placeholder_mappings:
             reqs.append(map[0])
+            base_idx -= 1
 
         # return added slide ID
         # always flush
         out = self._mutation([reqs], flush=flush)
         if flush:
-            return self.get_slide(out[-1]["createSlide"]["objectId"])
+            return self.get_slide(out[base_idx]["createSlide"]["objectId"])
         # self.refresh()
         # return self.get_slide(created)
 

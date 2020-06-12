@@ -3,6 +3,11 @@ from enum import Enum
 from typing import Union, Optional
 
 
+class AnchorPosition(Enum):
+    TOP_LEFT = 1
+    CENTER = 2
+
+
 class MeasurementUnit(Enum):
     PT = 1
     EMU = 2
@@ -33,14 +38,18 @@ class ElementProperties:
     y: Union[int, str, float]
     width: Optional[Union[int, str, float]] = None
     height: Optional[Union[int, str, float]] = None
-    object_id = None
-    unit_type = "PT"
+    object_id: str = None
+    unit_type: str = "PT"
+    anchor: AnchorPosition = AnchorPosition.TOP_LEFT
 
     def __post_init__(self):
         self.x = process_dimension(self.x, SLIDE_WIDTH)
         self.y = process_dimension(self.y, SLIDE_HEIGHT)
         self.width = process_dimension(self.width, SLIDE_WIDTH)
         self.height = process_dimension(self.height, SLIDE_HEIGHT)
+        if self.anchor == AnchorPosition.CENTER:
+            self.x = self.x - self.width / 2
+            self.y = self.y - self.height / 2
 
     def to_slides_json(self, page_id):
         base = {
