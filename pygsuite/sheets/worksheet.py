@@ -1,5 +1,6 @@
 from math import floor
 from string import ascii_letters, ascii_uppercase
+from typing import List
 
 from pygsuite.common.style import Border
 from pygsuite.sheets.cell import Cell
@@ -89,13 +90,19 @@ class Worksheet(object):
         df = self._spreadsheet.get_values_from_range(worksheet_range).to_df()
         return df
 
+    def insert_data(self, values: list, insert_range: str = None, anchor: str = None):
+
+        # TODO: test with lists of differing list lengths (is this possible?)
+
+        pass
+
     def format_borders(
         self,
         start_row_index: int,
         end_row_index: int,
         start_column_index: int,
         end_column_index: int,
-        borders: Border,
+        borders: List[Border],
     ):
 
         request = {
