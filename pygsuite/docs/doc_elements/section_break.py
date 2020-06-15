@@ -1,17 +1,10 @@
-class SectionBreak(object):
+from pygsuite.docs.doc_elements import BaseElement
+
+
+class SectionBreak(BaseElement):
     def __init__(self, element, document, last):
-        self._element = element
-        self._document = document
+        BaseElement.__init__(self, element=element, document=document, last=last)
         self._paragraph = self._element.get("paragraph")
-        self._last = last
-
-    @property
-    def end_index(self):
-        return self._element.get("endIndex")
-
-    @property
-    def start_index(self):
-        return self._element.get("startIndex")
 
     @property
     def section_style(self):

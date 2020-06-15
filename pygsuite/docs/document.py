@@ -5,6 +5,7 @@ from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
 from pygsuite.utility.decorators import retry
+from pygsuite import Clients
 
 
 def parse_id(input_id: str) -> str:
@@ -19,8 +20,21 @@ def parse_id(input_id: str) -> str:
 
 
 class Document:
+    @classmethod
+    def get_safe(cls, title: str, client=None):
+        from pygsuite.drive import Drive, FileTypes
+
+        file_client = client or Clients.drive_client_v3
+        files = Drive(client=file_client).find_files(FileTypes.DOCS, name=title)
+        if files:
+            return Document(id=files[0]["id"], client=client)
+        else:
+            client = client or Clients.docs_client
+            body = {"title": title}
+            new = client.documents().create(body=body).execute()
+            return Document(id=new.get("documentId"), client=client)
+
     def __init__(self, id=None, name=None, client=None, _document=None, local=False):
-        from pygsuite import Clients
 
         if not local:
             client = client or Clients.docs_client
@@ -28,6 +42,7 @@ class Document:
         self.id = parse_id(id) if id else None
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
+        self.auto_sync = False
 
     def id(self):
         return self._document["id"]
@@ -36,12 +51,11 @@ class Document:
         if not reqs:
             return None
         self._change_queue += reqs
-        if flush:
+        if flush or self.auto_sync:
             return self.flush()
 
-    @retry((HttpError), tries=3, delay=10, backoff=5)
+    @retry(HttpError, tries=3, delay=5, backoff=3)
     def flush(self, reverse=False):
-        print(self._change_queue)
         if reverse:
             base = reversed(self._change_queue)
         else:
@@ -81,24 +95,28 @@ class Document:
 
     @property
     def footers(self):
-        return [Footers(item, self._sheet) for item in self._sheet.footers()]
+        return [Footers(item, self) for item in self._document.get("footers")]
 
     @property
     def footnotes(self):
-        return [Footnotes(item, self._sheet) for item in self._sheet.footnotes()]
+        return [Footnotes(item, self) for item in self._document.get("footnotes")]
 
     @property
     def headers(self):
-        return [Headers(item, self._sheet) for item in self._sheet.headers()]
+        return [Headers(item, self) for item in self._document.get("headers")]
 
     @property
     def title(self):
         return self._document.get("title")
 
     @title.setter
-    def title(self, x):
+    def title(self, title: str):
         raise NotImplementedError
 
     def refresh(self):
         self._document = self.service.documents().get(documentId=self.id).execute()
         self.body._pending = []
+
+    @property
+    def url(self):
+        return f"https://docs.google.com/docs/d/{self.id}"

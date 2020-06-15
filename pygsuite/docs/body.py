@@ -1,21 +1,15 @@
 from typing import List
 
 from pygsuite.common.style import TextStyle
+from pygsuite.docs.doc_elements.paragraph import Paragraph
 from pygsuite.docs.element import DocElement
 
 
 class Body(object):
-    #
-    # @classmethod
-    # def from_id(cls, id, document):
-    #     slides = presentation.slides
-    #     return [slide for slide in slides if slide.id == id][0]
-
     def __init__(self, body, document):
-        # TODO
-        # self._body = body
-        # self._properties = slide['slideProperties']
-        self._document = document
+        from pygsuite import Document
+
+        self._document: Document = document
         self._pending = []
 
     @property
@@ -29,6 +23,10 @@ class Body(object):
             DocElement(element, self._document, idx == content_len - 1)
             for idx, element in enumerate(self._body.get("content"))
         ]
+
+    @property
+    def paragraphs(self) -> List[Paragraph]:
+        return [item for item in self.content if isinstance(item, Paragraph)]
 
     def delete(self, flush=True):
         # save the last character of the last element
@@ -68,10 +66,17 @@ class Body(object):
     def newline(self, count: int = 1):
         self.add_text("\n" * count)
 
+    @property
+    def text(self):
+
+        return "".join([element.text for element in self.content if isinstance(element, Paragraph)])
+
     def flush(self):
         self._document.flush()
 
     def add_text(self, text: str, position: int = None, style: TextStyle = None):
+        # TOOD: add warning
+        position = 1 if position == 0 else position
         self._pending.append(len(text))
         if style and not position and self._document._change_queue:
             # if there are pending changes
@@ -92,13 +97,10 @@ class Body(object):
             if position is None:
                 if not self.content:
                     start = 1
-
-                    end = start + len(text)
                 else:
                     start = self.content[-1].end_index - 1
 
-                    end = start + len(text)
-
+            end = start + len(text)
             fields, style = style.to_doc_style()
             queued.append(
                 {

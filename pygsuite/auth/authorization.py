@@ -45,7 +45,7 @@ class Clients(object):
 
     def validate(self):
         if not self.auth:
-            raise ValueError(f"Need to provide credential path or credential text or auth object.")
+            raise ValueError("Need to provide credential path or credential text or auth object.")
 
     def auth_default(self):
         import google.auth
@@ -93,17 +93,9 @@ class Clients(object):
         return build("docs", "v1", credentials=self.auth)
 
     @lazy_property
-    def local_docs_client(self):
-        return build("docs", "v1", credentials=self.auth)
-
-    @lazy_property
     def sheets_client(self):
         self.validate()
         return build("sheets", "v4", credentials=self.auth)
-
-    @lazy_property
-    def _local_sheets_client(self):
-        return build("docs", "v1", credentials=self.auth)
 
     @lazy_property
     def slides_client(self):
@@ -111,18 +103,30 @@ class Clients(object):
         return build("slides", "v1", credentials=self.auth)
 
     @lazy_property
+    def _local_sheets_client(self):
+        return build("sheets", "v4", credentials=self.auth)
+
+    @lazy_property
+    def local_docs_client(self):
+        return build("docs", "v1", credentials=self.auth)
+
+    @lazy_property
     def _local_slides_client(self):
         return build("slides", "v1", credentials=self.auth)
 
     @lazy_property
     def drive_client(self):
-        self.validate()
-        return build("drive", "v3", credentials=self.auth)
+        return self.drive_client_v3
 
     @lazy_property
     def drive_client_v2(self):
         self.validate()
         return build("drive", "v2", credentials=self.auth)
+
+    @lazy_property
+    def drive_client_v3(self):
+        self.validate()
+        return build("drive", "v3", credentials=self.auth)
 
 
 Clients = Clients()

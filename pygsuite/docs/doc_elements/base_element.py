@@ -69,3 +69,11 @@ class BaseElement(object):
     @property
     def children(self):
         return [self]
+
+    @property
+    def end_index(self):
+        return self._element.get("endIndex")
+
+    @property
+    def start_index(self):
+        return self._element.get("startIndex")

@@ -69,4 +69,4 @@ class Layout(object):
     def placeholders(self) -> Dict[str, Placeholder]:
         base = [obj.placeholder for obj in self.elements if obj.placeholder]
 
-        return {f"{obj.type}_{obj.index}": obj for obj in base}
+        return {str(obj): obj for obj in base}

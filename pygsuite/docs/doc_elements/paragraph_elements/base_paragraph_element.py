@@ -3,8 +3,10 @@ class BaseParagraphElement(object):
         self._element = element
         self._document = document
 
-    def end_index(self):
-        return self._element.get("endIndex")
-
-    def start_index(self):
+    @property
+    def start_index(self) -> int:
         return self._element.get("startIndex")
+
+    @property
+    def end_index(self) -> int:
+        return self._element.get("endIndex")

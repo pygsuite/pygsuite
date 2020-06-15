@@ -10,6 +10,7 @@ class SheetType(Enum):
 
     Google Docs: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/sheets#SheetType
     """
+
     GRID = "GRID"
     OBJECT = "OBJECT"
 

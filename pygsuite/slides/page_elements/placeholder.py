@@ -14,6 +14,12 @@ class Placeholder:
         self.index = self.base.get("index")
         self.parent_id = self.base.get("parentObjectId")
 
+    def __str__(self):
+        if self.index:
+            return f"{self.type}_{self.index}"
+        else:
+            return self.type
+
     @property
     def text(self):
         base = ""

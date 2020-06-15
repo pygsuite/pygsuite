@@ -1,3 +1,6 @@
+from pygsuite.docs.doc_elements import BaseElement
+from pygsuite.common.style import TextStyle, ParagraphStyle
+
 from .paragraph_elements import (
     AutoText,
     ColumnBreak,
@@ -12,6 +15,7 @@ from .paragraph_elements import (
 # from .doc_elements.image import Image
 class ParagraphElement(object):
     def __init__(self, element, document):
+
         self._element = element
         self._document = document
 
@@ -32,20 +36,13 @@ class ParagraphElement(object):
             return Equation(element, document)
 
 
-class Paragraph(object):
+class Paragraph(BaseElement):
     def __init__(self, element, document, last):
-        self._element = element
-        self._document = document
+        BaseElement.__init__(self, element=element, document=document, last=last)
         self._paragraph = self._element.get("paragraph")
-        self.last = last
 
-    @property
-    def end_index(self):
-        return self._element.get("endIndex")
-
-    @property
-    def start_index(self):
-        return self._element.get("startIndex")
+    def __repr__(self):
+        return f"<Paragraph: {self.text[0:10]}.../>"
 
     @property
     def elements(self):
@@ -53,13 +50,56 @@ class Paragraph(object):
 
     @property
     def text(self):
-        return "".join(
-            [element.content for element in self.elements if isinstance(element, TextRun)]
+        return "".join([element.text for element in self.elements if isinstance(element, TextRun)])
+
+    @text.setter
+    def text(self, text: str):
+        self.delete()
+        # TODO: combine with parent?
+        self._document._mutation(
+            [
+                # {
+                #     "deleteContentRange": {
+                #         "range": {
+                #             "segmentId": None,
+                #             "startIndex": self.start_index,
+                #             "endIndex": self.end_index - 1 if self._last else self.end_index,
+                #         }
+                #     }
+                # },
+                {
+                    "insertText": {
+                        "text": text,
+                        "location": {"segmentId": None, "index": self.start_index},
+                    }
+                }
+            ]
         )
 
-    #
+    @property
+    def style(self):
+        return TextStyle.from_doc_style(self._paragraph.get("paragraphStyle"))
+
+    @style.setter
+    def style(self, style: ParagraphStyle = None):
+        fields, style = style.to_doc_style("paragraph")
+        self._document._mutation(
+            [
+                {
+                    "updateParagraphStyle": {
+                        "range": {
+                            "startIndex": self.start_index,
+                            "endIndex": self.end_index - 1 if self._last else self.end_index,
+                        },
+                        "paragraphStyle": style,
+                        "fields": fields,
+                    }
+                }
+            ]
+        )
+
     def delete(self):
-        end_index = self.end_index - 1 if self.last else self.end_index
+        end_index = self.end_index - 1 if self._last else self.end_index
         if self.start_index == end_index:
             return
         self._document._mutation(
@@ -69,7 +109,7 @@ class Paragraph(object):
                         "range": {
                             "segmentId": None,
                             "startIndex": self.start_index,
-                            "endIndex": self.end_index - 1 if self.last else self.end_index,
+                            "endIndex": self.end_index - 1 if self._last else self.end_index,
                         }
                     }
                 }
