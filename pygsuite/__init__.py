@@ -6,7 +6,7 @@ from pygsuite.slides import Presentation
 from pygsuite.images import ImageUploader
 from pygsuite.drive import Drive
 
-__version__ = "0.0.2"
+__version__ = "0.0.5"
 __author__ = "Ethan Dickinson <ethan.dickinson@gmail.com>"
 __all__ = [
     Clients,
