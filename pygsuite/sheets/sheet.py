@@ -51,7 +51,7 @@ class DateTimeRenderOption(Enum):
     FORMATTED_STRING = "FORMATTED_STRING"
 
 
-def create_new_spreadsheet(service: Resource, title: str):
+def create_new_spreadsheet(title: str, client: Optional[Resource] = None):
     """Function to create a new spreadsheet given a client connection to the GSuite API,
        and a title for the new sheet.
 
@@ -68,13 +68,15 @@ def create_new_spreadsheet(service: Resource, title: str):
     if not isinstance(title, str):
         raise TypeError("The name of the spreadsheet must be given as a string.")
 
+    from pygsuite import Clients
+    service = client or Clients.sheets_client
+
     request = {"properties": {"title": title}}
 
     spreadsheet = service.spreadsheets().create(body=request, fields="spreadsheetId").execute()
-
     id = spreadsheet.get("spreadsheetId")
 
-    return Spreadsheet(service=service, id=id)
+    return Spreadsheet(client=service, id=id)
 
 
 class Spreadsheet:
@@ -216,8 +218,6 @@ class Spreadsheet:
         return response_dict
 
     def create_sheet(self, sheet_properties: Optional[SheetProperties] = None):
-        # original
-        # base = {"addSheet": sheet_properties}
         base = {"addSheet": {"properties": sheet_properties.to_json()}}
         self._spreadsheets_update_queue.append(base)
 
