@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict
 from enum import Enum
-from pygsuite.slides.page_elements.common import Text
+from typing import Optional
 
+from pygsuite.slides.page_elements.common import Text
 from .base_element import BaseElement
 
 
@@ -13,16 +13,40 @@ class LineType(Enum):
     LINE_CATEGORY_UNSPECIFIED: str
 
 
+class ArrowStyle(Enum):
+    NONE = 0
+    STEALTH_ARROW = 1
+    FILL_ARROW = 2
+    FILL_CIRCLE = 3
+    FILL_SQUARE = 4
+    FILL_DIAMOND = 5
+    OPEN_ARROW = 6
+    OPEN_CIRCLE = 7
+    OPEN_SQUARE = 8
+    OPEN_DIAMOND = 9
+
+    def to_api_repr(self):
+        return self.name
+
+@dataclass
+class LineConnection:
+    object_id: str
+    conn_index: int
+
+    def to_api_repr(self):
+        return {"connectedObjectId": self.object_id, "connectionSiteIndex": self.conn_index}
+
+
 @dataclass
 class LineProperties:
-    line_fill: str
-    weight: str
-    dash_style: str
-    start_arrow: str
-    end_arrow: str
-    link: str
-    start_connection: str
-    end_connection: str
+    line_fill: Optional[str] = None
+    weight: Optional[int] = None
+    dash_style: Optional[str] = None
+    start_arrow: Optional[ArrowStyle] = None
+    end_arrow: Optional[ArrowStyle] = None
+    link: Optional[str] = None
+    start_connection: Optional[LineConnection] = None
+    end_connection: Optional[LineConnection] = None
 
     @classmethod
     def from_api(cls, info):
@@ -38,13 +62,33 @@ class LineProperties:
         )
 
 
-@dataclass
-class LineConnection:
-    object_id: str
-    conn_index: int
-
-    def to_api_repr(self):
-        return {"connectedObjectId": self.object_id, "connectionSiteIndex": self.conn_index}
+    def to_api_repr(self, line_id):
+        fields = []
+        properties = {}
+        base = {"updateLineProperties": {
+            "objectId": line_id,
+            # "fields": "startConnection",
+            # "lineProperties": {"startConnection": conn.to_api_repr()},
+        }}
+        if self.start_connection:
+            key = 'startConnection'
+            fields.append(key)
+            properties[key] = self.start_connection.to_api_repr()
+        if self.end_connection:
+            key = 'endConnection'
+            fields.append(key)
+            properties[key] = self.end_connection.to_api_repr()
+        if self.start_arrow:
+            key = 'startArrow'
+            fields.append(key)
+            properties[key] = self.start_arrow.to_api_repr()
+        if self.start_arrow:
+            key = 'endArrow'
+            fields.append(key)
+            properties[key] = self.end_arrow.to_api_repr()
+        base['updateLineProperties']['fields'] = ','.join(fields)
+        base['updateLineProperties']['lineProperties'] = properties
+        return base
 
 
 class Line(BaseElement):

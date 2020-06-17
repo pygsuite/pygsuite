@@ -15,4 +15,5 @@ Simplified authentication management.
 ## Helpful Utilities
 
 Abstractions for working with more complex features.
+
 - Images

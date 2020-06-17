@@ -4,6 +4,7 @@ from typing import List, Union
 from jinja2 import Template, Environment, meta
 
 from .page_element import PageElement, Table, Shape, Image, Line
+from .page_elements import LineProperties
 from pygsuite.slides.element_properties import ElementProperties
 from pygsuite.slides.enums import ShapeType
 from pygsuite.utility.guids import get_guid
@@ -121,7 +122,7 @@ class Slide(object):
     # def add_text(self, text):
     #     raise NotImplementedError
 
-    def add_line(self, category, properties: ElementProperties, id=None):
+    def add_line(self, category, properties: ElementProperties, line_properties:LineProperties=None, id=None):
         id = id or get_guid()
         reqs = []
 
@@ -134,6 +135,8 @@ class Slide(object):
                 }
             }
         )
+        if line_properties:
+            reqs.append(line_properties.to_api_repr(id))
         self._presentation._mutation(reqs=reqs)
         return Line.from_id(id=id, presentation=self._presentation)
 

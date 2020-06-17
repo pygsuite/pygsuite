@@ -12,9 +12,9 @@ pages:
       - Sheets: quickstart/sheets.md
       - Slides: quickstart/slides.md
   - Examples:
-      - Docs: examples/docs.md
-      - Sheets: examples/sheets.md
-      - Slides: examples/slides.md
+      - Docs: ref_examples/docs.md
+      - Sheets: ref_examples/sheets.md
+      - Slides: ref_examples/slides.md
 theme: material
 #google_analytics:
 #  - "auto"

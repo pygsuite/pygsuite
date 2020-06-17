@@ -10,9 +10,9 @@ This example walks through how to add slides to a deck.
 
 #### Setup
 
-Define a hex constant color and import some useful files. 
+Define a hex constant color and import some useful files.
 
-Then create a blank slideshow and copy the URL into the TEST_SLIDES constant. 
+Then create a blank slideshow and copy the URL into the TEST_SLIDES constant.
 
 ```python
 from pygsuite import Clients, DefaultFonts, Document, TextStyle, Color
@@ -31,8 +31,8 @@ Pass in the auth object you generated from the auth quickstart.
 Clients.authorize(AUTH_PLACEHOLDER)
 ```
 
-
 #### Create Slides Object
+
 Create the slide object, then clear it to have a blank slate.
 
 ```python
@@ -41,9 +41,10 @@ prez = Presentation(id='https://docs.google.com/presentation/d/1fkEmiaeQ256sfGJn
 ```
 
 ### Check Out Our Templates
+
 An easy way to create content in slides is through filling in the default templates.
 
-You can loop through and print them. This tutorial assumes you created an empty 
+You can loop through and print them. This tutorial assumes you created an empty
 deck off the default template.
 
 ```python
@@ -53,7 +54,7 @@ for layout in prez.layouts:
 
 Seems like we've got some useful templates there!
 
-Titles and big numbers are always useful. Let's see what details they have. 
+Titles and big numbers are always useful. Let's see what details they have.
 
 ```python
 title_layout = prez.layouts["Title slide"]
@@ -66,8 +67,8 @@ for element in number_layout.placeholders:
 
 ```
 
-
 #### Add Content
+
 We can use those placeholders to quickly add content to our deck.
 
 Let's add a title slide and a countdown from 5 to 1.
@@ -105,7 +106,7 @@ for idx in reversed(range(1, 5)):
 
 This hasn't actually changed our presentation at all!
 
-To actually commit the changes, we need to *flush* them to google.
+To actually commit the changes, we need to _flush_ them to google.
 
 This will add them all into one batch request and submit them to google.
 
@@ -113,7 +114,7 @@ This is the default behavior because Google's APIs are slow and full of quotas -
 always optimal to write out your logic in a clear way, then flush out the changes in a
 single large batch to google.
 
-Pygsuite does support auto-flushing on every operation if you prefer. See the 
+Pygsuite does support auto-flushing on every operation if you prefer. See the
 advanced configuration for details.
 
 But to make our changes live, we just need to run one call.
