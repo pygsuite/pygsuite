@@ -250,26 +250,32 @@ def add_player_image(slide, row, x_offset=0):
     y = ElementProperties.base_height - EDGE_PADDING - target_height
     slide.add_image(SILHOUETTE_URL,
                     ElementProperties(x=x, 
-                                    y=y,
-                                    height=target_height, 
-                                    width=target_width)
+                                      y=y,
+                                      height=target_height, 
+                                      width=target_width)
     )
     
     line_y = ElementProperties.base_height - EDGE_PADDING - target_height
     slide.add_line('STRAIGHT', 
                     ElementProperties(x=base_x   - 15,
-                    y=y,
+                    y=line_y,
                     height=target_height, 
                     width=1))
+    
+    height_label_y = ElementProperties.base_height - EDGE_PADDING - target_height
     shape = slide.add_shape(ShapeType.TEXT_BOX,
                             ElementProperties(x=base_x   - 10,
-                                              y=ElementProperties.base_height - EDGE_PADDING - target_height,
-                                              height=20, width=69))
+                                              y=height_label_y ,
+                                              height=20, 
+                                              width=69))
     shape.text = f'{row.player_height} cm'
+    
+    name_label_y = ElementProperties.base_height - EDGE_PADDING - target_height -20
     shape = slide.add_shape(ShapeType.TEXT_BOX,
-                                ElementProperties(x=base_x   - 10,
-                                                  y=ElementProperties.base_height - EDGE_PADDING - target_height -20,
-                                                  height=20, width=180))
+                            ElementProperties(x=base_x   - 10,
+                                              y=name_label_y,
+                                              height=20, 
+                                              width=180))
     shape.text = f'{row.player_name}'
 
 
