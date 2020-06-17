@@ -5,6 +5,7 @@ from googleapiclient.discovery import Resource
 from googleapiclient.errors import HttpError
 import pandas as pd
 
+from pygsuite.common.parsing import parse_id
 from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
@@ -115,9 +116,9 @@ class Spreadsheet:
         from pygsuite import Clients
 
         self.service = client or Clients.sheets_client
-        self.id = id
+        self.id = parse_id(id) if id else None
 
-        self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=id).execute()
+        self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
         self._properties = self._spreadsheet.get("properties")
 
         # queues to add to and run in flush()
