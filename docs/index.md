@@ -38,12 +38,12 @@ so begin there.
 Refer to the [goals](./goals.md) and [features](./features.md) pages
 for overviews of the package.
 
-The [./examples/examples.md] page will walk you through more complicated
+The [examples](./examples/examples.md) page will walk you through more complicated
 examples that highlight more complex features of each module
 and how they can interact.
 
-The [./reference/reference.md] section will provide detailed reference
+The [reference](./reference/reference.md) section will provide detailed reference
 examples for specific use cases.
 
-The [./api/api.md] section will give you detailed reference on each
+The [api](./api/api.md) section will give you detailed reference on each
 of the base classes.
