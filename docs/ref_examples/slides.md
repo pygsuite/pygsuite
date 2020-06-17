@@ -277,7 +277,7 @@ prez.flush()
 
 Your output slide should look like this:
 
-![GetById](../../../docs_src/images/slides_tutorial_comparison_0.PNG)
+![player_comparison](../../docs_src/images/slides_tutorial_comparison_0.PNG)
 
 
 It's a decent start, but we've got a lot more data we could display.
