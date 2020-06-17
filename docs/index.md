@@ -11,7 +11,7 @@ It currently includes:
 
 ## Overview
 
-Pygsuite is a light, wrapper around the core Docs, Sheets,
+Pygsuite is a light, pythonic wrapper around the core Docs, Sheets,
 and Slides APIs. It offers efficient APIs for batch requests to 
 automate the creation, manipulation, and sharing of drive documents.
 

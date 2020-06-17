@@ -1,5 +1,6 @@
 from typing import Dict, Union
 
+from pygsuite.common.parsing import parse_id
 from .layout import Layout
 from .slide import Slide
 
@@ -23,8 +24,8 @@ class Presentation:
         from pygsuite import Clients
 
         self.service = client or Clients.slides_client
-        self.id = id
-        self._presentation = self.service.presentations().get(presentationId=id).execute()
+        self.id = parse_id(id) if id else None
+        self._presentation = self.service.presentations().get(presentationId=self.id).execute()
         self._change_queue = []
 
     def __getitem__(self, item):

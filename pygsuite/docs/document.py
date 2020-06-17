@@ -1,22 +1,12 @@
 from googleapiclient.errors import HttpError
 
+from pygsuite import Clients
+from pygsuite.common.parsing import parse_id
 from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
 from pygsuite.utility.decorators import retry
-from pygsuite import Clients
-
-
-def parse_id(input_id: str) -> str:
-    if "/" in input_id:
-        portions = input_id.split("/")
-        for idx, val in enumerate(portions):
-            if val == "d":
-                return portions[idx + 1]
-        raise ValueError("Unable to parse ID from input")
-    else:
-        return input_id
 
 
 class Document:

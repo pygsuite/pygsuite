@@ -69,6 +69,7 @@ def create_new_spreadsheet(title: str, client: Optional[Resource] = None):
         raise TypeError("The name of the spreadsheet must be given as a string.")
 
     from pygsuite import Clients
+
     service = client or Clients.sheets_client
 
     request = {"properties": {"title": title}}
