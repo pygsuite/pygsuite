@@ -85,10 +85,16 @@ max_min = sorted2018.iloc[[0, -1]]
 print(max_min.head())
 
 ```
+You should see something like this:
+
+![max_min](../../docs_src/images/slides_tutorial_data_0.png)
+
 
 ### Add Content
 
-Let's see how these two compare to each other.
+We should have some nice contrasts here between our shortest and tallest player.
+
+Let's compare them.
 
 We want to visualize how big this relative difference is, in our slide.
 
@@ -100,7 +106,7 @@ We need a public URL for our silhouette image - let's use 'http://clipart-librar
 
 It's useful to know the ratio of this image for other operations to avoid hard-coding.
 
-From inspecting the image, let's use `5.63 / 6.46`.
+From inspecting the image size, it looks like we can`1024 / 891` as the ratio.
 
 The height value is in CMs. Let's assume 250cms, or 2.5 meters is a reasonable human
 height to anchor on.
@@ -116,7 +122,7 @@ Let's define these as globals:
 ```python
 SILHOUETTE_URL = 'http://clipart-library.com/images_k/silhouette-of-basketball-player/silhouette-of-basketball-player-10.png'
 
-SILHOUETTE_HEIGHT_WIDTH_RATIO = 5.63 / 6.46
+SILHOUETTE_HEIGHT_WIDTH_RATIO = 1024 / 891
 
 HUMAN_CM_SCALE = 250
 
@@ -174,7 +180,10 @@ add_player_image(slide, max_min.iloc[0] )
 prez.flush()
 ```
 
-Take a look at the slide. You should see an NBA player silhouette.
+Take a look at the slide. You should see something that looks like this:
+
+![player_comparison](../../docs_src/images/slides_tutorial_base_image.png)
+
 
 Let's do that again, with our other player. We'll call the same function and
 swap to passing in our second row.
@@ -185,7 +194,7 @@ add_player_image(slide, max_min.iloc[1] )
 prez.flush()
 ```
 
-Swap between the two. Looks like a bit of a difference, doesn't it?
+Swap between the two and see the size change. 
 
 Wouldn't it be nice if we could see them side by side?
 
