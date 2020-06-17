@@ -87,7 +87,7 @@ print(max_min.head())
 ```
 You should see something like this:
 
-![max_min](../../docs_src/images/slides_tutorial_data_0.png)
+![max_min](../images/slides_tutorial_data_0.png)
 
 
 ### Add Content
@@ -106,18 +106,19 @@ We need a public URL for our silhouette image - let's use 'http://clipart-librar
 
 It's useful to know the ratio of this image for other operations to avoid hard-coding.
 
-From inspecting the image size, it looks like we can`1024 / 891` as the ratio.
+From inspecting the image size, it looks like we can use `1024 / 891` as the ratio.
+(Height in pixels divided by width in pixels)
 
-The height value is in CMs. Let's assume 250cms, or 2.5 meters is a reasonable human
+The height value from our dataset is in CMs. Let's assume 250cms, or 2.5 meters is a reasonable human
 height to anchor on.
 
-We also have our target height for the slide - let's say 350 Pts. This will take up most of the
+We also have our target height for the slide - let's say 350 PTs. This will take up most of the
 horizontal space on a slide.
 
 It's also a bad idea to be too close to the borders of a slide. Let's define some padding of
 25 pts.
 
-Let's define these as globals:
+Let's add all these constants as globals:
 
 ```python
 SILHOUETTE_URL = 'http://clipart-library.com/images_k/silhouette-of-basketball-player/silhouette-of-basketball-player-10.png'
@@ -181,7 +182,7 @@ prez.flush()
 
 Take a look at the slide. You should see something that looks like this:
 
-![player_comparison](../../docs_src/images/slides_tutorial_base_image.png)
+![player_comparison](../images/slides_tutorial_base_image.png)
 
 
 Let's do that again, with our other player. We'll call the same function and
@@ -295,7 +296,7 @@ prez.flush()
 
 Your output slide should look like this:
 
-![player_comparison](../../docs_src/images/slides_tutorial_comparison_0.PNG)
+![player_comparison](../images/slides_tutorial_comparison_0.PNG)
 
 
 It's a decent start, but we've got a lot more data we could display.
