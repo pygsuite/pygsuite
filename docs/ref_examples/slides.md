@@ -153,13 +153,12 @@ The height and width of our image will just be the target height and width.
 def add_player_image(slide, row):
     target_height = SILHOUETTE_MAX_HEIGHT * float(row.player_height) / HUMAN_CM_SCALE
     target_width =  target_height * SILHOUETTE_HEIGHT_WIDTH_RATIO
-
-    slide.add_image(
-        'http://clipart-library.com/images_k/silhouette-of-basketball-player/silhouette-of-basketball-player-10.png',
-
-
-        ElementProperties(x=EDGE_PADDING, y=ElementProperties.base_height - EDGE_PADDING - target_height,
-                          height=target_height, width=target_width))
+    y = ElementProperties.base_height - EDGE_PADDING - target_height
+    slide.add_image(SILHOUETTE_URL,
+                    ElementProperties(x=EDGE_PADDING, 
+                                      y=y,
+                                      height=target_height, 
+                                      width=target_width))
 ```
 
 ### But First, a Slide
@@ -211,14 +210,14 @@ plus the standard offset. To enable this, let's allow adding an x-offset to our 
 def add_player_image(slide, row, x_offset=0):
     target_height = SILHOUETTE_MAX_HEIGHT * float(row.player_height) / HUMAN_CM_SCALE
     target_width =  target_height * SILHOUETTE_HEIGHT_WIDTH_RATIO
-
+    y = ElementProperties.base_height - EDGE_PADDING - target_height
+    x = x_offset+EDGE_PADDING
     slide.add_image(
-        'http://clipart-library.com/images_k/silhouette-of-basketball-player/silhouette-of-basketball-player-10.png',
-
-
-        ElementProperties(x=x_offset+EDGE_PADDING,
-            y=ElementProperties.base_height - EDGE_PADDING - target_height,
-                          height=target_height, width=target_width))
+        SILHOUETTE_URL,
+        ElementProperties(x=x,
+                          y=y,
+                          height=target_height, 
+                          width=target_width))
 
 ```
 
@@ -247,17 +246,21 @@ def add_player_image(slide, row, x_offset=0):
     base_x = x_offset + EDGE_PADDING
     target_height = SILHOUETTE_MAX_HEIGHT * float(row.player_height) / HUMAN_CM_SCALE
     target_width = target_height * SILHOUETTE_HEIGHT_WIDTH_RATIO
-    print(ElementProperties.base_height - target_height)
-    slide.add_image(
-        'http://clipart-library.com/images_k/silhouette-of-basketball-player/silhouette-of-basketball-player-10.png',
-
-        ElementProperties(x=x_offset + EDGE_PADDING, y=ElementProperties.base_height - EDGE_PADDING - target_height,
-                          height=target_height, width=target_width)
+    x = x_offset + EDGE_PADDING
+    y = ElementProperties.base_height - EDGE_PADDING - target_height
+    slide.add_image(SILHOUETTE_URL,
+                    ElementProperties(x=x, 
+                                    y=y,
+                                    height=target_height, 
+                                    width=target_width)
     )
-
-    slide.add_line('STRAIGHT', ElementProperties(x=base_x   - 15,
-                                                 y=ElementProperties.base_height - EDGE_PADDING - target_height,
-                                                 height=target_height, width=1))
+    
+    line_y = ElementProperties.base_height - EDGE_PADDING - target_height
+    slide.add_line('STRAIGHT', 
+                    ElementProperties(x=base_x   - 15,
+                    y=y,
+                    height=target_height, 
+                    width=1))
     shape = slide.add_shape(ShapeType.TEXT_BOX,
                             ElementProperties(x=base_x   - 10,
                                               y=ElementProperties.base_height - EDGE_PADDING - target_height,
