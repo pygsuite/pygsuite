@@ -16,9 +16,9 @@ is required for many management tasks.
 If you're using a personal account, you can start with any of Google's quickstarts
 to enable the API you're interested in.
 
-- (Docs)[https://developers.google.com/docs/api/quickstart/python]
-- (Sheets)[https://developers.google.com/sheets/api/quickstart/python]
-- (Slides)[https://developers.google.com/slides/api/quickstart/python]
+- [Docs](https://developers.google.com/docs/api/quickstart/python)
+- [Sheets](https://developers.google.com/sheets/api/quickstart/python)
+- [Slides](https://developers.google.com/slides/api/quickstart/python)
 
 <!-- prettier-ignore-start -->
 !!! tip
@@ -56,7 +56,9 @@ through the entire flow.
 
 ### Using an Existing Credential Object
 
-If you already have a valid credential object, you can also authorize with that directly
+If you already have a valid credential object, you can also authorize with that directly.
+This may be common if you're working through a job scheduler or sharing google suth
+between multiple clients.
 
 ```python
 from pygsuite import Clients
