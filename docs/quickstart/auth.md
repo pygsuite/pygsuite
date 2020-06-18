@@ -1,10 +1,9 @@
-## Background
-
 Authorization to Google can be tricky.
 
 All the API flows involve working with a Project - a namespaced section of GCP - 
 that has the appropriate APIs enabled. The main APIs that pygsuite will require 
 are the 
+
 - Docs API
 - Slides API
 - Sheets API
