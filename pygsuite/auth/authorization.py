@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+from os.path import dirname, join
 import os.path
 import pickle
 
@@ -68,22 +69,20 @@ class Clients(object):
     def authorize_string(self, auth_string: str):
         self.auth = get_oauth_credential(auth_string)
 
-    def local_file_auth(self):
+    def local_file_auth(self, path: str):
+        directory = dirname(path)
+        pickle_path = join(directory, "cache.pickle")
         creds = None
-        if os.path.exists("token.pickle"):
-            with open("token.pickle", "rb") as token:
+        if os.path.exists(pickle_path):
+            with open(pickle_path, "rb") as token:
                 creds = pickle.load(token)
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
-                flow = (
-                    InstalledAppFlow.from_client_secrets_file(self.cred_path, SCOPES)
-                    if self.cred_path
-                    else self.create_client_file_from_string()
-                )
+                flow = InstalledAppFlow.from_client_secrets_file(path, SCOPES)
                 creds = flow.run_local_server(port=0)
-            with open("token.pickle", "wb") as token:
+            with open(pickle_path, "wb") as token:
                 pickle.dump(creds, token)
         self.auth = creds
 

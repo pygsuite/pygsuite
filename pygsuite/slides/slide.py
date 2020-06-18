@@ -122,7 +122,13 @@ class Slide(object):
     # def add_text(self, text):
     #     raise NotImplementedError
 
-    def add_line(self, category, properties: ElementProperties, line_properties:LineProperties=None, id=None):
+    def add_line(
+        self,
+        category,
+        properties: ElementProperties,
+        line_properties: LineProperties = None,
+        id=None,
+    ):
         id = id or get_guid()
         reqs = []
 

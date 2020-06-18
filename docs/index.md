@@ -45,5 +45,5 @@ and how they can interact.
 The [reference](./reference/reference.md) section will provide detailed reference
 examples for specific use cases.
 
-The [api](./api/api.md) section will give you detailed reference on each
-of the base classes.
+The [api](./api/api.md) section will give you details on each of the base
+python classes. 

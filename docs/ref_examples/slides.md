@@ -102,7 +102,8 @@ We can do this by grabbing a generic player silhouette and appropriately sizing 
 
 First we need to define some constants.
 
-We need a public URL for our silhouette image - let's use 'http://clipart-library.com/images_k/silhouette-of-basketball-player/silhouette-of-basketball-player-10.png.
+We need a public URL for our silhouette image - let's use `http://clipart-library.com/images_k/silhouette-of-basketball-player/silhouette-of-basketball-player-10.png`,
+which is a generic image. 
 
 It's useful to know the ratio of this image for other operations to avoid hard-coding.
 
@@ -139,7 +140,7 @@ to convert the height to PTs on a slide.
 Let's define a function to scale each player appropriately and add them to the slide
 that uses those constants.
 
-Given a slide, we can simply call 'add_image' with the URL and properties for where we want to insert it.
+Given a slide, we can simply call the 'add_image' method with the URL and properties for where we want to insert it.
 
 When adding an image, the default x, y positioning is for the top left of the image.
 

@@ -15,6 +15,11 @@ pages:
       - Docs: ref_examples/docs.md
       - Sheets: ref_examples/sheets.md
       - Slides: ref_examples/slides.md
+  - Reference:
+      - Slides:
+          - Images: reference/slides/images.md
+          - Lines: references/slides/lines.md
+          - Objects: references/slides/objects.md
 theme: material
 #google_analytics:
 #  - "auto"

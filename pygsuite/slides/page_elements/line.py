@@ -28,6 +28,7 @@ class ArrowStyle(Enum):
     def to_api_repr(self):
         return self.name
 
+
 @dataclass
 class LineConnection:
     object_id: str
@@ -61,33 +62,34 @@ class LineProperties:
             info.get("endConnection"),
         )
 
-
     def to_api_repr(self, line_id):
         fields = []
         properties = {}
-        base = {"updateLineProperties": {
-            "objectId": line_id,
-            # "fields": "startConnection",
-            # "lineProperties": {"startConnection": conn.to_api_repr()},
-        }}
+        base = {
+            "updateLineProperties": {
+                "objectId": line_id,
+                # "fields": "startConnection",
+                # "lineProperties": {"startConnection": conn.to_api_repr()},
+            }
+        }
         if self.start_connection:
-            key = 'startConnection'
+            key = "startConnection"
             fields.append(key)
             properties[key] = self.start_connection.to_api_repr()
         if self.end_connection:
-            key = 'endConnection'
+            key = "endConnection"
             fields.append(key)
             properties[key] = self.end_connection.to_api_repr()
         if self.start_arrow:
-            key = 'startArrow'
+            key = "startArrow"
             fields.append(key)
             properties[key] = self.start_arrow.to_api_repr()
         if self.start_arrow:
-            key = 'endArrow'
+            key = "endArrow"
             fields.append(key)
             properties[key] = self.end_arrow.to_api_repr()
-        base['updateLineProperties']['fields'] = ','.join(fields)
-        base['updateLineProperties']['lineProperties'] = properties
+        base["updateLineProperties"]["fields"] = ",".join(fields)
+        base["updateLineProperties"]["lineProperties"] = properties
         return base
 
 
