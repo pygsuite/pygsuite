@@ -27,7 +27,7 @@ to enable the API you're interested in.
 
 ### Getting Authentication
 
-Any of the google tutorial flows will generate a 'credentials.json' file for you to save.
+Any of the google tutorial flows will generate a JSON credential file for you to save.
 
 This token identifies an 'oauth identity' from your project, which you can 
 then authorize to access your APIs. 
