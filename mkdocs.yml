@@ -24,6 +24,8 @@ theme: material
   palette:
     primary: indigo
     accent: cyan
+  font:
+    text: Lato
 #google_analytics:
 #  - "auto"
 markdown_extensions:
