@@ -1,7 +1,8 @@
 from math import floor
 from string import ascii_letters, ascii_uppercase
-from typing import List
+from typing import List, Optional
 
+import pandas as pd
 import re
 
 from pygsuite.common.style import Border
@@ -94,12 +95,6 @@ class Worksheet(object):
         df = self._spreadsheet.get_values_from_range(worksheet_range).to_df()
         return df
 
-    def insert_data(self, values: list, insert_range: str = None, anchor: str = None):
-
-        # TODO: test with lists of differing list lengths (is this possible?)
-
-        pass
-
     def format_borders(
         self,
         start_row_index: int,
@@ -181,3 +176,18 @@ class Worksheet(object):
         range = f"{self.name}!{top_left}:{bottom_right}"
         print(range)
         self._spreadsheet.insert_data(insert_range=range, values=values)
+
+    def insert_data_from_df(
+        self,
+        df: pd.DataFrame,
+        header: Optional[bool] = True,
+        insert_range: Optional[str] = None,
+        anchor: Optional[str] = None,
+    ):
+
+        values = []
+        if header:
+            values.append(df.columns.values.tolist())
+        values.extend(df.values.tolist())
+
+        self.insert_data(values=values, insert_range=insert_range, anchor=anchor)
