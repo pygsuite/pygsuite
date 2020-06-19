@@ -23,8 +23,8 @@ pages:
 theme:
   name: material
   palette:
-    primary: indigo
-    accent: cyan
+    primary: cyan
+    accent: deep orange
   font:
     text: Lato
 #google_analytics:
