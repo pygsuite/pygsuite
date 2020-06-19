@@ -46,7 +46,7 @@ class Worksheet(object):
         self._properties = self._worksheet["properties"]
 
     def __getitem__(self, cell_range):
-        return self.values_from_range(cell_range).to_list()
+        return self.values_from_range(cell_range)
 
     @property
     def name(self):
@@ -159,6 +159,7 @@ class Worksheet(object):
         values: list,
         insert_range: str = None,
         anchor: str = None,
+        flush: bool = False,
         # major_dimension: Dimension = Dimension.ROWS
         # commented out because you'll need to move this to avoid circular imports
     ):
@@ -182,12 +183,16 @@ class Worksheet(object):
         print(range)
         self._spreadsheet.insert_data(insert_range=range, values=values)
 
+        if flush:
+            self._spreadsheet.flush()
+
     def insert_data_from_df(
         self,
         df: pd.DataFrame,
         header: Optional[bool] = True,
         insert_range: Optional[str] = None,
         anchor: Optional[str] = None,
+        flush: bool = False
     ):
 
         values = []
@@ -195,4 +200,4 @@ class Worksheet(object):
             values.append(df.columns.values.tolist())
         values.extend(df.values.tolist())
 
-        self.insert_data(values=values, insert_range=insert_range, anchor=anchor)
+        self.insert_data(values=values, insert_range=insert_range, anchor=anchor, flush=flush)
