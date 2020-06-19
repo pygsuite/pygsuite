@@ -56,7 +56,7 @@ through the entire flow.
 ### Using an Existing Credential Object
 
 If you already have a valid credential object, you can also authorize with that directly.
-This may be common if you're working through a job scheduler or sharing google suth
+This may be common if you're working through a job scheduler or sharing google auth
 between multiple clients.
 
 ```python

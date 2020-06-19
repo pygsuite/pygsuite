@@ -31,4 +31,10 @@ theme: material
 markdown_extensions:
   - codehilite
   - admonition
+  - toc:
+      permalink: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - inlinehilite
 

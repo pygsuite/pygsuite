@@ -40,11 +40,7 @@ The rest of the examples in this page will reference the `spreadsheet` object cr
 
 ### Creating a worksheet
 
-After creating a spreadsheet object, a worksheet can be created with the `create_sheet()` method. The method used to create the sheet uses an optional `SheetProperties` object that represents various details about the sheet to create, including options for the ID, title, index (position of the tab), tab color, and more. If not sheet properties are specified, defaults will be used by the Sheets API.
-
-```python
-spreadsheet.create_sheet()
-```
+After creating a spreadsheet object, a worksheet can be created with the `#!python create_sheet()` method. The method used to create the sheet uses an optional `SheetProperties` object that represents various details about the sheet to create, including options for the ID, title, index (position of the tab), tab color, and more. If not sheet properties are specified, defaults will be used by the Sheets API.
 
 Here is an example using specified sheet properties:
 
@@ -59,9 +55,9 @@ spreadsheet.create_sheet(sheet_properties=sheet_properties)
 
 ### Reading data from a spreadsheet
 
-Data in a spreadsheet can be returned using the `get_values_from_range(cell_range)` method, where the `cell_range` is a range of cells to retrieve, in [A1 notation](https://developers.google.com/sheets/api/guides/concepts#a1_notation).
+Data in a spreadsheet can be returned using the `#!python get_values_from_range(cell_range)` method, where the `cell_range` is a range of cells to retrieve, in [A1 notation](https://developers.google.com/sheets/api/guides/concepts#a1_notation).
 
-This method must be used in combination with either the `to_list()` or `to_df()` method to return data in a specific data structure.
+This method must be used in combination with either the `#!python to_list()` or `#!python to_df()` method to return data in a specific data structure.
 
 ```python
 cell_range = "Sheet1!A1:B10"
