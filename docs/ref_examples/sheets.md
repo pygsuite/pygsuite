@@ -18,7 +18,7 @@ from sklearn.datasets import load_iris
 from pygsuite import Spreadsheet
 from pygsuite.sheets.cell import Cell, CellFormat, HorizontalAlign
 from pygsuite.sheets.sheet_properties import SheetProperties
-from pygsuite.common.style import Color, TextStyle
+from pygsuite.common.style import Color, TextStyle, Border, BorderStyle, BorderPosition
 ```
 
 Let's get our spreadsheet object:
@@ -34,5 +34,79 @@ First, let's import our practice Iris data set and try adding this to our spread
 
 ```python
 iris = load_iris()
-iris_df = pd.DataFrame(data=np.c_[iris['data'], iris['target']], columns=iris['feature_names'] + ['target'])
+iris_df = pd.DataFrame(data=np.c_[iris["data"], iris["target"]], columns=iris["feature_names"] + ["target"])
+```
+
+Now that we have a dataframe, let's start off by adding the original dataset to a sheet in our spreadsheet so others can reference the original data. Here we can use the `anchor` parameter to insert our dataframe, starting with the upper-left cell in our anchor.
+
+```python
+spreadsheet["Sheet1"].insert_data_from_df(iris_df, anchor="A1")
+spreadsheet.flush()
+```
+
+Let's quickly format the header row of the dataset in bold, to make it stand out from the data. We can define a `Cell` with a custom `CellFormat` and `TextStyle`.
+
+```python
+cell = Cell(user_entered_format=CellFormat(text_format=TextStyle(bold=True)))
+spreadsheet["Sheet1"].format_cells(start_row_index=0, end_row_index=1, start_column_index=0, end_column_index=5, cell=cell)
+spreadsheet.flush()
+```
+
+We can also add a border to separate the header from the row data.
+
+```python
+border = Border(position=BorderPosition.TOP, style=BorderStyle.SOLID_THICK, color=Color(red=0, green=0, blue=0))
+spreadsheet["Sheet1"].format_borders(start_row_index=0, end_row_index=1, start_column_index=0, end_column_index=5, borders=[border])
+spreadsheet.flush()
+```
+
+## Adding a New Slide with Formula Cells
+
+Let's make a new worksheet in the spreadsheet that has a few descriptive metrics of the Iris data set. Using the `SheetProperties`, we can specify a title, id, position, and more for the new sheet. In this example, let's call this sheet "Summary" and make it the first tab in our spreadsheet.
+
+```python
+spreadsheet.create_sheet(SheetProperties(title="Summary", index=0))
+spreadsheet.flush()
+```
+
+Now that we have made the new sheet, let's describe the data for the Sepals and Petals by:
+
+- count
+- average
+- minimum
+- maximum
+
+All of these calculations have corresponding Google Sheets formulas that we can leverge to calculate these based on the data in our first sheet (Sheet1). First, let's start out by making a header row:
+
+```python
+header = ["Metric", "Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
+```
+
+Next, let's map the metric names we want to use with the formula names we will wall. Given that all of these formulas accept a list of cells or cell range, we can iterate through the metrics.
+
+```python
+metrics = {"Count":"COUNT", "Average":"AVERAGE", "Min":"MIN", "Max":"MAX"}
+```
+
+All that's left is to create a loop to create a row for each metric that contains one formatted formula per column:
+
+```python
+calculations = []
+
+for metric in metrics:
+
+    row = [metric]
+
+    for col in ["A", "B", "C", "D"]:
+
+        formula = f"={calcs[calc]}(Sheet1!{col}2:{col}151)"
+        row.append(formula)
+
+    calculations.append(row)
+
+values = [header]
+values.extend(calculations)
+
+spreadsheet["Summary"].insert_data(values=values, anchor="A1")
+spreadsheet.flush()
 ```
