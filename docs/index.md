@@ -4,6 +4,7 @@ A pythonic library for interacting with google suite products through a convenie
 object-oriented model.
 
 It currently includes support for working with the following gsuite offerings. 
+
 - Sheets
 - Drive
 - Slides
