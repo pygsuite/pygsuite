@@ -14,9 +14,11 @@ It currently includes support for working with the following gsuite offerings.
 
 Pygsuite is a light, pythonic wrapper around the core Google provided api clients.
 It offers efficient APIs for batch requests to automate the creation, manipulation, 
-and sharing of drive documents.
+and sharing of Gsuite content. 
 
-Pygsuite's code is hosted on github.
+Pygsuite's code is hosted on GitHub.
+
+You can read more about the raw gsuite APIs here [here](https://developers.google.com/gsuite/aspects/apis).
 
 ## Install
 
