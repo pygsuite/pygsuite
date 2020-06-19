@@ -1,12 +1,12 @@
 ## Setup
 
-This quickstart assumes that you have already created an auth object using the auth quickstart.
+This quickstart assumes that you have already authorized your client, per the auth quickstart.
 
 Authorization is the same for all examples.
 
 ### Basic
 
-This example walks through how to clear a document and append text and images to it.
+This example walks through how to get a document and append text and images to it.
 
 #### Setup
 
@@ -85,24 +85,22 @@ BRIGHT_GREEN_HEX = '#72FF33'
 
 TEST_DOCUMENT = r'https://docs.google.com/document/d/############/edit'
 
-if __name__ == "__main__":
-    Clients.authorize(AUTH_PLACEHOLDER)
 
-    document = Document(id=TEST_DOCUMENT)
-    docbody = document.body
-    docbody.delete()
-    docbody.add_text("Hello, World", style=TextStyle(font_size=18, font_weight=200, color=Color(hex=BRIGHT_GREEN_HEX)))
+document = Document(id=TEST_DOCUMENT)
+docbody = document.body
+docbody.delete()
+docbody.add_text("Hello, World", style=TextStyle(font_size=18, font_weight=200, color=Color(hex=BRIGHT_GREEN_HEX)))
 
-    docbody.newline(count=2)
-    docbody.add_text("A Report on Birds", style=DefaultFonts.title)
-    docbody.newline()
-    # image source: create commons: https://commons.wikimedia.org/wiki/File:Cisticola_exilis.jpg
-    docbody.add_image(
-        "https://upload.wikimedia.org/wikipedia/commons/0/0d/Cisticola_exilis.jpg"
-    )
-    docbody.newline()
-    docbody.add_text('Birds are a...', style=DefaultFonts.normal)
-    document.flush()
+docbody.newline(count=2)
+docbody.add_text("A Report on Birds", style=DefaultFonts.title)
+docbody.newline()
+# image source: create commons: https://commons.wikimedia.org/wiki/File:Cisticola_exilis.jpg
+docbody.add_image(
+    "https://upload.wikimedia.org/wikipedia/commons/0/0d/Cisticola_exilis.jpg"
+)
+docbody.newline()
+docbody.add_text('Birds are a...', style=DefaultFonts.normal)
+document.flush()
 
 
 ```

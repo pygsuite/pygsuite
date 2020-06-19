@@ -35,7 +35,6 @@ def default_callback(request_id, response, exception):
     if exception:
         # Handle error
         raise ValueError(exception)
-    print(request_id, response, exception)
 
 
 class Drive:
@@ -58,6 +57,16 @@ class Drive:
 
     def update_file_permissions(
         self, file_id, address, role=PermissionType.READER, type=UserType.USER
+    ):
+        batch = self.service.new_batch_http_request(callback=default_callback)
+        user_permission = {"type": type.value, "role": role.value, "emailAddress": address}
+        batch.add(
+            self.service.permissions().create(fileId=file_id, body=user_permission, fields="id")
+        )
+        batch.execute()
+
+    def create_file(
+            self, file_id, address, role=PermissionType.READER, type=UserType.USER
     ):
         batch = self.service.new_batch_http_request(callback=default_callback)
         user_permission = {"type": type.value, "role": role.value, "emailAddress": address}
