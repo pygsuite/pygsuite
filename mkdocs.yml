@@ -21,6 +21,9 @@ pages:
           - Lines: references/slides/lines.md
           - Objects: references/slides/objects.md
 theme: material
+  palette:
+    primary: indigo
+    accent: cyan
 #google_analytics:
 #  - "auto"
 markdown_extensions:
