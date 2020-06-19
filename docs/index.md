@@ -3,17 +3,17 @@
 A pythonic library for interacting with google suite products through a convenient,
 object-oriented model.
 
-It currently includes:
-
+It currently includes support for working with the following gsuite offerings. 
 - Sheets
 - Drive
 - Slides
+- Drive
 
 ## Overview
 
-Pygsuite is a light, pythonic wrapper around the core Docs, Sheets,
-and Slides APIs. It offers efficient APIs for batch requests to
-automate the creation, manipulation, and sharing of drive documents.
+Pygsuite is a light, pythonic wrapper around the core Google provided api clients.
+It offers efficient APIs for batch requests to automate the creation, manipulation, 
+and sharing of drive documents.
 
 Pygsuite's code is hosted on github.
 
@@ -25,13 +25,14 @@ $ pip install pygsuite
 
 ## Want to dive right in?
 
-Get started with the quickstart examples. You'll need to set up auth first,
-so begin there.
+Get started with the quickstart examples. You'll need to start with the auth quickstart
+to use any of them, so begin there.
 
 - [Auth](./quickstart/auth.md)
 - [Sheets](./quickstart/sheets.md)
 - [Docs](./quickstart/docs.md)
 - [Slides](./quickstart/slides.md)
+- [Drive]('./quickstart/drive.md)
 
 ## More Information
 
