@@ -64,6 +64,11 @@ class Worksheet(object):
     def column_count(self):
         return self._properties["gridProperties"]["columnCount"]
 
+    def delete_sheet(self, flush: Optional[bool] = True):
+        self._spreadsheet.delete_sheet(id=self.id)
+        if flush:
+            self._spreadsheet.flush()
+
     def range_from_indexes(self, startcol: str, startrow: int, endcol: str, endrow: int):
 
         assert startcol <= endcol
