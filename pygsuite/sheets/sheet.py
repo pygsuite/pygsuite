@@ -225,6 +225,27 @@ class Spreadsheet:
 
         return self
 
+    def delete_sheet(self, title: Optional[str] = None, id: Optional[int] = None):
+        """Method to delete a sheet by the title or id.
+
+        Args:
+            title (Optional: str): The title of a sheet to delete.
+            id (Optional: int): The id of a sheet to delete.
+
+        Returns:
+            self (Spreadsheet): The object itself, to method chain.
+        """
+
+        # if an id is not given, title must be given; get id from title
+        if not id:
+            assert title is not None
+            id = self.__getitem__(key=title).id
+
+        base = {"deleteSheet": {"sheetId": id}}
+        self._spreadsheets_update_queue.append(base)
+
+        return self
+
     def get_values_from_range(self, cell_range: str):
         """Method to get data from a Spreadsheet range.
 
