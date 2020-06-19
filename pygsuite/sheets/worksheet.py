@@ -1,7 +1,8 @@
 from math import floor
 from string import ascii_letters, ascii_uppercase
-from typing import List
+from typing import List, Optional
 
+import pandas as pd
 import re
 
 from pygsuite.common.style import Border
@@ -45,7 +46,7 @@ class Worksheet(object):
         self._properties = self._worksheet["properties"]
 
     def __getitem__(self, cell_range):
-        return self.values_from_range(cell_range).to_list()
+        return self.values_from_range(cell_range)
 
     @property
     def name(self):
@@ -62,6 +63,11 @@ class Worksheet(object):
     @property
     def column_count(self):
         return self._properties["gridProperties"]["columnCount"]
+
+    def delete_sheet(self, flush: Optional[bool] = True):
+        self._spreadsheet.delete_sheet(id=self.id)
+        if flush:
+            self._spreadsheet.flush()
 
     def range_from_indexes(self, startcol: str, startrow: int, endcol: str, endrow: int):
 
@@ -93,12 +99,6 @@ class Worksheet(object):
         worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
         df = self._spreadsheet.get_values_from_range(worksheet_range).to_df()
         return df
-
-    def insert_data(self, values: list, insert_range: str = None, anchor: str = None):
-
-        # TODO: test with lists of differing list lengths (is this possible?)
-
-        pass
 
     def format_borders(
         self,
@@ -159,6 +159,7 @@ class Worksheet(object):
         values: list,
         insert_range: str = None,
         anchor: str = None,
+        flush: bool = False,
         # major_dimension: Dimension = Dimension.ROWS
         # commented out because you'll need to move this to avoid circular imports
     ):
@@ -181,3 +182,22 @@ class Worksheet(object):
         range = f"{self.name}!{top_left}:{bottom_right}"
         print(range)
         self._spreadsheet.insert_data(insert_range=range, values=values)
+
+        if flush:
+            self._spreadsheet.flush()
+
+    def insert_data_from_df(
+        self,
+        df: pd.DataFrame,
+        header: Optional[bool] = True,
+        insert_range: Optional[str] = None,
+        anchor: Optional[str] = None,
+        flush: bool = False
+    ):
+
+        values = []
+        if header:
+            values.append(df.columns.values.tolist())
+        values.extend(df.values.tolist())
+
+        self.insert_data(values=values, insert_range=insert_range, anchor=anchor, flush=flush)

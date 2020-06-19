@@ -156,11 +156,14 @@ class Spreadsheet:
         """
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
 
+        self._spreadsheets_update_queue = []
+        self._values_update_queue = []
+
     @retry((HttpError), tries=3, delay=10, backoff=5)
     def flush(
         self,
         reverse: bool = False,
-        value_input_option: ValueInputOption = ValueInputOption.RAW,
+        value_input_option: ValueInputOption = ValueInputOption.USER_ENTERED,
         include_values_in_response: bool = False,
         response_value_render_option: ValueRenderOption = ValueRenderOption.FORMATTED_VALUE,
         response_date_time_render_option: DateTimeRenderOption = DateTimeRenderOption.SERIAL_NUMBER,
@@ -213,14 +216,40 @@ class Spreadsheet:
                 .get("responses")
             )
 
-        self._spreadsheets_update_queue = []
-        self._values_update_queue = []
+        # the queues are reset in the refresh() method
+        # self._spreadsheets_update_queue = []
+        # self._values_update_queue = []
         self.refresh()
 
         return response_dict
 
     def create_sheet(self, sheet_properties: Optional[SheetProperties] = None):
         base = {"addSheet": {"properties": sheet_properties.to_json()}}
+        self._spreadsheets_update_queue.append(base)
+
+        return self
+
+    def update_sheet(self, worksheet, sheet_properties):
+
+        pass
+
+    def delete_sheet(self, title: Optional[str] = None, id: Optional[int] = None):
+        """Method to delete a sheet by the title or id.
+
+        Args:
+            title (Optional: str): The title of a sheet to delete.
+            id (Optional: int): The id of a sheet to delete.
+
+        Returns:
+            self (Spreadsheet): The object itself, to method chain.
+        """
+
+        # if an id is not given, title must be given; get id from title
+        if not id:
+            assert title is not None
+            id = self.__getitem__(key=title).id
+
+        base = {"deleteSheet": {"sheetId": id}}
         self._spreadsheets_update_queue.append(base)
 
         return self

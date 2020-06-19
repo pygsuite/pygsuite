@@ -1,163 +1,112 @@
 This guide assumes you have already created an auth object using the auth quickstart.
 
-## Create a new spreadsheet
+This example will walk you through an example using the sheets objects, which demonstrates some of the power to programmatically interact with Google Sheets.
 
-The sheets integration allows the creation of a new spreadsheet. The created spreadsheet will be in the highest-level bucket of the account creating the spreadsheet&mdash;the Drive part of this package can be used to move the file into a desired bucket.
+This example will use data from the following resource:
 
-```python
-from pygsuite.sheets.sheet import create_new_spreadsheet
+- [Iris flower data set](https://en.wikipedia.org/wiki/Iris_flower_data_set) accessed through [sklearn](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html)
 
-title = "My first google sheet"
-spreadsheet = create_new_spreadsheet(title=title)
-```
+## Get our spreadsheet
 
-When using this function, `client` is an optional parameter that can be used to provide an auth object.
-
-## Interacting with a spreadsheet
-
-To begin, create a spreadsheet object using the ID of the spreadsheet. From the [API docs](https://developers.google.com/sheets/api/guides/concepts): This ID is the value between the "/d/" and the "/edit" in the URL of your spreadsheet. For example, consider the following URL that references a Google Sheets spreadsheet:
-
-```
-https://docs.google.com/spreadsheets/d/spreadsheetId/edit#gid=0
-```
-
-The spreadsheet ID is a string containing letters, numbers, and some special characters. The following regular expression can be used to extract the spreadsheet ID from a Google Sheets URL:
-
-```
-/spreadsheets/d/([a-zA-Z0-9-_]+)
-```
-
-Once you have located the ID, create the spreadsheet object:
+Humans work with names, not IDs. The `get_safe` method will fetch an existing presentation if it exists, or create it if it does not exist. Before doing this, we will import a few classes that will be useful down the road&mdash;we will cover each of these in more detail later.
 
 ```python
-from pygsuite.sheets.sheet import Spreadsheet
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_iris
 
-TEST_ID = "ABC123def456"
-spreadsheet = Spreadsheet(id=TEST_ID)
-```
-
-The rest of the examples in this page will reference the `spreadsheet` object created here.
-
-### Creating a worksheet
-
-After creating a spreadsheet object, a worksheet can be created with the `#!python create_sheet()` method. The method used to create the sheet uses an optional `SheetProperties` object that represents various details about the sheet to create, including options for the ID, title, index (position of the tab), tab color, and more. If not sheet properties are specified, defaults will be used by the Sheets API.
-
-Here is an example using specified sheet properties:
-
-```python
+from pygsuite import Spreadsheet
+from pygsuite.sheets.cell import Cell, CellFormat, HorizontalAlign
 from pygsuite.sheets.sheet_properties import SheetProperties
-
-sheet_title = "NewSheet"
-index = 0
-sheet_properties = SheetProperties(title=sheet_title, index=index)
-spreadsheet.create_sheet(sheet_properties=sheet_properties)
+from pygsuite.common.style import Color, TextStyle, Border, BorderStyle, BorderPosition
 ```
 
-### Reading data from a spreadsheet
-
-Data in a spreadsheet can be returned using the `#!python get_values_from_range(cell_range)` method, where the `cell_range` is a range of cells to retrieve, in [A1 notation](https://developers.google.com/sheets/api/guides/concepts#a1_notation).
-
-This method must be used in combination with either the `#!python to_list()` or `#!python to_df()` method to return data in a specific data structure.
+Let's get our spreadsheet object:
 
 ```python
-cell_range = "Sheet1!A1:B10"
-
-values_list = spreadsheet.values_from_range(cell_range=cell_range).to_list()
-values_df = spreadsheet.values_from_range(cell_range=cell_range).to_df()
+title = "Iris Flower Data Set"
+spreadsheet = Spreadsheet.get_safe(title)
 ```
 
-### Inserting data into a spreadsheet
+## Adding Iris Data
 
-TODO
-
-## Interacting with a worksheet
-
-A given spreadsheet has one or multiple "worksheets" that represent that different tabs of data in the spreadsheet. Worksheet objects can be accessed in multiple ways from a spreadsheet object.
-
-### Accessing a worksheet
-
-Worksheet objects are accessible by using the integer index of the worksheet, where 0 represents the first worksheet in the spreadsheet, 1 represents the second, etc.
+First, let's import our practice Iris data set and try adding this to our spreadsheet. Using the `load_iris` function, we can load the Iris data and then convert it to a pandas DataFrame:
 
 ```python
-worksheet = spreadsheet[0] # first tab in spreadsheet
+iris = load_iris()
+iris_df = pd.DataFrame(data=np.c_[iris["data"], iris["target"]], columns=iris["feature_names"] + ["target"])
 ```
 
-Worksheet objects are also accessible by the sheet name:
+Now that we have a dataframe, let's start off by adding the original dataset to a sheet in our spreadsheet so others can reference the original data. Here we can use the `anchor` parameter to insert our dataframe, starting with the upper-left cell in our anchor.
 
 ```python
-worksheet = spreadsheet["Sheet1"]
+spreadsheet["Sheet1"].insert_data_from_df(iris_df, anchor="A1")
+spreadsheet.flush()
 ```
 
-Lastly, worksheet objects are also accessible from a list of worksheets in the `worksheets` spreadsheet attribute. This last approach can also be used to get a list of worksheet objects for all the worksheets in a spreadsheet:
+Let's quickly format the header row of the dataset in bold, to make it stand out from the data. We can define a `Cell` with a custom `CellFormat` and `TextStyle`.
 
 ```python
-worksheet = spreadsheet.worksheets[0]
-worksheets_list = spreadsheet.worksheets
+cell = Cell(user_entered_format=CellFormat(text_format=TextStyle(bold=True)))
+spreadsheet["Sheet1"].format_cells(start_row_index=0, end_row_index=1, start_column_index=0, end_column_index=5, cell=cell)
+spreadsheet.flush()
 ```
 
-### Worksheet attributes
-
-There are a number of pieces of information specific to a worksheet stored in the worksheet object. This includes:
-
-**Worksheet name**
-
-```
-worksheet.name
-```
-
-**Worksheet ID**
-
-```
-worksheet.id
-```
-
-**Worksheet row count**
-
-```
-worksheet.row_count
-```
-
-**Worksheet column count**
-
-```
-worksheet.column_count
-```
-
-**Worksheet values**
-
-All the data in a spreadsheet, in a list data structure.
-
-```
-worksheet.values
-```
-
-**Worksheet dataframe**
-
-All the data in a spreadsheet, in a pandas DataFrame structure.
-
-```
-worksheet.dataframe
-```
-
-### Inserting data
-
-TODO
-
-### Reading data
-
-Data in a worksheet can be returned using the `values_from_range(cell_range)` method, where the `cell_range` is a range of cells to retrieve, in [A1 notation](https://developers.google.com/sheets/api/guides/concepts#a1_notation).
-
-This method to retrieve data returns a list of values:
+We can also add a border to separate the header from the row data.
 
 ```python
-worksheet = spreadsheet["Sheet1"]
-data = worksheet.values_from_range(cell_range="A1:B10")
+border = Border(position=BorderPosition.TOP, style=BorderStyle.SOLID_THICK, color=Color(red=0, green=0, blue=0))
+spreadsheet["Sheet1"].format_borders(start_row_index=0, end_row_index=1, start_column_index=0, end_column_index=5, borders=[border])
+spreadsheet.flush()
 ```
 
-### Formatting borders
+## Adding a New Slide with Formula Cells
 
-TODO
+Let's make a new worksheet in the spreadsheet that has a few descriptive metrics of the Iris data set. Using the `SheetProperties`, we can specify a title, id, position, and more for the new sheet. In this example, let's call this sheet "Summary" and make it the first tab in our spreadsheet.
 
-### Formatting cells
+```python
+spreadsheet.create_sheet(SheetProperties(title="Summary", index=0))
+spreadsheet.flush()
+```
 
-TODO
+Now that we have made the new sheet, let's describe the data for the Sepals and Petals by:
+
+- count
+- average
+- minimum
+- maximum
+
+All of these calculations have corresponding Google Sheets formulas that we can leverge to calculate these based on the data in our first sheet (Sheet1). First, let's start out by making a header row:
+
+```python
+header = ["Metric", "Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
+```
+
+Next, let's map the metric names we want to use with the formula names we will wall. Given that all of these formulas accept a list of cells or cell range, we can iterate through the metrics.
+
+```python
+metrics = {"Count":"COUNT", "Average":"AVERAGE", "Min":"MIN", "Max":"MAX"}
+```
+
+All that's left is to create a loop to create a row for each metric that contains one formatted formula per column:
+
+```python
+calculations = []
+
+for metric in metrics:
+
+    row = [metric]
+
+    for col in ["A", "B", "C", "D"]:
+
+        formula = f"={calcs[calc]}(Sheet1!{col}2:{col}151)"
+        row.append(formula)
+
+    calculations.append(row)
+
+values = [header]
+values.extend(calculations)
+
+spreadsheet["Summary"].insert_data(values=values, anchor="A1")
+spreadsheet.flush()
+```
