@@ -13,7 +13,7 @@ with open("pygsuite/__init__.py", "rb") as f:
     version = str(ast.literal_eval(_match.group(1)))
 
 with open("requirements.txt", "r") as f:
-    install_requires = [line.strip().replace("==", ">=") for line in f.readlines()]
+    install_requires = [line.strip() for line in f.readlines()]
 
 setuptools.setup(
     name="pygsuite",
@@ -21,7 +21,7 @@ setuptools.setup(
     url="https://github.com/greenmtnboy/pygsuite",
     author="greenmtnboy",
     author_email="ethan.dickinson@gmail.com",
-    description="Packages for working with google suite products.",
+    description="Package for working with the Gsuite set of tools.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
@@ -33,5 +33,6 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
 )

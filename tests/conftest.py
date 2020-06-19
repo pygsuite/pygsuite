@@ -1,8 +1,16 @@
 from json import loads
-from os import environ
+from os import environ, path
 from pytest import fixture
 from pygsuite import Clients
 from uuid import uuid4
+
+
+
+if path.isfile('./test_config.json'):
+    with open('./test_config.json') as file:
+        config = loads(file.read())
+        for key, value in config.items():
+            environ[key] = value
 
 
 @fixture(scope="session")
