@@ -42,6 +42,8 @@ to use any of them, so begin there.
 Refer to the [goals](./goals.md) and [features](./features.md) pages
 for overviews of the package.
 
+The [quickstart](./quickstart/auth.md) pages will let you dive right in and start writing code. 
+
 The [examples](./examples/examples.md) page will walk you through more complicated
 examples that highlight more complex features of each module
 and how they can interact.
