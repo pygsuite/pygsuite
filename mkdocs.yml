@@ -20,6 +20,11 @@ pages:
           - Images: reference/slides/images.md
           - Lines: references/slides/lines.md
           - Objects: references/slides/objects.md
+      - Sheets:
+          - Charts: references/sheets/charts.md
+      - Docs:
+          - Footers: reference/docs/footers.md
+          - Headers: reference/docs/headers.md
 theme:
   name: material
   palette:
