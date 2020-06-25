@@ -38,7 +38,7 @@ class GridRange:
     end_column_index: Optional[int] = None
 
     @classmethod
-    def from_string(cls, id: str, range_string: str) -> GridRange:
+    def from_string(cls, id: str, range_string: str):
         """Method to create a GridRange object from an A1 notation string.
 
         Args:
@@ -60,13 +60,16 @@ class GridRange:
         else:
             cell_range = range_string
 
+        start_row_index = None
+        end_row_index = None
+
         if ":" in cell_range:
             cell_range_start = cell_range.split(":")[0]
             cell_range_end = cell_range.split(":")[1]
 
-            if re.match(r"/d+", cell_range_start) is not None:
+            if re.match(r"[A-Za-z]*\d+", cell_range_start) is not None:
                 start_row_index = int(re.search(r"\d+", cell_range_start).group()) - 1
-            if re.match(r"/d+", cell_range_end) is not None:
+            if re.match(r"[A-Za-z]*\d+", cell_range_end) is not None:
                 end_row_index = int(re.search(r"\d+", cell_range_end).group()) - 1
 
             start_column_index = a1_to_index(cell_range_start)
@@ -95,6 +98,11 @@ class GridRange:
         return grid_range
 
     def to_json(self) -> dict:
+        """Method to return the JSON representation of the GridRange object.
+
+        Returns:
+            base (dict): JSON representation of the GridRange for a request.
+        """
 
         base = {"sheetId": self.sheet_id}
 
