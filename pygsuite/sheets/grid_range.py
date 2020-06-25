@@ -118,5 +118,7 @@ class GridRange:
         return base
 
     def to_a1_string(self) -> str:
+        """
+        """
 
         pass
