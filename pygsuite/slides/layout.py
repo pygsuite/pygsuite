@@ -34,6 +34,9 @@ class Layout(object):
 
     def _get_smart_placeholder(self, test_str):
 
+        exact = self.placeholders.get(test_str, None)
+        if exact:
+            return exact
         matches = []
         for key in self.placeholders:
             if test_str in key:
