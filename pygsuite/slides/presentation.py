@@ -28,7 +28,30 @@ class Presentation:
         self._presentation = self.service.presentations().get(presentationId=self.id).execute()
         self._change_queue = []
 
-    def __getitem__(self, item):
+    def share(
+        self,
+        role: str,
+        user: str = None,
+        group: str = None,
+        domain: str = None,
+        everyone: str = False,
+    ):
+
+        from pygsuite import Clients
+
+        permissions = []
+        if user:
+            permissions.append({"role": role, "type": "user", "emailAddress": user})
+        if group:
+            permissions.append({"role": role, "type": "group", "emailAddress": group})
+        if domain:
+            permissions.append({"role": role, "type": "domain", "domain": domain})
+        if everyone:
+            permissions.append({"role": role, "type": "everyone"})
+        for permission in permissions:
+            Clients.drive_client.permissions().create(fileId=self.id, body=permission).execute()
+
+    def __getitem__(self, item) -> Slide:
         return self.slides[item]
 
     def __setitem__(self, index, value: Slide, style=None):
@@ -84,7 +107,7 @@ class Presentation:
 
     @property
     def url(self):
-        return f"https://docs.google.com/slides/d/{self.id}"
+        return f"https://docs.google.com/presentation/d/{self.id}"
 
     def add_slide(
         self,
