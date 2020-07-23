@@ -25,7 +25,7 @@ class UserType(Enum):
 class FileTypes(Enum):
     SHEETS = "application/vnd.google-apps.spreadsheet"
     DOCS = "application/vnd.google-apps.document"
-    SLIDES = "application/vnd.google-apps.slides"
+    SLIDES = "application/vnd.google-apps.presentation"
 
     def __str__(self):
         return self.value
@@ -65,9 +65,7 @@ class Drive:
         )
         batch.execute()
 
-    def create_file(
-            self, file_id, address, role=PermissionType.READER, type=UserType.USER
-    ):
+    def create_file(self, file_id, address, role=PermissionType.READER, type=UserType.USER):
         batch = self.service.new_batch_http_request(callback=default_callback)
         user_permission = {"type": type.value, "role": role.value, "emailAddress": address}
         batch.add(

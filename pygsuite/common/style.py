@@ -155,6 +155,34 @@ class TextStyle:
 
         return masks, base
 
+    def to_slide_style(self):
+
+        base = {}
+        masks = []
+
+        if self.font_size is not None:
+            base["fontSize"] = {"magnitude": self.font_size, "unit": "PT"}
+            masks.append("fontSize")
+        if self.bold is not None:
+            base["bold"] = self.bold
+            masks.append("bold")
+        if self.italic is not None:
+            base["italic"] = self.italic
+            masks.append("italic")
+        if self.underline is not None:
+            base["underline"] = self.underline
+            masks.append("underline")
+        if self.color is not None:
+            base["foregroundColor"] = self.color.to_sheet_style()
+            masks.append("foregroundColor")
+        if self.font is not None:
+            base["fontFamily"] = self.font
+            masks.append("fontFamily")
+        if self.link is not None:
+            base["link"] = {"url": self.link}
+            masks.append("link")
+        return masks, base
+
     @classmethod
     def from_doc_style(cls, info):
         if info.get("namedStyleType"):

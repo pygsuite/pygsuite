@@ -192,7 +192,7 @@ class Worksheet(object):
         header: Optional[bool] = True,
         insert_range: Optional[str] = None,
         anchor: Optional[str] = None,
-        flush: bool = False
+        flush: bool = False,
     ):
 
         values = []

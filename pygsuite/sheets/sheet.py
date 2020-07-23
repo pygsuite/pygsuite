@@ -151,6 +151,28 @@ class Spreadsheet:
         """
         return [Worksheet(sheet, self) for sheet in self._spreadsheet.get("sheets")]
 
+    def share(
+        self,
+        role: str,
+        user: str = None,
+        group: str = None,
+        domain: str = None,
+        everyone: str = False,
+    ):
+        from pygsuite import Clients
+
+        permissions = []
+        if user:
+            permissions.append({"role": role, "type": "user", "emailAddress": user})
+        if group:
+            permissions.append({"role": role, "type": "group", "emailAddress": group})
+        if domain:
+            permissions.append({"role": role, "type": "domain", "domain": domain})
+        if everyone:
+            permissions.append({"role": role, "type": "everyone"})
+        for permission in permissions:
+            Clients.drive_client.permissions().create(fileId=self.id, body=permission).execute()
+
     def refresh(self):
         """Method to refresh the spreadsheets API connection.
         """

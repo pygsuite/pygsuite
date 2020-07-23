@@ -34,8 +34,8 @@ def process_dimension(dim, FULL):
 
 @dataclass
 class ElementProperties:
-    x: Union[int, str, float]
-    y: Union[int, str, float]
+    x: Union[int, str, float] = 0
+    y: Union[int, str, float] = 0
     width: Optional[Union[int, str, float]] = None
     height: Optional[Union[int, str, float]] = None
     object_id: str = None
