@@ -180,7 +180,6 @@ class Worksheet(object):
         # do some validation that it fits in rage if insert_rang was provided
 
         range = f"{self.name}!{top_left}:{bottom_right}"
-        print(range)
         self._spreadsheet.insert_data(insert_range=range, values=values)
 
         if flush:
