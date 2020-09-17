@@ -74,6 +74,6 @@ class Drive:
         batch.execute()
 
     def copy_file(self, file_id, title: str, folder_id: str):
-        body = {"name": title, "parents": [{"kind": "drive#fileLink", "id": folder_id}]}
+        body = {"name": title, "parents": [folder_id]}
         response = self.service.files().copy(fileId=file_id, body=body).execute()
         return response
