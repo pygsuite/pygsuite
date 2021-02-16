@@ -1,4 +1,5 @@
 from typing import Dict, Union
+from urllib.error import HTTPError
 
 from pygsuite.common.parsing import parse_id
 from pygsuite.utility import retry
