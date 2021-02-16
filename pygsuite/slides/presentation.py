@@ -1,6 +1,7 @@
 from typing import Dict, Union
 
 from pygsuite.common.parsing import parse_id
+from pygsuite.utility import retry
 from .layout import Layout
 from .slide import Slide
 
