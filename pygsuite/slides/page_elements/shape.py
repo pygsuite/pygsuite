@@ -99,7 +99,7 @@ class Shape(BaseElement):
             reqs = [{"deleteText": {"objectId": self.id, "textRange": {"type": "ALL"}}}]
             self._presentation._mutation(reqs=reqs)
 
-    def add_text(self, text, style):
+    def add_text(self, text, style=None):
         reqs = [{"insertText": {"objectId": self.id, "insertionIndex": 0, "text": text}}]
         if style:
             fields, style = style.to_slide_style()
