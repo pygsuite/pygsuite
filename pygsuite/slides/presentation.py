@@ -58,7 +58,7 @@ class Presentation:
         self._mutation([{"slideObjectIds": [Slide.id], "insertionIndex": index}])
         self.flush()
 
-    # @retry((HttpError), tries=3, delay=5, backoff=3)
+    @retry((HttpError), tries=3, delay=5, backoff=3)
     def flush(self, reverse=False):
         if reverse:
             base = reversed(self._change_queue)
