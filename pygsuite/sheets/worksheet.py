@@ -30,8 +30,7 @@ def alphabet_to_index(cell_ref: str):
 
 
 class Worksheet(object):
-    """Worksheet object for the worksheets within a Spreadsheet
-    """
+    """Worksheet object for the worksheets within a Spreadsheet"""
 
     def __init__(self, worksheet, spreadsheet):
         """Method to initialize the class.
@@ -166,7 +165,7 @@ class Worksheet(object):
         # DO some input validation here
         anchor = insert_range.split(":")[0] if insert_range else anchor if anchor else "A1"
 
-        split = re.split("(\d+)", anchor)
+        split = re.split(r"(\d+)", anchor)
         x_raw = split[0]
         x = alphabet_to_index(x_raw)
         y = int(split[1])
