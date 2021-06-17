@@ -1,5 +1,3 @@
-from math import floor
-from string import ascii_letters, ascii_uppercase
 from typing import List, Optional
 
 import pandas as pd
@@ -7,26 +5,9 @@ import re
 
 from pygsuite.common.style import Border
 from pygsuite.sheets.cell import Cell
+from pygsuite.sheets.helpers import alphabet_to_index, index_to_alphabet
 
 # INDEX_SPLITTER = re.compile('(\d+)',s)
-
-
-def index_to_alphabet(idx: int):
-    out = ""
-    count = floor(idx / 26)
-    remainder = idx % 26
-    if count:
-        out = ascii_uppercase[count - 1]
-    out += ascii_uppercase[remainder - 1]
-    return out
-
-
-def alphabet_to_index(cell_ref: str):
-    idx = 0
-    for char in cell_ref:
-        if char in ascii_letters:
-            idx = idx * 26 + (ord(char.upper()) - ord("A")) + 1
-    return idx - 1
 
 
 class Worksheet(object):
