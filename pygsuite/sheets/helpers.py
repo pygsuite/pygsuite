@@ -23,7 +23,6 @@ def index_to_alphabet(input_index: int) -> str:
 
     while input_index > 0:
         input_index, remainder = divmod(input_index - 1, 26)
-        print(input_index, remainder)
         a1_notation = ascii_uppercase[remainder] + a1_notation
 
     return a1_notation
