@@ -188,8 +188,8 @@ class TextStyle:
         if info.get("namedStyleType"):
             return DefaultFonts[info.get("namedStyleType")]
         return TextStyle(
-            font_size=info.get("fontSize").get("magnitude"),
-            font_unit=info.get("fontSize").get("unit"),
+            font_size=info.get("fontSize", {}).get("magnitude"),
+            font_unit=info.get("fontSize", {}).get("unit"),
             font=info.get("font"),
             font_weight=info.get("fonWeight"),
             color=doc_color_to_color(info.get("color")),

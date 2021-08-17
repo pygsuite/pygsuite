@@ -1,5 +1,6 @@
 from googleapiclient.errors import HttpError
 
+from pygsuite.common.drive_object import DriveObject
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
 from pygsuite.docs.body import Body
@@ -9,30 +10,24 @@ from pygsuite.docs.headers import Headers
 from pygsuite.utility.decorators import retry
 
 
-class Document:
-    @classmethod
-    def get_safe(cls, title: str, client=None):
-        from pygsuite.drive import Drive, FileTypes
-
-        file_client = client or Clients.drive_client_v3
-        files = Drive(client=file_client).find_files(FileTypes.DOCS, name=title)
-        if files:
-            return Document(id=files[0]["id"], client=client)
-        else:
-            client = client or Clients.docs_client
-            body = {"title": title}
-            new = client.documents().create(body=body).execute()
-            return Document(id=new.get("documentId"), client=client)
+class Document(DriveObject):
 
     def __init__(self, id=None, name=None, client=None, _document=None, local=False):
 
         if not local:
             client = client or Clients.docs_client
         self.service = client
-        self.id = parse_id(id) if id else None
+        DriveObject.__init__(self, id=parse_id(id) if id else None, client=client)
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
         self.auto_sync = False
+
+    @classmethod
+    def create_new(cls, title:str, client=None):
+        client = client or Clients.docs_client
+        body = {"title": title}
+        new = client.documents().create(body=body).execute()
+        return Document(id=new.get("documentId"), client=client)
 
     def share(
         self,
