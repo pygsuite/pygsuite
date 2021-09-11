@@ -3,7 +3,7 @@ from pygsuite import PermissionType
 BRIGHT_GREEN_HEX = "#72FF33"
 
 
-def test_presentation(test_sheet):
+def test_sheets(test_sheet):
     new_sheet = test_sheet.create_sheet(title="test_sheet", tab_color=BRIGHT_GREEN_HEX)
     test_sheet.flush()
     domain = "@gmail.com"
