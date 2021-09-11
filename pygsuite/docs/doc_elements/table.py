@@ -161,7 +161,7 @@ class TableRow(BaseElement):
 
 class Table(BaseElement):
     def __init__(self, element, document, last):
-        BaseElement.__init__(self, element, document)
+        BaseElement.__init__(self, element, document, last)
         self._details = self._element.get("table")
         self.last = last
 

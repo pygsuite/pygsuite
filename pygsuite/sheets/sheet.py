@@ -82,8 +82,7 @@ def create_new_spreadsheet(title: str, client: Optional[Resource] = None):
 
 
 class Spreadsheet:
-    """Base class for the GSuite Spreadsheets API.
-    """
+    """Base class for the GSuite Spreadsheets API."""
 
     @classmethod
     def get_safe(cls, title: str, client=None):
@@ -147,8 +146,7 @@ class Spreadsheet:
 
     @property
     def worksheets(self):
-        """List of Worksheet objects for each worksheet in the Spreadsheet.
-        """
+        """List of Worksheet objects for each worksheet in the Spreadsheet."""
         return [Worksheet(sheet, self) for sheet in self._spreadsheet.get("sheets")]
 
     def share(
@@ -174,8 +172,7 @@ class Spreadsheet:
             Clients.drive_client.permissions().create(fileId=self.id, body=permission).execute()
 
     def refresh(self):
-        """Method to refresh the spreadsheets API connection.
-        """
+        """Method to refresh the spreadsheets API connection."""
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
 
         self._spreadsheets_update_queue = []
@@ -300,7 +297,9 @@ class Spreadsheet:
 
         return self
 
-    def to_list(self,) -> list:
+    def to_list(
+        self,
+    ) -> list:
         """Method to use with self.get_values_from_range(self, cell_range) to return a list of values.
 
         Returns:

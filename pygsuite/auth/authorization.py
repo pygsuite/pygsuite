@@ -18,6 +18,11 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive",
 ]
 
+SHEETS_VERSION = "v4"
+DOCS_VERSION = "v1"
+SLIDES_VERSION = "v1"
+DRIVE_VERSION = "v2"
+
 
 def json_str_to_oauth(token_str: str) -> Credentials:
     import json
@@ -38,7 +43,7 @@ def get_oauth_credential(credential_string: str) -> Credentials:
     return creds
 
 
-class Clients(object):
+class _Clients(object):
     def __init__(self):
         self.cred_path = None
         self.cred_text = None
@@ -48,10 +53,10 @@ class Clients(object):
         if not self.auth:
             raise ValueError("Need to provide credential path or credential text or auth object.")
 
-    def auth_default(self):
+    def auth_default(self, project: str = None):
         import google.auth
 
-        self.auth, project_id = google.auth.default()
+        self.auth, project_id = google.auth.default(quota_project_id=project)
 
     def create_client_file_from_string(self):
         from tempfile import TemporaryDirectory
@@ -63,7 +68,7 @@ class Clients(object):
             flow = InstalledAppFlow.from_client_secrets_file(keyfile.name, SCOPES)
         return flow
 
-    def authorize(self, auth):
+    def authorize(self, auth, project=None):
         self.auth = auth
 
     def authorize_string(self, auth_string: str):
@@ -89,29 +94,29 @@ class Clients(object):
     @lazy_property
     def docs_client(self):
         self.validate()
-        return build("docs", "v1", credentials=self.auth)
+        return build("docs", DOCS_VERSION, credentials=self.auth)
 
     @lazy_property
     def sheets_client(self):
         self.validate()
-        return build("sheets", "v4", credentials=self.auth)
+        return build("sheets", SHEETS_VERSION, credentials=self.auth)
 
     @lazy_property
     def slides_client(self):
         self.validate()
-        return build("slides", "v1", credentials=self.auth)
+        return build("slides", SLIDES_VERSION, credentials=self.auth)
 
     @lazy_property
     def _local_sheets_client(self):
-        return build("sheets", "v4", credentials=self.auth)
+        return build("sheets", SHEETS_VERSION, credentials=self.auth)
 
     @lazy_property
     def local_docs_client(self):
-        return build("docs", "v1", credentials=self.auth)
+        return build("docs", DOCS_VERSION, credentials=self.auth)
 
     @lazy_property
     def _local_slides_client(self):
-        return build("slides", "v1", credentials=self.auth)
+        return build("slides", SLIDES_VERSION, credentials=self.auth)
 
     @lazy_property
     def drive_client(self):
@@ -128,4 +133,4 @@ class Clients(object):
         return build("drive", "v3", credentials=self.auth)
 
 
-Clients = Clients()
+Clients = _Clients()
