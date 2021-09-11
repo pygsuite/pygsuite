@@ -3,7 +3,6 @@ from json import loads, dumps
 from os import environ, path
 from uuid import uuid4
 
-import requests
 from pytest import fixture
 
 from pygsuite import Clients
@@ -58,10 +57,10 @@ def test_sheet(auth_test_clients):
 
     # yield Document.get_safe(title=f"test-static")
 
+
 @fixture(scope="session")
 def test_image(auth_test_clients):
-
-    raw= base64.b64decode(environ["TEST_IMAGE"].encode("utf-8"))
+    raw = base64.b64decode(environ["TEST_IMAGE"].encode("utf-8"))
     uploader = ImageUploader(
         bucket=environ["TEST_BUCKET"], account_info=environ["TEST_GCS_ACCOUNT"]
     )
