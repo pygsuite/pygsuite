@@ -1,10 +1,13 @@
+import base64
 from json import loads, dumps
 from os import environ, path
 from uuid import uuid4
 
+import requests
 from pytest import fixture
 
 from pygsuite import Clients
+from pygsuite import ImageUploader
 
 if path.isfile("./test_config.json"):
     with open("./test_config.json") as file:
@@ -54,3 +57,13 @@ def test_sheet(auth_test_clients):
     yield Spreadsheet.get_safe(title=f"test-{uuid4()}")
 
     # yield Document.get_safe(title=f"test-static")
+
+@fixture(scope="session")
+def test_image(auth_test_clients):
+
+    raw= base64.b64decode(environ["TEST_IMAGE"].encode("utf-8"))
+    uploader = ImageUploader(
+        bucket=environ["TEST_BUCKET"], account_info=environ["TEST_GCS_ACCOUNT"]
+    )
+    url = uploader.signed_url_from_string(raw, "png")
+    yield url

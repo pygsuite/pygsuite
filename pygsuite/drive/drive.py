@@ -1,9 +1,7 @@
-from enum import Enum
 from typing import Optional
 
 from pygsuite import Clients
 from pygsuite.enums import FileTypes, PermissionType, UserType
-
 
 DRIVE_V3_API_URL = "https://www.googleapis.com/drive/v3/files"
 
@@ -27,13 +25,13 @@ class Drive:
         files = base.get("files")
         page_token = base.get("nextPageToken")
         while page_token is not None:
-            base = self.service.files().list(q=q).execute()
+            base = self.service.files().list(q=q, page_token=page_token).execute()
             files += base.get("files")
             page_token = base.get("nextPageToken")
         return files
 
     def update_file_permissions(
-        self, file_id, address, role=PermissionType.READER, type=UserType.USER
+            self, file_id, address, role=PermissionType.READER, type=UserType.USER
     ):
         """Deprecate this in favor of the object specific methods"""
         batch = self.service.new_batch_http_request(callback=default_callback)

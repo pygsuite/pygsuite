@@ -42,3 +42,10 @@ def test_paragraph(test_document):
 
     assert docbody.content[2].text.strip() == "TEST_CUSTOM_SETTER"
     assert docbody.paragraphs[1].elements[0].style.font_size == 24
+
+
+def test_image(test_document, test_image):
+    document = test_document
+    docbody = document.body
+    docbody.add_image(uri=test_image, width=100, height=100)
+    docbody.add_image(uri=test_image)
