@@ -1,5 +1,6 @@
-BRIGHT_GREEN_HEX = "#72FF33"
 from pygsuite import PermissionType
+
+BRIGHT_GREEN_HEX = "#72FF33"
 
 
 def test_presentation(test_sheet):
