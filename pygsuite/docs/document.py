@@ -11,7 +11,6 @@ from pygsuite.utility.decorators import retry
 
 
 class Document(DriveObject):
-
     def __init__(self, id=None, name=None, client=None, _document=None, local=False):
 
         if not local:
@@ -23,7 +22,7 @@ class Document(DriveObject):
         self.auto_sync = False
 
     @classmethod
-    def create_new(cls, title:str, client=None):
+    def create_new(cls, title: str, client=None):
         client = client or Clients.docs_client
         body = {"title": title}
         new = client.documents().create(body=body).execute()

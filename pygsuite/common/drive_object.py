@@ -6,15 +6,16 @@ from pygsuite.utility.decorators import lazy_property
 
 
 class DriveObject:
-
     def __init__(self, id, client):
         self.id = id
         self.client = client
 
     @property
     def comments(self) -> List[Comment]:
-        return [Comment(item) for item in
-                self.drive_client.comments().list(fileId=self.id).execute().get('items', [])]
+        return [
+            Comment(item)
+            for item in self.drive_client.comments().list(fileId=self.id).execute().get("items", [])
+        ]
 
     @lazy_property
     def drive_client(self):

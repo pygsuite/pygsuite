@@ -18,10 +18,11 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-SHEETS_VERSION = 'v4'
-DOCS_VERSION = 'v1'
-SLIDES_VERSION = 'v1'
-DRIVE_VERSION = 'v2'
+SHEETS_VERSION = "v4"
+DOCS_VERSION = "v1"
+SLIDES_VERSION = "v1"
+DRIVE_VERSION = "v2"
+
 
 def json_str_to_oauth(token_str: str) -> Credentials:
     import json
@@ -52,11 +53,10 @@ class _Clients(object):
         if not self.auth:
             raise ValueError("Need to provide credential path or credential text or auth object.")
 
-    def auth_default(self, project:str = None):
+    def auth_default(self, project: str = None):
         import google.auth
 
         self.auth, project_id = google.auth.default(quota_project_id=project)
-
 
     def create_client_file_from_string(self):
         from tempfile import TemporaryDirectory
@@ -104,7 +104,7 @@ class _Clients(object):
     @lazy_property
     def slides_client(self):
         self.validate()
-        return build("slides",SLIDES_VERSION, credentials=self.auth)
+        return build("slides", SLIDES_VERSION, credentials=self.auth)
 
     @lazy_property
     def _local_sheets_client(self):
@@ -125,12 +125,12 @@ class _Clients(object):
     @lazy_property
     def drive_client_v2(self):
         self.validate()
-        return build("drive", 'v2', credentials=self.auth)
+        return build("drive", "v2", credentials=self.auth)
 
     @lazy_property
     def drive_client_v3(self):
         self.validate()
-        return build("drive", 'v3', credentials=self.auth)
+        return build("drive", "v3", credentials=self.auth)
 
 
 Clients = _Clients()

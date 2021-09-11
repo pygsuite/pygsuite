@@ -1,3 +1,4 @@
 wheel
+pytest
 google-cloud-storage
 requests
