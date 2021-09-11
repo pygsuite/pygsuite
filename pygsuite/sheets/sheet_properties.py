@@ -65,6 +65,7 @@ class SheetProperties:
     right_to_left: Optional[bool] = None
 
     def __post_init__(self):
+        self.tab_color = Color.parse(self.tab_color)
 
         # sheetId must be non-negative
         if self.sheet_id:

@@ -12,3 +12,4 @@ examples/
 env.bak/
 venv.bak/
 *.pickle
+*.doctree

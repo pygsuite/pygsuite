@@ -45,3 +45,12 @@ def test_presentation(auth_test_clients):
     yield Presentation.get_safe(title=f"test-{uuid4()}")
 
     # yield Document.get_safe(title=f"test-static")
+
+
+@fixture(scope="session")
+def test_sheet(auth_test_clients):
+    from pygsuite import Spreadsheet
+
+    yield Spreadsheet.get_safe(title=f"test-{uuid4()}")
+
+    # yield Document.get_safe(title=f"test-static")

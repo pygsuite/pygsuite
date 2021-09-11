@@ -21,3 +21,11 @@ class DocElement(object):
             return SectionBreak(element, document, last)
         else:
             return BaseElement(element, document, last)
+
+    @property
+    def start_index(self) -> int:
+        return self._element.get("startIndex")
+
+    @property
+    def end_index(self) -> int:
+        return self._element.get("endIndex")

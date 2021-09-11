@@ -2,33 +2,10 @@ from enum import Enum
 from typing import Optional
 
 from pygsuite import Clients
+from pygsuite.enums import FileTypes, PermissionType, UserType
+
 
 DRIVE_V3_API_URL = "https://www.googleapis.com/drive/v3/files"
-
-
-class PermissionType(Enum):
-    OWNER = "owner"
-    ORGANIZER = "organizer"
-    FILE_ORGANIZER = "fileOrganizer"
-    WRITER = "writer"
-    COMMENTER = "commenter"
-    READER = "reader"
-
-
-class UserType(Enum):
-    USER = "user"
-    GROUP = "group"
-    DOMAIN = "domain"
-    ANYONE = "anyone"
-
-
-class FileTypes(Enum):
-    SHEETS = "application/vnd.google-apps.spreadsheet"
-    DOCS = "application/vnd.google-apps.document"
-    SLIDES = "application/vnd.google-apps.presentation"
-
-    def __str__(self):
-        return self.value
 
 
 def default_callback(request_id, response, exception):
@@ -58,6 +35,7 @@ class Drive:
     def update_file_permissions(
         self, file_id, address, role=PermissionType.READER, type=UserType.USER
     ):
+        """Deprecate this in favor of the object specific methods"""
         batch = self.service.new_batch_http_request(callback=default_callback)
         user_permission = {"type": type.value, "role": role.value, "emailAddress": address}
         batch.add(

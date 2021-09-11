@@ -94,7 +94,7 @@ class Body(object):
 
         if style:
             start = position
-            if position is None:
+            if start is None:
                 if not self.content:
                     start = 1
                 else:

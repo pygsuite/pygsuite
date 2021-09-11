@@ -2,57 +2,33 @@ from typing import Dict, Union
 
 from googleapiclient.errors import HttpError
 
+from pygsuite import Clients
+from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
+from pygsuite.enums import FileTypes
 from pygsuite.utility.decorators import retry
 from .layout import Layout
 from .slide import Slide
 
 
-class Presentation:
-    @classmethod
-    def get_safe(cls, title: str, client=None):
-        from pygsuite import Clients
-        from pygsuite.drive import Drive, FileTypes
-
-        files = Drive(client=client).find_files(FileTypes.SLIDES, name=title)
-        if files:
-            return Presentation(id=files[0]["id"], client=client)
-        else:
-            client = client or Clients.slides_client
-            body = {"title": title}
-            new = client.presentations().create(body=body).execute()
-            return Presentation(id=new.get("presentationId"), client=client)
+class Presentation(DriveObject):
+    file_type = FileTypes.SLIDES
 
     def __init__(self, id, client=None):
         from pygsuite import Clients
 
         self.service = client or Clients.slides_client
         self.id = parse_id(id) if id else None
+        DriveObject.__init__(self, id=id, client=client)
         self._presentation = self.service.presentations().get(presentationId=self.id).execute()
         self._change_queue = []
 
-    def share(
-        self,
-        role: str,
-        user: str = None,
-        group: str = None,
-        domain: str = None,
-        everyone: str = False,
-    ):
-
-        from pygsuite import Clients
-
-        permissions = []
-        if user:
-            permissions.append({"role": role, "type": "user", "emailAddress": user})
-        if group:
-            permissions.append({"role": role, "type": "group", "emailAddress": group})
-        if domain:
-            permissions.append({"role": role, "type": "domain", "domain": domain})
-        if everyone:
-            permissions.append({"role": role, "type": "everyone"})
-        for permission in permissions:
-            Clients.drive_client.permissions().create(fileId=self.id, body=permission).execute()
+    @classmethod
+    def create_new(cls, title: str, client=None):
+        client = client or Clients.slides_client
+        body = {"title": title}
+        new = client.presentations().create(body=body).execute()
+        return Presentation(id=new.get("presentationId"), client=client)
 
     def __getitem__(self, item) -> Slide:
         return self.slides[item]

@@ -16,15 +16,9 @@ pages:
       - Sheets: ref_examples/sheets.md
       - Slides: ref_examples/slides.md
   - Reference:
-      - Slides:
-          - Images: reference/slides/images.md
-          - Lines: references/slides/lines.md
-          - Objects: references/slides/objects.md
-      - Sheets:
-          - Charts: references/sheets/charts.md
-      - Docs:
-          - Footers: reference/docs/footers.md
-          - Headers: reference/docs/headers.md
+      - Slides: reference/markdown/slides.md
+      - Sheets: reference/markdown/sheets.md
+      - Docs: reference/markdown/docs.md
 theme:
   name: material
   palette:

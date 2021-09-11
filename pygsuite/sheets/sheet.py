@@ -1,11 +1,14 @@
 from enum import Enum
 from typing import Optional, Union
 
+import pandas as pd
 from googleapiclient.discovery import Resource
 from googleapiclient.errors import HttpError
-import pandas as pd
 
+from pygsuite import Clients
+from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
+from pygsuite.enums import FileTypes
 from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
@@ -81,24 +84,10 @@ def create_new_spreadsheet(title: str, client: Optional[Resource] = None):
     return Spreadsheet(client=service, id=id)
 
 
-class Spreadsheet:
+class Spreadsheet(DriveObject):
     """Base class for the GSuite Spreadsheets API."""
 
-    @classmethod
-    def get_safe(cls, title: str, client=None):
-        from pygsuite import Clients
-        from pygsuite.drive import Drive, FileTypes
-
-        file_client = client or Clients.drive_client_v3
-        files = Drive(client=file_client).find_files(FileTypes.SHEETS, name=title)
-        client = client or Clients.sheets_client
-        if files:
-            return Spreadsheet(id=files[0]["id"], client=client)
-        else:
-
-            body = {"properties": {"title": title}}
-            new = client.spreadsheets().create(body=body).execute()
-            return Spreadsheet(id=new.get("spreadsheetId"), client=client)
+    file_type = FileTypes.SHEETS
 
     def __init__(self, id: str, client: Optional[Resource] = None):
         """Method to initialize the class.
@@ -112,10 +101,9 @@ class Spreadsheet:
             client (googleapiclient.discovery.Resource): connection to the Google API Sheets resource.
         """
 
-        from pygsuite import Clients
-
         self.service = client or Clients.sheets_client
         self.id = parse_id(id) if id else None
+        DriveObject.__init__(self, id=id, client=client)
 
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
         self._properties = self._spreadsheet.get("properties")
@@ -123,6 +111,13 @@ class Spreadsheet:
         # queues to add to and run in flush()
         self._spreadsheets_update_queue = []
         self._values_update_queue = []
+
+    @classmethod
+    def create_new(cls, title: str, client=None):
+        client = client or Clients.sheets_client
+        body = {"properties": {"title": title}}
+        new = client.spreadsheets().create(body=body).execute()
+        return Spreadsheet(id=new.get("spreadsheetId"), client=client)
 
     def __getitem__(self, key: Union[str, int]):
 
@@ -148,28 +143,6 @@ class Spreadsheet:
     def worksheets(self):
         """List of Worksheet objects for each worksheet in the Spreadsheet."""
         return [Worksheet(sheet, self) for sheet in self._spreadsheet.get("sheets")]
-
-    def share(
-        self,
-        role: str,
-        user: str = None,
-        group: str = None,
-        domain: str = None,
-        everyone: str = False,
-    ):
-        from pygsuite import Clients
-
-        permissions = []
-        if user:
-            permissions.append({"role": role, "type": "user", "emailAddress": user})
-        if group:
-            permissions.append({"role": role, "type": "group", "emailAddress": group})
-        if domain:
-            permissions.append({"role": role, "type": "domain", "domain": domain})
-        if everyone:
-            permissions.append({"role": role, "type": "everyone"})
-        for permission in permissions:
-            Clients.drive_client.permissions().create(fileId=self.id, body=permission).execute()
 
     def refresh(self):
         """Method to refresh the spreadsheets API connection."""
@@ -242,7 +215,9 @@ class Spreadsheet:
 
         return response_dict
 
-    def create_sheet(self, sheet_properties: Optional[SheetProperties] = None):
+    def create_sheet(self, sheet_properties: Optional[SheetProperties] = None, **kwargs):
+        """Add a new sheet to the spreadsheet."""
+        sheet_properties = sheet_properties or SheetProperties(**kwargs)
         base = {"addSheet": {"properties": sheet_properties.to_json()}}
         self._spreadsheets_update_queue.append(base)
 

@@ -38,7 +38,7 @@ class ElementProperties:
     y: Union[int, str, float] = 0
     width: Optional[Union[int, str, float]] = None
     height: Optional[Union[int, str, float]] = None
-    object_id: str = None
+    object_id: str = ""
     unit_type: str = "PT"
     anchor: AnchorPosition = AnchorPosition.TOP_LEFT
 
