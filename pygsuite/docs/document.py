@@ -1,16 +1,21 @@
 from googleapiclient.errors import HttpError
 
-from pygsuite.common.drive_object import DriveObject
 from pygsuite import Clients
+from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
 from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
+from pygsuite.enums import FileTypes
 from pygsuite.utility.decorators import retry
 
 
 class Document(DriveObject):
+    """A document on google drive. """
+
+    file_type = FileTypes.DOCS
+
     def __init__(self, id=None, name=None, client=None, _document=None, local=False):
 
         if not local:
@@ -27,28 +32,6 @@ class Document(DriveObject):
         body = {"title": title}
         new = client.documents().create(body=body).execute()
         return Document(id=new.get("documentId"), client=client)
-
-    def share(
-        self,
-        role: str,
-        user: str = None,
-        group: str = None,
-        domain: str = None,
-        everyone: str = False,
-    ):
-        from pygsuite import Clients
-
-        permissions = []
-        if user:
-            permissions.append({"role": role, "type": "user", "emailAddress": user})
-        if group:
-            permissions.append({"role": role, "type": "group", "emailAddress": group})
-        if domain:
-            permissions.append({"role": role, "type": "domain", "domain": domain})
-        if everyone:
-            permissions.append({"role": role, "type": "everyone"})
-        for permission in permissions:
-            Clients.drive_client.permissions().create(fileId=self.id, body=permission).execute()
 
     def id(self):
         return self._document["id"]

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pygsuite.common.style import TextStyle
 from pygsuite.docs.doc_elements.paragraph import Paragraph
@@ -94,7 +94,7 @@ class Body(object):
 
         if style:
             start = position
-            if position is None:
+            if start is None:
                 if not self.content:
                     start = 1
                 else:
@@ -114,15 +114,24 @@ class Body(object):
 
         self._document._mutation(queued)
 
-    def add_image(self, uri, position=None):
+    def add_image(self, uri, position:Optional[int]=None, height:Optional[int] = None, width=Optional[int]):
+        '''Add an image to the document at the specified location.'''
         message = {
             "insertInlineImage": {
                 "uri": uri,
+
                 # "objectSize": {
                 #     object (Size)
                 # }
             }
         }
+        if height or width:
+            size = {}
+            if height:
+                size['height'] = height
+            if width:
+                size['width'] = width
+            message['insertInlineImage']['objectSize'] = size
         if position:
             message["insertInlineImage"]["location"] = {"index": position}
         else:

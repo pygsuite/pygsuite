@@ -1,8 +1,4 @@
-from os import environ
-from pygsuite import Clients, Spreadsheet, Presentation
 from pygsuite.slides import ShapeType, ElementProperties
-
-from pygsuite import DefaultFonts, Document, TextStyle, Color
 
 BRIGHT_GREEN_HEX = "#72FF33"
 

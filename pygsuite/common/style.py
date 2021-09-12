@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Tuple, Dict, Union
+from typing import Optional, Tuple, Dict, Union, Any
 
 
 @dataclass
@@ -38,11 +38,24 @@ def doc_link_to_link(info: dict):
 
 @dataclass
 class Color:
-    hex: str = None
+    hex: Optional[str] = None
     red: float = None
     blue: float = None
     green: float = None
     alpha: float = None
+
+    @classmethod
+    def parse(cls, item: Any):
+        if isinstance(item, Color):
+            return item
+        elif isinstance(item, str):
+            return Color(item)
+        elif isinstance(item, Tuple):
+            return Color(None, *item)
+        elif not item:
+            return None
+        else:
+            raise ValueError(f"Cannot parse {item} to Color")
 
     def __post_init__(self):
 
