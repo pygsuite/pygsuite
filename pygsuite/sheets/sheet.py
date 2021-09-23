@@ -128,7 +128,7 @@ class Spreadsheet(DriveObject):
         elif isinstance(key, str):
             try:
                 return [worksheet for worksheet in self.worksheets if worksheet.name == key][0]
-            except KeyError:
+            except IndexError:
                 raise KeyError(
                     "No worksheet with the title '{key}' exists. The worksheets included in your spreadsheet are: {worksheets}".format(
                         key=key, worksheets=[worksheet.name for worksheet in self.worksheets]
