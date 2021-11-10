@@ -31,7 +31,7 @@ class Drive:
         return files
 
     def update_file_permissions(
-            self, file_id, address, role=PermissionType.READER, type=UserType.USER
+        self, file_id, address, role=PermissionType.READER, type=UserType.USER
     ):
         """Deprecate this in favor of the object specific methods"""
         batch = self.service.new_batch_http_request(callback=default_callback)

@@ -73,4 +73,6 @@ class DriveObject:
         if everyone:
             permissions.append({"role": role.value, "type": "everyone"})
         for permission in permissions:
-            self.drive_client_3.permissions().create(fileId=self.id, body=permission).execute()
+            self.drive_client_3.permissions().create(
+                fileId=self.id, body=permission, supportsAllDrives=True
+            ).execute()
