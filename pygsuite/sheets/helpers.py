@@ -17,7 +17,9 @@ def index_to_alphabet(input_index: int) -> str:
     try:
         assert input_index <= SHEETS_MAX_COLUMN_NUMBER
     except AssertionError:
-        raise ValueError(f"Input of column index {input_index} exceeds the maximum column number allowed of {SHEETS_MAX_COLUMN_NUMBER}.")
+        raise ValueError(
+            f"Input of column index {input_index} exceeds the maximum column number allowed of {SHEETS_MAX_COLUMN_NUMBER}."
+        )
 
     a1_notation = ""
 

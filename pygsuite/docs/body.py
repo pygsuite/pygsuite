@@ -114,12 +114,13 @@ class Body(object):
 
         self._document._mutation(queued)
 
-    def add_image(self, uri, position:Optional[int]=None, height:Optional[int] = None, width=Optional[int]):
-        '''Add an image to the document at the specified location.'''
+    def add_image(
+        self, uri, position: Optional[int] = None, height: Optional[int] = None, width=Optional[int]
+    ):
+        """Add an image to the document at the specified location."""
         message = {
             "insertInlineImage": {
                 "uri": uri,
-
                 # "objectSize": {
                 #     object (Size)
                 # }
@@ -128,10 +129,10 @@ class Body(object):
         if height or width:
             size = {}
             if height:
-                size['height'] = height
+                size["height"] = height
             if width:
-                size['width'] = width
-            message['insertInlineImage']['objectSize'] = size
+                size["width"] = width
+            message["insertInlineImage"]["objectSize"] = size
         if position:
             message["insertInlineImage"]["location"] = {"index": position}
         else:
