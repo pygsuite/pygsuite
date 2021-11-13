@@ -27,3 +27,11 @@ class FileTypes(Enum):
 
     def __str__(self):
         return self.value
+
+
+class GoogleDocFormat(Enum):
+    DOCS = "Documents"
+    SHEETS = "Spreadsheets"
+    DRAWINGS = "Drawings"
+    SLIDES = "Presentations"
+    SCRIPTS = "App Scripts"
