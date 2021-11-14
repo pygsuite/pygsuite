@@ -88,6 +88,7 @@ class File:
             # if a mimetype is not provided, find best match
             if not mimetype:
                 import magic
+
                 mimetype = magic.from_buffer(media_body.read())
 
             media_body = MediaIoBaseUpload(fd=media_body, mimetype=mimetype)
