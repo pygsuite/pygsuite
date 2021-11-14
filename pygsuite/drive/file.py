@@ -1,8 +1,9 @@
+from io import BytesIO
 import os
 from typing import Optional, Union
 
 from googleapiclient.discovery import Resource
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 
 from pygsuite.auth.authorization import Clients
 from pygsuite.common.parsing import parse_id
@@ -58,35 +59,88 @@ class File:
         self.client = client or Clients.drive_client
 
     @classmethod
+    def create(
+        cls,
+        name: Optional[str] = None,
+        mimetype: Optional[str] = None,
+        body: Optional[dict] = None,
+        media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
+        client: Optional[Resource] = None,
+    ):
+        """Create a new file in Google Drive.
+
+        Args:
+            name (str): Name of the file.
+            mimetype (str): Specified type of the file to create.
+            body (dict): Request body, if not provided, one is created with `name` and `mimetype` params.
+            media_body (BytesIO, MediaFileUpload, MediaIoBaseUpload): Content for the file.
+            client (Resource): client connection to the Drive API.
+        """
+
+        # establish a client
+        client = client or Clients.drive_client
+
+        # create request body
+        body = {"name": name, "mimeType": mimetype} if not body else body
+
+        # handle media conversion for bytes-like objects
+        if isinstance(media_body, BytesIO):
+            # if a mimetype is not provided, find best match
+            if not mimetype:
+                import magic
+                mimetype = magic.from_buffer(media_body.read())
+
+            media_body = MediaIoBaseUpload(fd=media_body, mimetype=mimetype)
+
+        # execute files.create request and return File object
+        file = (
+            client.files()
+            .create(
+                body=body,
+                media_body=media_body,
+                fields="id",
+            )
+            .execute()
+        )
+
+        return File(id=file.get("id"), client=client)
+
+    @classmethod
     def upload(
         cls,
         filepath: str,
         name: Optional[str] = None,
+        mimetype: Optional[str] = None,
         convert_to: Optional[Union[str, GoogleDocFormat]] = None,
         client: Optional[Resource] = None,
     ):
         """Method to upload a local file to Google Drive.
 
         Args:
-            filepath (str): Filepath of the file to upload
-            name (str): Name of the file in Google Drive once uploaded
-            convert (bool): Convert the upload file into a Google App file (e.g. CSV -> Google Sheet)
+            filepath (str): Filepath of the file to upload.
+            name (str): Name of the file in Google Drive once uploaded.
+            mimetype (str): Specified type of the file to create. mimetype is automatically determined if not specified.
+            convert_to (str, GoogleDocFormat): Convert the upload file into a Google App file (e.g. CSV -> Google Sheet)
+            client (Resource): client connection to the Drive API.
         """
         # establish a client
         client = client or Clients.drive_client
 
         # get upload file size
         filesize = os.path.getsize(filepath)
+
+        # establish if the upload should be resumable
+        # TODO: expand upon this and determine how this should work for users
         if filesize > DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE:
-            # TODO: do something for resumable uploads
             resumable = True
+        else:
+            resumable = False
 
         # get filename and extension
         _, extension = os.path.splitext(filepath)
 
         # name of the file in Drive
         name = name if name else os.path.basename(filepath)
-        file_metadata = {"name": name}
 
         if convert_to:
             # try to coerce str into a GoogleDocFormat
@@ -101,20 +155,25 @@ class File:
             # find the corresponding mime type of the extension of the upload file
             try:
                 mimetype = FILE_MIME_TYPE_MAP[convert_to][extension.lower()]
-                file_metadata["mimeType"] = mimetype
             except Exception as e:
                 raise ValueError(
                     f"File extension {extension.lower()} is not supported with the Google Document type {convert_to.value}"
                 ) from e
-        else:
-            mimetype = None
 
-        media = MediaFileUpload(filename=filepath, mimetype=mimetype, chunksize=-1)
+        media_body = MediaFileUpload(
+            filename=filepath, mimetype=mimetype, chunksize=-1, resumable=resumable
+        )
 
-        file = client.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields="id",
-        ).execute()
+        file = cls.create(
+            name=name,
+            mimetype=mimetype,
+            media_body=media_body,
+            client=client,
+        )
 
-        return File(id=file.get("id"), client=client)
+        return file
+
+    def delete(self):
+        """Permanently deletes a file owned by the user without moving it to the trash."""
+
+        self.client.files().delete(fileId=self.id).execute()
