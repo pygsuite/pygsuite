@@ -1,4 +1,5 @@
 from io import BytesIO
+import logging
 import os
 from typing import Optional, Union
 
@@ -87,8 +88,9 @@ class File:
         if isinstance(media_body, BytesIO):
             # if a mimetype is not provided, find best match
             if not mimetype:
-                import magic
+                logging.warning("No mimetype specified, attempting to determine one.")
 
+                import magic
                 mimetype = magic.from_buffer(media_body.read())
 
             media_body = MediaIoBaseUpload(fd=media_body, mimetype=mimetype)
