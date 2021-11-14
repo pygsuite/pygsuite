@@ -59,6 +59,9 @@ class File:
         self.id = parse_id(id) if id else None
         self.client = client or Clients.drive_client
 
+        # cache the metadata
+        self._metadata = None
+
     @classmethod
     def create(
         cls,
@@ -175,6 +178,41 @@ class File:
         )
 
         return file
+
+    @property
+    def metadata(self, cache: bool = True) -> dict:
+        """Metadata for the file, based on the files.get method.
+
+        Args:
+            cache (bool): whether to first look at the cached metadata.
+        """
+
+        # see if we have cached the file metadata already
+        if (self._metadata is None or cache is False):
+
+            self._metadata = (
+                self.client.files()
+                .get(
+                    fileId=self.id,
+                )
+            ).execute()
+
+        return self._metadata
+
+    @property
+    def kind(self):
+
+        return self.metadata.get("kind")
+
+    @property
+    def name(self):
+
+        return self.metadata.get("name")
+
+    @property
+    def mimetype(self):
+
+        return self.metadata.get("mimeType")
 
     def delete(self):
         """Permanently deletes a file owned by the user without moving it to the trash."""
