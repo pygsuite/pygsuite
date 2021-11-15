@@ -181,30 +181,52 @@ class File:
 
     def fetch_metadata(
         self,
-        fields: List[str] = ["id", "kind", "name", "mimeType"],
         cache: bool = True,
+        fields: Optional[List[str]] = None,
     ) -> dict:
         """Metadata for the file, based on the files.get method.
-        Default fields include kind, name, and mimetype.
-        Additional fields available are found here:
+        Default fields include kind, name, and mimetype. Additional fields available are found here:
         https://googleapis.github.io/google-api-python-client/docs/dyn/drive_v3.files.html#get
 
         Args:
             cache (bool): whether to first look at the cached metadata.
+            fields (Optional[List[str]]): list of fields to return. Use ["*"] to return all.
         """
 
+        # we cannot use the cache if there is none
+        if self._metadata is None:
+            cache = False
+
+        # default fields to fetch, needed by default properties
+        if fields is None:
+            fields = ["id", "kind", "name", "mimeType"]
+
+        metadata = {}
+
         # see if we have cached the file metadata already
-        if (self._metadata is None or cache is False):
+        if cache is True:
+            try:
+                for field in fields:
+                    metadata[field] = self._metadata[field]
 
-            self._metadata = (
-                self.client.files()
-                .get(
-                    fileId=self.id,
-                    fields=f"{', '.join(fields)}",
-                )
-            ).execute()
+                return metadata
 
-        return self._metadata
+            # if we cannot find a field, we need to fetch the metadata again
+            except KeyError:
+                pass
+
+        self._metadata = (
+            self.client.files()
+            .get(
+                fileId=self.id,
+                fields=f"{', '.join(fields)}",
+            )
+        ).execute()
+
+        for field in fields:
+            metadata[field] = self._metadata[field]
+
+        return metadata
 
     @property
     def kind(self):
