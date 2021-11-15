@@ -209,17 +209,17 @@ class File:
     @property
     def kind(self):
 
-        return self.metadata().get("kind")
+        return self.fetch_metadata().get("kind")
 
     @property
     def name(self):
 
-        return self.metadata().get("name")
+        return self.fetch_metadata().get("name")
 
     @property
     def mimetype(self):
 
-        return self.metadata().get("mimeType")
+        return self.fetch_metadata().get("mimeType")
 
     def share(self):
 
