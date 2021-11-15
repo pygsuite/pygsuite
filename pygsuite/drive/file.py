@@ -255,9 +255,18 @@ class File:
         user: Optional[str] = None,
         group: Optional[str] = None,
         domain: Optional[str] = None,
-        everyone: bool = False,
+        anyone: bool = False,
     ):
         """Share the object with a provided permission with a user, group, domain, or everyone.
+        More information on operations by role here:
+        https://developers.google.com/drive/api/v3/ref-roles
+
+        Args:
+            role (PermissionType): role identifying operations that can be performed.
+            user (Optional[str]): a user to share the file with.
+            group (Optional[str]): a group to share the file with.
+            domain (Optional[str]): a domain for a given permission role.
+            anyone (bool): make the file accessible to anyone.
         """
 
         permissions: List[dict] = []
@@ -270,8 +279,8 @@ class File:
             permissions.append({"role": role.value, "type": "group", "emailAddress": group})
         if domain:
             permissions.append({"role": role.value, "type": "domain", "domain": domain})
-        if everyone:
-            permissions.append({"role": role.value, "type": "everyone"})
+        if anyone:
+            permissions.append({"role": role.value, "type": "anyone"})
         for permission in permissions:
             self.client.permissions().create(
                 fileId=self.id, body=permission, supportsAllDrives=True
