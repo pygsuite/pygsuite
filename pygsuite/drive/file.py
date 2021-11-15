@@ -95,6 +95,7 @@ class File:
                 logging.warning("No mimetype specified, attempting to determine one.")
 
                 import magic
+
                 mimetype = magic.from_buffer(media_body.read())
 
             media_body = MediaIoBaseUpload(fd=media_body, mimetype=mimetype)
@@ -214,8 +215,7 @@ class File:
                 pass
 
         self._metadata = (
-            self.client.files()
-            .get(
+            self.client.files().get(
                 fileId=self.id,
                 fields=f"{', '.join(fields)}",
             )
