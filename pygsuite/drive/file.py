@@ -137,10 +137,7 @@ class File:
 
         # establish if the upload should be resumable
         # TODO: expand upon this and determine how this should work for users
-        if filesize > DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE:
-            resumable = True
-        else:
-            resumable = False
+        resumable = filesize > DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE
 
         # get filename and extension
         _, extension = os.path.splitext(filepath)
