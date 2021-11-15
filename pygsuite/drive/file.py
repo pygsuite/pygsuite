@@ -7,9 +7,10 @@ from googleapiclient.discovery import Resource
 from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 
 from pygsuite.auth.authorization import Clients
+from pygsuite.common.comment import Comment
 from pygsuite.common.parsing import parse_id
 from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE
-from pygsuite.enums import GoogleDocFormat
+from pygsuite.enums import GoogleDocFormat, PermissionType
 
 
 FILE_MIME_TYPE_MAP = {
@@ -240,9 +241,41 @@ class File:
 
         return self.fetch_metadata().get("mimeType")
 
-    def share(self):
+    @property
+    def comments(self) -> List[Comment]:
 
-        raise NotImplementedError
+        return [
+            Comment(item)
+            for item in self.client.comments().list(fileId=self.id).execute().get("items", [])
+        ]
+
+    def share(
+        self,
+        role: PermissionType,
+        user: Optional[str] = None,
+        group: Optional[str] = None,
+        domain: Optional[str] = None,
+        everyone: bool = False,
+    ):
+        """Share the object with a provided permission with a user, group, domain, or everyone.
+        """
+
+        permissions: List[dict] = []
+
+        role = PermissionType(role)
+
+        if user:
+            permissions.append({"role": role.value, "type": "user", "emailAddress": user})
+        if group:
+            permissions.append({"role": role.value, "type": "group", "emailAddress": group})
+        if domain:
+            permissions.append({"role": role.value, "type": "domain", "domain": domain})
+        if everyone:
+            permissions.append({"role": role.value, "type": "everyone"})
+        for permission in permissions:
+            self.client.permissions().create(
+                fileId=self.id, body=permission, supportsAllDrives=True
+            ).execute()
 
     def delete(self):
         """Permanently deletes a file owned by the user without moving it to the trash."""
