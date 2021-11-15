@@ -1,7 +1,7 @@
 from io import BytesIO
 import logging
 import os
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from googleapiclient.discovery import Resource
 from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
@@ -179,9 +179,15 @@ class File:
 
         return file
 
-    @property
-    def metadata(self, cache: bool = True) -> dict:
+    def fetch_metadata(
+        self,
+        fields: List[str] = ["id", "kind", "name", "mimeType"],
+        cache: bool = True,
+    ) -> dict:
         """Metadata for the file, based on the files.get method.
+        Default fields include kind, name, and mimetype.
+        Additional fields available are found here:
+        https://googleapis.github.io/google-api-python-client/docs/dyn/drive_v3.files.html#get
 
         Args:
             cache (bool): whether to first look at the cached metadata.
@@ -194,6 +200,7 @@ class File:
                 self.client.files()
                 .get(
                     fileId=self.id,
+                    fields=f"{', '.join(fields)}",
                 )
             ).execute()
 
@@ -202,17 +209,21 @@ class File:
     @property
     def kind(self):
 
-        return self.metadata.get("kind")
+        return self.metadata().get("kind")
 
     @property
     def name(self):
 
-        return self.metadata.get("name")
+        return self.metadata().get("name")
 
     @property
     def mimetype(self):
 
-        return self.metadata.get("mimeType")
+        return self.metadata().get("mimeType")
+
+    def share(self):
+
+        raise NotImplementedError
 
     def delete(self):
         """Permanently deletes a file owned by the user without moving it to the trash."""

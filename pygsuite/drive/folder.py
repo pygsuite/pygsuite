@@ -56,7 +56,3 @@ class Folder:
             page_token = response.get("nextPageToken", None)
 
         return files
-
-    def find(self):
-
-        raise NotImplementedError
