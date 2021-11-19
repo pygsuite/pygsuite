@@ -5,8 +5,8 @@ class BaseParagraphElement(object):
 
     @property
     def start_index(self) -> int:
-        return self._element.get("startIndex")
+        return int(self._element.get("startIndex", 0))
 
     @property
     def end_index(self) -> int:
-        return self._element.get("endIndex")
+        return int(self._element.get("endIndex", 0))

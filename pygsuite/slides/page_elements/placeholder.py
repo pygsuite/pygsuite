@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 
 @dataclass
 class Placeholder:
     base: Dict
-    type: str = None
-    index: int = None
-    parent_id: str = None
+    type: Optional[str] = None
+    index: Optional[int] = None
+    parent_id: Optional[str] = None
 
     def __post_init__(self):
         self.type = self.base.get("type")

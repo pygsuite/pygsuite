@@ -45,7 +45,7 @@ class TextRun(BaseParagraphElement):
         return TextStyle.from_doc_style(self._detail.get("textStyle"))
 
     @style.setter
-    def style(self, style: TextStyle = None):
+    def style(self, style: TextStyle):
         fields, style = style.to_doc_style()
         self._document._mutation(
             [

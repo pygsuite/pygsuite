@@ -45,11 +45,12 @@ class ImageUploader:
 
     def _generate_client(self, info: Union[Dict, str]) -> Tuple[Client, str]:
         if not isinstance(info, dict):
-            info = json.loads(info)
-
+            info_dict = json.loads(info)
+        else:
+            info_dict = info
         # The type key should indicate that the file is either a service account
         # credentials file or an authorized user credentials file.
-        credential_type = info.get("type")
+        credential_type = info_dict.get("type")
         if credential_type != _SERVICE_ACCOUNT_TYPE:
             raise ValueError(
                 f'Invalid credential type "{credential_type}". Generating signed URLs requires a service account with appropriate permissions.'
@@ -57,7 +58,9 @@ class ImageUploader:
 
         from google.oauth2 import service_account
 
-        return service_account.Credentials.from_service_account_info(info), info.get("project_id")
+        return service_account.Credentials.from_service_account_info(info_dict), info_dict.get(
+            "project_id"
+        )
 
     def _get_signed_url(self, obj: str):
         return generate_download_signed_url_v4(self.bucket, obj, self.timeout)

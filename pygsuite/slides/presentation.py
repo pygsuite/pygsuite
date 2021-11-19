@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 from googleapiclient.errors import HttpError
 
@@ -69,7 +69,7 @@ class Presentation(DriveObject):
     def slides(self):
         return [Slide(slide, self) for slide in self._presentation.get("slides")]
 
-    def get_slide(self, id: str):
+    def get_slide(self, id: str) -> Slide:
         return Slide.from_id(id, self)
 
     @property
@@ -92,9 +92,9 @@ class Presentation(DriveObject):
         self,
         layout: Union[str, Layout] = None,
         placeholders: Dict = None,
-        index: int = None,
-        flush=False,
-    ) -> str:
+        index: Optional[int] = None,
+        flush: bool = False,
+    ) -> Optional[Slide]:
         base = {}
         placeholder_mappings = []
         if layout:
@@ -123,6 +123,7 @@ class Presentation(DriveObject):
         out = self._mutation([reqs], flush=flush)
         if flush:
             return self.get_slide(out[base_idx]["createSlide"]["objectId"])
+        return None
         # self.refresh()
         # return self.get_slide(created)
 

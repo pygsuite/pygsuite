@@ -39,10 +39,10 @@ def doc_link_to_link(info: dict):
 @dataclass
 class Color:
     hex: Optional[str] = None
-    red: float = None
-    blue: float = None
-    green: float = None
-    alpha: float = None
+    red: Optional[float] = None
+    blue: Optional[float] = None
+    green: Optional[float] = None
+    alpha: Optional[float] = None
 
     @classmethod
     def parse(cls, item: Any):
@@ -50,7 +50,7 @@ class Color:
             return item
         elif isinstance(item, str):
             return Color(item)
-        elif isinstance(item, Tuple):
+        elif isinstance(item, tuple):
             return Color(None, *item)
         elif not item:
             return None
@@ -100,11 +100,11 @@ class TextStyle:
     strikethrough: Optional[bool] = None
     small_caps: Optional[bool] = None
     underline: Optional[bool] = None
-    link: str = None
+    link: Optional[str] = None
     font_unit: Optional[str] = "PT"
 
     def to_doc_style(self) -> Tuple[str, Dict]:  # noqa: C901
-        base = {}
+        base: Dict[str, Union[bool, str, int, dict]] = {}
         masks = []
         if self.font_size is not None:
             base["fontSize"] = {"magnitude": self.font_size, "unit": "PT"}
@@ -130,13 +130,13 @@ class TextStyle:
         if self.font is not None:
             if not base.get("weightedFontFamily"):
                 base["weightedFontFamily"] = {}
-            base["weightedFontFamily"]["fontFamily"] = self.font
+            base["weightedFontFamily"]["fontFamily"] = self.font  # type: ignore
             masks.append("weightedFontFamily.fontFamily")
         if self.font_weight is not None:
             if not base.get("weightedFontFamily"):
                 base["weightedFontFamily"] = {}
-                base["weightedFontFamily"]["fontFamily"] = "Arial"
-            base["weightedFontFamily"]["weight"] = self.font_weight
+                base["weightedFontFamily"]["fontFamily"] = "Arial"  # type: ignore
+            base["weightedFontFamily"]["weight"] = self.font_weight  # type: ignore
             masks.append("weightedFontFamily.fontFamily")
             masks.append("weightedFontFamily.weight")
 
@@ -144,7 +144,7 @@ class TextStyle:
 
     def to_sheet_style(self) -> Tuple[list, Dict]:  # noqa: C901
 
-        base = {}
+        base: Dict[str, Union[str, bool, int, dict]] = {}
         masks = []
 
         if self.font_size is not None:
