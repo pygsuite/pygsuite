@@ -81,8 +81,8 @@ class Paragraph(BaseElement):
         return TextStyle.from_doc_style(self._paragraph.get("paragraphStyle"))
 
     @style.setter
-    def style(self, style: ParagraphStyle = None):
-        fields, style = style.to_doc_style("paragraph")
+    def style(self, style: ParagraphStyle):
+        fields, style = style.to_doc_style()
         self._document._mutation(
             [
                 {

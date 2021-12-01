@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pygsuite.common.style import Color
 from pygsuite.slides.page_elements.common import Text
 from .base_element import BaseElement
+from typing import Optional
 
 
 @dataclass
@@ -13,11 +14,11 @@ class BackgroundFill:
 
 @dataclass
 class ShapeProperties:
-    shape_background_fill: Color = None
-    outline: str = None
-    shadow: str = None
-    link: str = None
-    content_alignment: str = None
+    shape_background_fill: Optional[Color] = None
+    outline: Optional[str] = None
+    shadow: Optional[str] = None
+    link: Optional[str] = None
+    content_alignment: Optional[str] = None
 
     # def __post_init__(self):
     #     if isinstance(self.shape_background_fill):
@@ -27,11 +28,11 @@ class ShapeProperties:
         if not info:
             return ShapeProperties()
         return ShapeProperties(
-            info.get("shapeBackgroundFill"),
-            info.get("outline"),
-            info.get("shadow"),
-            info.get("link"),
-            info.get("contentAlignment"),
+            info.get("shapeBackgroundFill"),  # type: ignore
+            info.get("outline"),  # type: ignore
+            info.get("shadow"),  # type: ignore
+            info.get("link"),  # type: ignore
+            info.get("contentAlignment"),  # type: ignore
         )
 
     def to_api_repr(self):

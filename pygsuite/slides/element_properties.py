@@ -76,6 +76,10 @@ class ElementProperties:
 
         return base
 
+    @property
+    def base_width(self):
+        return SLIDE_WIDTH
 
-ElementProperties.base_width = SLIDE_WIDTH
-ElementProperties.base_height = SLIDE_HEIGHT
+    @property
+    def base_height(self):
+        return SLIDE_HEIGHT

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict
 
 import pandas as pd
 from googleapiclient.discovery import Resource
@@ -84,6 +84,30 @@ def create_new_spreadsheet(title: str, client: Optional[Resource] = None):
     return Spreadsheet(client=service, id=id)
 
 
+class ValueResponse(list):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def to_list(self):
+        return list(self)
+
+    def to_df(self, header: bool):
+        """Method to use with self.get_values_from_range(self, cell_range) to return a pandas.DataFrame of values.
+
+        Returns:
+            df (pd.DataFrame): A pandas.DataFrame of the cell data gotten from get_values_from_range()
+        """
+        if header:
+            header = self[0]
+            records = self[1:]
+            df = pd.DataFrame.from_records(data=records, columns=header)
+        else:
+            records = self
+            df = pd.DataFrame.from_records(data=records)
+
+        return df
+
+
 class Spreadsheet(DriveObject):
     """Base class for the GSuite Spreadsheets API."""
 
@@ -109,8 +133,8 @@ class Spreadsheet(DriveObject):
         self._properties = self._spreadsheet.get("properties")
 
         # queues to add to and run in flush()
-        self._spreadsheets_update_queue = []
-        self._values_update_queue = []
+        self._spreadsheets_update_queue: List[Dict] = []
+        self._values_update_queue: List[Dict] = []
 
     @classmethod
     def create_new(cls, title: str, client=None):
@@ -174,8 +198,8 @@ class Spreadsheet(DriveObject):
         """
 
         if reverse:
-            _spreadsheets_update_queue = reversed(self._spreadsheets_update_queue)
-            _values_update_queue = reversed(self._values_update_queue)
+            _spreadsheets_update_queue = list(reversed(self._spreadsheets_update_queue))
+            _values_update_queue = list(reversed(self._values_update_queue))
         else:
             _spreadsheets_update_queue = self._spreadsheets_update_queue
             _values_update_queue = self._values_update_queue
@@ -220,12 +244,27 @@ class Spreadsheet(DriveObject):
         sheet_properties = sheet_properties or SheetProperties(**kwargs)
         base = {"addSheet": {"properties": sheet_properties.to_json()}}
         self._spreadsheets_update_queue.append(base)
-
         return self
+
+    def create_and_return_sheet(
+        self, sheet_properties: Optional[SheetProperties] = None, **kwargs
+    ) -> "Worksheet":
+        before = [sheet.name for sheet in self.worksheets]
+        self.create_sheet(sheet_properties=sheet_properties, **kwargs)
+        self.flush()
+        try:
+            new = [sheet.name for sheet in self.worksheets if sheet.name not in before][0]
+        except IndexError:
+            raise ValueError("Error creating new sheet!")
+        return self[new]
 
     def update_sheet(self, worksheet, sheet_properties):
 
         pass
+
+    def clear_range(self, range: str):
+        self.service.spreadsheets().values().clear(spreadsheetId=self.id, range=range).execute()
+        return self
 
     def delete_sheet(self, title: Optional[str] = None, id: Optional[int] = None):
         """Method to delete a sheet by the title or id.
@@ -248,8 +287,9 @@ class Spreadsheet(DriveObject):
 
         return self
 
-    def get_values_from_range(self, cell_range: str):
-        """Method to get data from a Spreadsheet range.
+    def get_values_from_range(self, cell_range: str) -> ValueResponse:
+        """Method to get data from a Spreadsheet range. Returns a value object which can be chained
+        to a dataframe or list.
 
         Args:
             cell_range (str): The range of cells for which to get data.
@@ -266,43 +306,24 @@ class Spreadsheet(DriveObject):
         )
 
         value_range = get_response.get("valueRanges")[0]  # TODO: cleanup
-        values = value_range.get("values")
+        values = value_range.get("values", [])
+        return ValueResponse(values)
 
-        self._values = values
-
-        return self
-
-    def to_list(
-        self,
-    ) -> list:
-        """Method to use with self.get_values_from_range(self, cell_range) to return a list of values.
+    def to_list(self, cell_range: str) -> list:
+        """Method to use to return a list of values.
 
         Returns:
             self._values (list): A list of the cell data gotten from get_values_from_range()
         """
+        return self.get_values_from_range(cell_range=cell_range)
 
-        assert len(self._values) > 0
-
-        return self._values
-
-    def to_df(self, header: bool = True) -> pd.DataFrame:
-        """Method to use with self.get_values_from_range(self, cell_range) to return a pandas.DataFrame of values.
+    def to_df(self, cell_range: str, header: bool = True) -> pd.DataFrame:
+        """Method to use to return a pandas.DataFrame of values.
 
         Returns:
             df (pd.DataFrame): A pandas.DataFrame of the cell data gotten from get_values_from_range()
         """
-
-        assert len(self._values) > 0
-
-        if header:
-            header = self._values[0]
-            records = self._values[1:]
-            df = pd.DataFrame.from_records(data=records, columns=header)
-        else:
-            records = self._values
-            df = pd.DataFrame.from_records(data=records)
-
-        return df
+        return self.get_values_from_range(cell_range=cell_range).to_df(header=header)
 
     def insert_data(
         self, insert_range: str, values: list, major_dimension: Dimension = Dimension.ROWS

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 from pygsuite.common.style import Color, TextStyle
 
@@ -52,7 +52,7 @@ class CellFormat:
 
     def to_json(self) -> Tuple[list, Dict]:  # noqa: C901
 
-        base = {}
+        base: Dict[str, Union[str, int, dict, Color]] = {}
         fields_mask = []
 
         if self.number_format is not None:
@@ -112,7 +112,7 @@ class Cell:
 
     def to_json(self) -> Tuple[str, Dict]:  # noqa: C901
 
-        base = {}
+        base: Dict[str, Union[str, dict, int]] = {}
         fields_mask = []
 
         if self.user_entered_value is not None:
