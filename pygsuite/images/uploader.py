@@ -1,9 +1,11 @@
 import datetime
 import json
+from typing import TYPE_CHECKING
 from typing import Union, Dict, Tuple
 from uuid import uuid4
 
-from google.cloud.storage import Client
+if TYPE_CHECKING:
+    from google.cloud.storage import Client
 
 _SERVICE_ACCOUNT_TYPE = "service_account"
 
@@ -31,7 +33,9 @@ def generate_download_signed_url_v4(bucket, blob_name: str, timeout: int = 15):
 
 
 class ImageUploader:
-    def __init__(self, bucket: str, account_info: Union[Client, str, Dict], timeout: int = 15):
+    def __init__(self, bucket: str, account_info: Union["Client", str, Dict], timeout: int = 15):
+        from google.cloud.storage import Client
+
         self.account_info = account_info
         self.timeout = timeout
         self._client, self._project = (
@@ -43,7 +47,7 @@ class ImageUploader:
         self.client = Client(credentials=self._client, project=self._project)
         self.bucket = self.client.bucket(bucket)
 
-    def _generate_client(self, info: Union[Dict, str]) -> Tuple[Client, str]:
+    def _generate_client(self, info: Union[Dict, str]) -> Tuple["Client", str]:
         if not isinstance(info, dict):
             info_dict = json.loads(info)
         else:
