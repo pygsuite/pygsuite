@@ -47,7 +47,7 @@ class ImageUploader:
         self.client = Client(credentials=self._client, project=self._project)
         self.bucket = self.client.bucket(bucket)
 
-    def _generate_client(self, info: Union[Dict, str]) -> Tuple[Client, str]:
+    def _generate_client(self, info: Union[Dict, str]) -> Tuple["Client", str]:
         if not isinstance(info, dict):
             info_dict = json.loads(info)
         else:
