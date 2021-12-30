@@ -13,12 +13,10 @@ _SERVICE_ACCOUNT_TYPE = "service_account"
 def generate_download_signed_url_v4(bucket, blob_name: str, timeout: int = 15):
     """Generates a v4 signed URL for downloading a blob.
 
-    Note that this method requires a service account key file. You can not use
+    Note that this method requires a service account key file. You cannot use
     this if you are using Application Default Credentials from Google Compute
     Engine or from the Google Cloud SDK.
     """
-    # bucket_name = 'your-bucket-name'
-    # blob_name = 'your-object-name'
 
     blob = bucket.blob(blob_name)
 

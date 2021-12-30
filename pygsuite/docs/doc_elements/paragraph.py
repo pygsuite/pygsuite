@@ -82,7 +82,7 @@ class Paragraph(BaseElement):
 
     @style.setter
     def style(self, style: ParagraphStyle):
-        fields, style = style.to_doc_style()
+        fields, style_dict = style.to_doc_style()
         self._document._mutation(
             [
                 {
@@ -91,7 +91,7 @@ class Paragraph(BaseElement):
                             "startIndex": self.start_index,
                             "endIndex": self.end_index - 1 if self._last else self.end_index,
                         },
-                        "paragraphStyle": style,
+                        "paragraphStyle": style_dict,
                         "fields": fields,
                     }
                 }

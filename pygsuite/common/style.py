@@ -256,7 +256,7 @@ class Border:
         "LINK",
     ]
 
-    position: str
+    position: BorderPosition
     style: BorderStyle
     color: Color
     color_style: Optional[Union[str, Color]] = None
