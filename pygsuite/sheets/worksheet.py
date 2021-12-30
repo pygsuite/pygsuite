@@ -91,7 +91,7 @@ class Worksheet(object):
     def dataframe(self):
 
         worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
-        df = self._spreadsheet.get_values_from_range(worksheet_range).to_df()
+        df = self._spreadsheet.get_values_from_range(worksheet_range).to_df(header=True)
         return df
 
     def format_borders(

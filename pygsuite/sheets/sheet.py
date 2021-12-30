@@ -280,7 +280,7 @@ class Spreadsheet(DriveObject):
         # if an id is not given, title must be given; get id from title
         if not id:
             assert title is not None
-            id = self.__getitem__(key=title).id
+            id = self[title].id
 
         base = {"deleteSheet": {"sheetId": id}}
         self._spreadsheets_update_queue.append(base)

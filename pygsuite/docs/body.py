@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 from pygsuite.common.style import TextStyle
 from pygsuite.docs.doc_elements.paragraph import Paragraph
@@ -24,6 +24,10 @@ class Body(object):
             for idx, element in enumerate(self._body.get("content"))
         ]
 
+    @content.setter
+    def content(self, x):
+        self._body["content"] = x
+
     @property
     def paragraphs(self) -> List[Paragraph]:
         return [item for item in self.content if isinstance(item, Paragraph)]
@@ -34,11 +38,7 @@ class Body(object):
             object.delete()
         if flush:
             self._document.flush()
-        self.content = []
-
-    @content.setter
-    def content(self, x):
-        self._body["content"] = x
+        self.content = []  # type: ignore
 
     @property
     def start_index(self):
@@ -85,7 +85,7 @@ class Body(object):
             # We could get the size of each pending object, track it, and infer the appropriate style index
             # without flushing
             self._document.flush()
-        message = {"insertText": {"text": text}}
+        message: Dict[str, Dict[str, Any]] = {"insertText": {"text": text}}
         if position is not None:
             message["insertText"]["location"] = {"index": position}
         else:
@@ -101,12 +101,12 @@ class Body(object):
                     start = self.content[-1].end_index - 1
 
             end = start + len(text)
-            fields, style = style.to_doc_style()
+            fields, style_dict = style.to_doc_style()
             queued.append(
                 {
                     "updateTextStyle": {
                         "range": {"startIndex": start, "endIndex": end},
-                        "textStyle": style,
+                        "textStyle": style_dict,
                         "fields": fields,
                     }
                 }
@@ -141,10 +141,10 @@ class Body(object):
 
     def style(self, style: TextStyle, start: int, end: int):
         # TODO: finish this method
-        fields, style = style.to_doc_style()
+        fields, style_dict = style.to_doc_style()
         message = {
             "updateTextStyle": {
-                "textStyle": style,
+                "textStyle": style_dict,
                 "range": {"startIndex": start, "endIndex": end},
                 "fields": fields,
             }

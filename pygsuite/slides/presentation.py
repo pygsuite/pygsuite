@@ -1,4 +1,4 @@
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, Any
 
 from googleapiclient.errors import HttpError
 
@@ -95,7 +95,7 @@ class Presentation(DriveObject):
         index: Optional[int] = None,
         flush: bool = False,
     ) -> Optional[Slide]:
-        base = {}
+        base: Dict[str, Any] = {}
         placeholder_mappings = []
         if layout:
             if isinstance(layout, Layout):
@@ -106,7 +106,7 @@ class Presentation(DriveObject):
         if not index is None:  # noqa: E714
             base["insertionIndex"] = index
         if placeholders is not None:
-            if not layout:
+            if not isinstance(layout, Layout):
                 raise ValueError("Cannot pass placeholders without a reference layout!")
             placeholder_mappings = [
                 layout.build_reference_map(key, val) for key, val in placeholders.items()
