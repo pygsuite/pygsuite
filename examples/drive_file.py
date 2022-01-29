@@ -42,5 +42,5 @@ print(sheets_file.id)
 
 # delete the test files
 text_file.delete()
-image_file.delete()
+# image_file.delete()
 sheets_file.delete()

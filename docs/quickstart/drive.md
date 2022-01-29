@@ -149,7 +149,22 @@ all_fields = image.fetch_metadata(fields=["*"])
 
 ## Sharing files
 
-Coming soon!
+Updating permissions is easily done using the `share` method for a given user, group, domain, or everyone:
+
+```python
+from pygsuite.drive import File
+from pygsuite.enums import PermissionType
+
+
+image = File(id="1TfNFLx9eHRIZoGupQ7S_n91kQjvXn5eM")
+image.share(role=PermissionType.WRITER, user="test@gmail.com")
+```
+
+The `share` method takes inputs of the _type_, identifying the scope of the permission, and the _role_, identifying the operations that the _type_ can perform. Options for the _type_ include `user`, `group`, `domain`, `anyone` (represented by their corresponding parameters in the method), and options for the _role_ are represented by the `PermissionType` enumeration and include `PermissionType.OWNER`, `PermissionType.ORGANIZER`, `PermissionType.FILE_ORGANIZER`, `PermissionType.WRITER`, `PermissionType.COMMENTER`, `PermissionType.READER`. For more information on what operations a given role can perform, [see the documentation on roles here](https://developers.google.com/drive/api/v3/ref-roles).
+
+A full email address should be provided for the `type` if sharing with a user or group, as in the example above: `user="test@gmail.com"`.
+
+To share a file with anyone, simply set `anyone=True`.
 
 ## Downloading files
 
