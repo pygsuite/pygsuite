@@ -8,7 +8,7 @@ from googleapiclient.errors import HttpError
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
 from pygsuite.drive.file import File
-from pygsuite.enums import GoogleMimeTypes
+from pygsuite.enums import GoogleMimeType
 from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
@@ -111,7 +111,7 @@ class ValueResponse(list):
 class Spreadsheet(File):
     """Base class for the GSuite Spreadsheets API."""
 
-    mimetype = GoogleMimeTypes.SHEETS
+    mimetype = GoogleMimeType.SHEETS
 
     def __init__(self, id: str, client: Optional[Resource] = None):
         """Method to initialize the class.

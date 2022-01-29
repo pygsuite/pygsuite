@@ -1,11 +1,11 @@
-from typing import Optional
+from typing import Optional, Union
 
 from googleapiclient.discovery import Resource
 
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
 from pygsuite.drive.file import File
-from pygsuite.drive.query import Operator, QueryString, QueryTerm
+from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
 
 
 class Folder:
@@ -16,13 +16,33 @@ class Folder:
         self.id = parse_id(id) if id else None
         self.client = client or Clients.drive_client
 
-    @property
-    def files(self):
+    def get_files(
+        self,
+        extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
+        support_all_drives: bool = False,
+    ):
+        """The files in a given folder. If no folder ID is given in the instance,
+        a recursive search is performed from the Drive root.
 
+        Args:
+            extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
+            support_all_drives (bool): Whether the requesting application supports both My Drives and shared drives.
+        """
+        query = None
         files = []
         page_token = None
 
-        query = QueryString(QueryTerm.PARENTS, Operator.IN, self.id).formatted
+        if self.id:
+            query = QueryString(QueryTerm.PARENTS, Operator.IN, self.id)
+
+        if extra_conditions:
+            query = (
+                QueryStringGroup([query, extra_conditions])
+                if query is not None
+                else extra_conditions
+            )
+
+        query = query.formatted if query else query
 
         response = (
             self.client.files()
@@ -31,9 +51,12 @@ class Folder:
                 spaces="drive",
                 fields="nextPageToken, files(id, name)",
                 pageToken=page_token,
+                supportsAllDrives=support_all_drives,
+                includeItemsFromAllDrives=support_all_drives,
             )
             .execute()
         )
+        print(f"RESPONSE:\n{response}")
 
         for file in response.get("files", []):
             files.append(File(file.get("id")))

@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import Optional, Union
 
 from pygsuite import Clients
-from pygsuite.enums import PermissionType, UserType
+from pygsuite.drive.folder import Folder
+from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
+from pygsuite.enums import GoogleMimeType, PermissionType, UserType
+
 
 DRIVE_V3_API_URL = "https://www.googleapis.com/drive/v3/files"
 
@@ -19,18 +22,60 @@ class Drive:
         client = client or Clients.drive_client_v3
         self.service = client
 
-    # def find_files(self, type: FileTypes, name: Optional[str] = None):
-    #     q = f'mimeType="{type}"'
-    #     if name:
-    #         q += f' and name = "{name}"'
-    #     base = self.service.files().list(q=q).execute()
-    #     files = base.get("files")
-    #     page_token = base.get("nextPageToken")
-    #     while page_token is not None:
-    #         base = self.service.files().list(q=q, page_token=page_token).execute()
-    #         files += base.get("files")
-    #         page_token = base.get("nextPageToken")
-    #     return files
+    def _find_files(self, type: GoogleMimeType, name: Optional[str] = None):
+        q = f'mimeType="{type}"'
+        if name:
+            q += f' and name = "{name}"'
+        base = self.service.files().list(q=q).execute()
+        files = base.get("files")
+        page_token = base.get("nextPageToken")
+        while page_token is not None:
+            base = self.service.files().list(q=q, page_token=page_token).execute()
+            files += base.get("files")
+            page_token = base.get("nextPageToken")
+        return files
+
+    def find_files(
+        self,
+        folder_id: Optional[str] = None,
+        title: Optional[str] = None,
+        exact_match: bool = True,
+        type: Optional[Union[GoogleMimeType, str]] = None,
+        extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
+        support_all_drives: bool = False,
+    ):
+        """Find matching files given certain criteria.
+
+        Args:
+            folder_id (str): The folder ID to search within. If none is provided, a recursive search of all folders is performed.
+            title (str): The case-sensitive title of the file to search for.
+            exact_match (bool): Whether to only match the given title exactly, or return any title containing the string.
+            type (Union[GoogleMimeType, str]): A specific Google Docs type to match.
+            extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
+            support_all_drives (bool): Whether the requesting application supports both My Drives and shared drives.
+        """
+        query = None
+
+        # title match query
+        if title:
+            operator = Operator.EQUAL if exact_match else Operator.CONTAINS
+            title_query = QueryString(QueryTerm.NAME, operator, title)
+            query = title_query
+
+        # optional type query
+        if type:
+            mimetype = str(type) if isinstance(type, GoogleMimeType) else type
+            type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
+            query = QueryStringGroup([query, type_query]) if query else type_query
+
+        # optional auxillary query
+        if extra_conditions:
+            query = QueryStringGroup([query, extra_conditions]) if query else extra_conditions
+
+        folder = Folder(id=folder_id, client=self.service)
+        files = folder.get_files(extra_conditions=query, support_all_drives=support_all_drives)
+
+        return files
 
     def update_file_permissions(
         self, file_id, address, role=PermissionType.READER, type=UserType.USER

@@ -5,14 +5,14 @@ from googleapiclient.errors import HttpError
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
 from pygsuite.drive.file import File
-from pygsuite.enums import GoogleMimeTypes
+from pygsuite.enums import GoogleMimeType
 from pygsuite.utility.decorators import retry
 from .layout import Layout
 from .slide import Slide
 
 
 class Presentation(File):
-    mimetype = GoogleMimeTypes.SLIDES
+    mimetype = GoogleMimeType.SLIDES
 
     def __init__(self, id, client=None):
         from pygsuite import Clients

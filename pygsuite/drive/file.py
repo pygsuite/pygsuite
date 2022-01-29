@@ -11,12 +11,14 @@ from pygsuite.common.comment import Comment
 from pygsuite.common.parsing import parse_id
 from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE, FILE_MIME_TYPE_MAP
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
-from pygsuite.enums import GoogleDocFormat, PermissionType, GoogleMimeTypes
+from pygsuite.enums import GoogleDocFormat, PermissionType, GoogleMimeType
 from pygsuite.utility.decorators import lazy_property
 
 
 class File:
     """Base class for a Google Drive File"""
+
+    mimetype = GoogleMimeType.UNKNOWN
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
@@ -34,7 +36,7 @@ class File:
     def create(
         cls,
         name: Optional[str] = None,
-        mimetype: Optional[Union[str, GoogleMimeTypes]] = None,
+        mimetype: Optional[Union[str, GoogleMimeType]] = None,
         body: Optional[dict] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
         drive_client: Optional[Resource] = None,
@@ -55,7 +57,7 @@ class File:
         drive_client = drive_client or Clients.drive_client_v3
 
         # handle Google mimetypes
-        mimetype = str(mimetype) if isinstance(mimetype, GoogleMimeTypes) else mimetype
+        mimetype = str(mimetype) if isinstance(mimetype, GoogleMimeType) else mimetype
 
         # create request body
         body = {"name": name, "mimeType": mimetype} if not body else body
@@ -168,7 +170,7 @@ class File:
         cls,
         title: str,
         exact_match: bool = True,
-        type: Optional[Union[GoogleMimeTypes, str]] = None,
+        type: Optional[Union[GoogleMimeType, str]] = None,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
@@ -178,7 +180,7 @@ class File:
         Args:
             title (str): The case-sensitive title of the file to search for.
             exact_match (bool): Whether to only match the given title exactly, or return any title containing the string.
-            type (Union[GoogleMimeTypes, str]): A specific Google Docs type to match.
+            type (Union[GoogleMimeType, str]): A specific Google Docs type to match.
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             drive_client (Resource): client connection to the Drive API used to create file.
             object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
@@ -196,7 +198,7 @@ class File:
 
         # optional type query
         if type:
-            mimetype = str(type) if isinstance(type, GoogleMimeTypes) else type
+            mimetype = str(type) if isinstance(type, GoogleMimeType) else type
             type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
             query = QueryStringGroup([query, type_query])
 
@@ -216,16 +218,13 @@ class File:
             )
             .execute()
         )
-        print(f"QUERY RESPONSE:\n{response}")
 
         files = response.get("files", [])
         if files:
             # TODO: better method for determining *best* match from a set of matches
             return cls(files[0].get("id"), object_client)
         else:
-            return cls.create_new(
-                title=title, client=object_client
-            )
+            return cls.create_new(title=title, client=object_client)
 
     def fetch_metadata(
         self,
@@ -264,7 +263,7 @@ class File:
                 pass
 
         self._metadata = (
-            self.client.files().get(
+            self.drive_client.files().get(
                 fileId=self.id,
                 fields=f"{', '.join(fields)}",
             )
