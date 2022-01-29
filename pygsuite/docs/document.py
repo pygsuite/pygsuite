@@ -1,27 +1,27 @@
 from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
-from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
 from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
-from pygsuite.enums import FileTypes
+from pygsuite.drive.file import File
+from pygsuite.enums import GoogleMimeTypes
 from pygsuite.utility.decorators import retry
 
 
-class Document(DriveObject):
-    """A document on google drive. """
+class Document(File):
+    """A document on google drive."""
 
-    file_type = FileTypes.DOCS
+    mimetype = GoogleMimeTypes.DOCS
 
     def __init__(self, id=None, name=None, client=None, _document=None, local=False):
 
         if not local:
             client = client or Clients.docs_client
         self.service = client
-        DriveObject.__init__(self, id=parse_id(id) if id else None, client=client)
+        File.__init__(self, id=parse_id(id) if id else None, client=client)
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
         self.auto_sync = False

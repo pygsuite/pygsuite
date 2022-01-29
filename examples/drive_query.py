@@ -1,10 +1,4 @@
-from pygsuite.drive.query import (
-    Connector,
-    Operator,
-    QueryString,
-    QueryStringGroup,
-    QueryTerm
-)
+from pygsuite.drive.query import Connector, Operator, QueryString, QueryStringGroup, QueryTerm
 
 condition1 = QueryString(QueryTerm.WRITERS, Operator.IN, "test@gmail.com")
 condition2 = QueryString(QueryTerm.TEXT, Operator.CONTAINS, "something")

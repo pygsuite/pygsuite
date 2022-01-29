@@ -2,11 +2,7 @@ from enum import Enum
 from typing import Any, Callable, Optional
 
 
-def coerce_value_to_enum(
-    value: Any,
-    enum: Enum,
-    transform: Optional[Callable] = None
-) -> Enum:
+def coerce_value_to_enum(value: Any, enum: Enum, transform: Optional[Callable] = None) -> Enum:
 
     if transform:
         value = transform(value)
@@ -27,14 +23,18 @@ if __name__ == "__main__":
 
     from pygsuite.enums import UserType
 
-    print(coerce_value_to_enum(
-        value="User",
-        enum=UserType,
-        transform=str.lower,
-    ))
+    print(
+        coerce_value_to_enum(
+            value="User",
+            enum=UserType,
+            transform=str.lower,
+        )
+    )
 
-    print(coerce_value_to_enum(
-        value="Robot",
-        enum=UserType,
-        transform=str.lower,
-    ))
+    print(
+        coerce_value_to_enum(
+            value="Robot",
+            enum=UserType,
+            transform=str.lower,
+        )
+    )

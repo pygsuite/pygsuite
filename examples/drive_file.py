@@ -18,7 +18,9 @@ text_file = File.create(
 print(text_file.id)
 
 # create an image object
-response = requests.get("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1280px-SNice.svg.png")
+response = requests.get(
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1280px-SNice.svg.png"
+)
 bytes = BytesIO(response.content)
 
 image_file = File.create(

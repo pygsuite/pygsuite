@@ -18,10 +18,7 @@ def docs(session):
     )
 
     shutil.rmtree(
-        os.path.join(
-            "docs",
-            "reference"
-        ),
+        os.path.join("docs", "reference"),
         ignore_errors=True,
     )
     session.run("sphinx-build", "-M", "markdown", "./docs_src", "./docs/reference")

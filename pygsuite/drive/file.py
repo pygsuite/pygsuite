@@ -9,47 +9,9 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 from pygsuite.auth.authorization import Clients
 from pygsuite.common.comment import Comment
 from pygsuite.common.parsing import parse_id
-from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE
-from pygsuite.enums import GoogleDocFormat, PermissionType
-
-
-FILE_MIME_TYPE_MAP = {
-    GoogleDocFormat.DOCS: {
-        ".html": "text/html",
-        ".txt": "text/plain",
-        ".rtf": "application/rtf",
-        ".odt": "application/vnd.oasis.opendocument.text",
-        ".pdf": "application/pdf",
-        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ".doc": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ".epub": "application/epub+zip",
-    },
-    GoogleDocFormat.SHEETS: {
-        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ".xls": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ".ods": "application/x-vnd.oasis.opendocument.spreadsheet",
-        ".pdf": "application/pdf",
-        ".csv": "text/csv",
-        ".tsv": "text/tab-separated-values",
-    },
-    GoogleDocFormat.DRAWINGS: {
-        ".jpeg": "image/jpeg",
-        ".jpg": "image/jpeg",
-        ".png": "image/png",
-        ".svg": "image/svg+xml",
-        ".pdf": "application/pdf",
-    },
-    GoogleDocFormat.SLIDES: {
-        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        ".ppt": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        ".odp": "application/vnd.oasis.opendocument.presentation",
-        ".pdf": "application/pdf",
-        ".txt": "text/plain",
-    },
-    GoogleDocFormat.SCRIPTS: {
-        ".json": "application/vnd.google-apps.script+json",
-    },
-}
+from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE, FILE_MIME_TYPE_MAP
+from pygsuite.enums import GoogleDocFormat, PermissionType, GoogleMimeTypes
+from pygsuite.utility.decorators import lazy_property
 
 
 class File:
@@ -58,18 +20,23 @@ class File:
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
         self.id = parse_id(id) if id else None
-        self.client = client or Clients.drive_client
+        self.client = client
 
-        # cache the metadata
+        # metadata cache
         self._metadata = None
+
+    @lazy_property
+    def drive_client(self):
+        return Clients.drive_client_v3
 
     @classmethod
     def create(
         cls,
         name: Optional[str] = None,
-        mimetype: Optional[str] = None,
+        mimetype: Optional[Union[str, GoogleMimeTypes]] = None,
         body: Optional[dict] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
+        drive_client: Optional[Resource] = None,
         client: Optional[Resource] = None,
     ):
         """Create a new file in Google Drive.
@@ -79,11 +46,15 @@ class File:
             mimetype (str): Specified type of the file to create.
             body (dict): Request body, if not provided, one is created with `name` and `mimetype` params.
             media_body (BytesIO, MediaFileUpload, MediaIoBaseUpload): Content for the file.
-            client (Resource): client connection to the Drive API.
+            drive_client (Resource): client connection to the Drive API used to create file.
+            client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
         """
 
         # establish a client
-        client = client or Clients.drive_client
+        drive_client = drive_client or Clients.drive_client_v3
+
+        # handle Google mimetypes
+        mimetype = str(mimetype) if isinstance(mimetype, GoogleMimeTypes) else mimetype
 
         # create request body
         body = {"name": name, "mimeType": mimetype} if not body else body
@@ -102,7 +73,7 @@ class File:
 
         # execute files.create request and return File object
         file = (
-            client.files()
+            drive_client.files()
             .create(
                 body=body,
                 media_body=media_body,
@@ -110,6 +81,7 @@ class File:
             )
             .execute()
         )
+        print(f"ID: {file.get('id')}")
 
         return File(id=file.get("id"), client=client)
 
@@ -180,7 +152,7 @@ class File:
 
     def fetch_metadata(
         self,
-        cache: bool = True,
+        ignore_cache: bool = False,
         fields: Optional[List[str]] = None,
     ) -> dict:
         """Metadata for the file, based on the files.get method.
@@ -188,13 +160,13 @@ class File:
         https://googleapis.github.io/google-api-python-client/docs/dyn/drive_v3.files.html#get
 
         Args:
-            cache (bool): whether to first look at the cached metadata.
+            ignore_cache (bool): whether to first look at the cached metadata.
             fields (Optional[List[str]]): list of fields to return. Use ["*"] to return all.
         """
 
         # we cannot use the cache if there is none
         if self._metadata is None:
-            cache = False
+            ignore_cache = True
 
         # default fields to fetch, needed by default properties
         if fields is None:
@@ -203,7 +175,7 @@ class File:
         metadata = {}
 
         # see if we have cached the file metadata already
-        if cache is True:
+        if ignore_cache is False:
             try:
                 for field in fields:
                     metadata[field] = self._metadata[field]
@@ -246,7 +218,7 @@ class File:
 
         return [
             Comment(item)
-            for item in self.client.comments().list(fileId=self.id).execute().get("items", [])
+            for item in self.drive_client.comments().list(fileId=self.id).execute().get("items", [])
         ]
 
     def share(
@@ -282,11 +254,11 @@ class File:
         if anyone:
             permissions.append({"role": role.value, "type": "anyone"})
         for permission in permissions:
-            self.client.permissions().create(
+            self.drive_client.permissions().create(
                 fileId=self.id, body=permission, supportsAllDrives=True
             ).execute()
 
     def delete(self):
         """Permanently deletes a file owned by the user without moving it to the trash."""
 
-        self.client.files().delete(fileId=self.id).execute()
+        self.drive_client.files().delete(fileId=self.id).execute()

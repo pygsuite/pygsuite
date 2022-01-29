@@ -8,6 +8,7 @@ class QueryTerm(Enum):
 
     More information here: https://developers.google.com/drive/api/v3/ref-search-terms#file_properties
     """
+
     NAME = "name"
     TEXT = "fullText"
     MIMETYPE = "mimeType"
@@ -36,6 +37,7 @@ class Operator(Enum):
 
     More information here: https://developers.google.com/drive/api/v3/ref-search-terms#operators
     """
+
     CONTAINS = "contains"
     NOT_CONTAINS = "not {} contains"
     EQUAL = "="
@@ -90,7 +92,9 @@ class QueryString:
         # NOT_CONTAINS comparisons wrap query term with operator
         # ex. not name contains 'hello'
         elif self.operator == Operator.NOT_CONTAINS:
-            self.formatted = self.operator.value.format(self.query_term.value) + f" {self.query_term.value}"
+            self.formatted = (
+                self.operator.value.format(self.query_term.value) + f" {self.query_term.value}"
+            )
         # all other operators are formatted: query_term, operator, value
         else:
             self.formatted = f"{self.query_term.value} {self.operator.value} '{self.value}'"
@@ -114,6 +118,8 @@ class QueryStringGroup:
         zipped_list = zip(self.query_strings, self.connectors)
 
         for (query_string, connector) in zipped_list:
-            self.formatted += f"{connector.value if connector is not None else ''} {query_string.formatted} "
+            self.formatted += (
+                f"{connector.value if connector is not None else ''} {query_string.formatted} "
+            )
 
         self.formatted = f"({self.formatted})"

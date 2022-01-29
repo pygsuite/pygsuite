@@ -6,9 +6,9 @@ from googleapiclient.discovery import Resource
 from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
-from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
-from pygsuite.enums import FileTypes
+from pygsuite.drive.file import File
+from pygsuite.enums import GoogleMimeTypes
 from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
@@ -108,10 +108,10 @@ class ValueResponse(list):
         return df
 
 
-class Spreadsheet(DriveObject):
+class Spreadsheet(File):
     """Base class for the GSuite Spreadsheets API."""
 
-    file_type = FileTypes.SHEETS
+    mimetype = GoogleMimeTypes.SHEETS
 
     def __init__(self, id: str, client: Optional[Resource] = None):
         """Method to initialize the class.
@@ -127,7 +127,7 @@ class Spreadsheet(DriveObject):
 
         self.service = client or Clients.sheets_client
         self.id = parse_id(id) if id else None
-        DriveObject.__init__(self, id=id, client=client)
+        File.__init__(self, id=id, client=client)
 
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
         self._properties = self._spreadsheet.get("properties")
@@ -138,10 +138,10 @@ class Spreadsheet(DriveObject):
 
     @classmethod
     def create_new(cls, title: str, client=None):
+        """Create a new Google Sheet"""
         client = client or Clients.sheets_client
-        body = {"properties": {"title": title}}
-        new = client.spreadsheets().create(body=body).execute()
-        return Spreadsheet(id=new.get("spreadsheetId"), client=client)
+        new_file = cls.create(name=title, mimetype=cls.mimetype)
+        return Spreadsheet(id=new_file.id, client=client)
 
     def __getitem__(self, key: Union[str, int]):
 

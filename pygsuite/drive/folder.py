@@ -31,7 +31,8 @@ class Folder:
                 spaces="drive",
                 fields="nextPageToken, files(id, name)",
                 pageToken=page_token,
-            ).execute()
+            )
+            .execute()
         )
 
         for file in response.get("files", []):
@@ -47,7 +48,8 @@ class Folder:
                     spaces="drive",
                     fields="nextPageToken, files(id, name)",
                     pageToken=page_token,
-                ).execute()
+                )
+                .execute()
             )
 
             for file in response.get("files", []):
