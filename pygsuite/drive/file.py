@@ -10,6 +10,7 @@ from pygsuite.auth.authorization import Clients
 from pygsuite.common.comment import Comment
 from pygsuite.common.parsing import parse_id
 from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE, FILE_MIME_TYPE_MAP
+from pygsuite.drive.query import Connector, Operator, QueryString, QueryStringGroup, QueryTerm
 from pygsuite.enums import GoogleDocFormat, PermissionType, GoogleMimeTypes
 from pygsuite.utility.decorators import lazy_property
 
@@ -37,7 +38,7 @@ class File:
         body: Optional[dict] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
         drive_client: Optional[Resource] = None,
-        client: Optional[Resource] = None,
+        object_client: Optional[Resource] = None,
     ):
         """Create a new file in Google Drive.
 
@@ -47,7 +48,7 @@ class File:
             body (dict): Request body, if not provided, one is created with `name` and `mimetype` params.
             media_body (BytesIO, MediaFileUpload, MediaIoBaseUpload): Content for the file.
             drive_client (Resource): client connection to the Drive API used to create file.
-            client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
+            object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
         """
 
         # establish a client
@@ -83,7 +84,7 @@ class File:
         )
         print(f"ID: {file.get('id')}")
 
-        return File(id=file.get("id"), client=client)
+        return File(id=file.get("id"), client=object_client)
 
     @classmethod
     def upload(
@@ -92,7 +93,8 @@ class File:
         name: Optional[str] = None,
         mimetype: Optional[str] = None,
         convert_to: Optional[Union[str, GoogleDocFormat]] = None,
-        client: Optional[Resource] = None,
+        drive_client: Optional[Resource] = None,
+        object_client: Optional[Resource] = None,
     ):
         """Method to upload a local file to Google Drive.
 
@@ -101,10 +103,11 @@ class File:
             name (str): Name of the file in Google Drive once uploaded.
             mimetype (str): Specified type of the file to create. mimetype is automatically determined if not specified.
             convert_to (str, GoogleDocFormat): Convert the upload file into a Google App file (e.g. CSV -> Google Sheet)
-            client (Resource): client connection to the Drive API.
+            drive_client (Resource): client connection to the Drive API used to create file.
+            object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
         """
         # establish a client
-        client = client or Clients.drive_client
+        drive_client = drive_client or Clients.drive_client_v3
 
         # get upload file size
         filesize = os.path.getsize(filepath)
@@ -145,10 +148,66 @@ class File:
             name=name,
             mimetype=mimetype,
             media_body=media_body,
-            client=client,
+            drive_client=drive_client,
+            client=object_client,
         )
 
         return file
+
+    @classmethod
+    def get_safe(
+        cls,
+        title: str,
+        exact_match: bool = True,
+        type: Optional[Union[GoogleMimeTypes, str]] = None,
+        extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
+        drive_client: Optional[Resource] = None,
+        object_client: Optional[Resource] = None,
+    ):
+        """Get a file or create one if not found
+
+        Args:
+            title (str): The case-sensitive title of the file to search for.
+            exact_match (bool): Whether to only match the given title exactly, or return any title containing the string.
+            type (Union[GoogleMimeTypes, str]): A specific Google Docs type to match.
+            extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
+            drive_client (Resource): client connection to the Drive API used to create file.
+            object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
+
+        Returns:
+            An instantiated File object, or specific Google Docs type object, such as Spreadsheet, Presentation, or Document.
+        """
+        # establish a client
+        drive_client = drive_client or Clients.drive_client_v3
+
+        # title match query
+        operator = Operator.EQUAL if exact_match else Operator.CONTAINS
+        title_query = QueryString(QueryTerm.NAME, operator, title)
+        query = title_query
+
+        # optional type query
+        if type:
+            mimetype = str(type) if isinstance(type, GoogleMimeTypes) else type
+            type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
+            query = QueryStringGroup([query, type_query])
+
+        # optional auxillary query
+        if extra_conditions:
+            query = QueryStringGroup([query, extra_conditions])
+
+        response = drive_client.files().list(
+            q=query.formatted,
+            spaces="drive",
+            fields="nextPageToken, files(id, name)",
+            pageToken=None,
+        ).execute()
+        print(f"QUERY RESPONSE:\n{response}")
+
+        files = response.get("files", [])
+        if files[0]:
+            return cls(files[0].get("id"), object_client)
+        else:
+            return None
 
     def fetch_metadata(
         self,
