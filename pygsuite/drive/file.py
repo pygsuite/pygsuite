@@ -195,12 +195,16 @@ class File:
         if extra_conditions:
             query = QueryStringGroup([query, extra_conditions])
 
-        response = drive_client.files().list(
-            q=query.formatted,
-            spaces="drive",
-            fields="nextPageToken, files(id, name)",
-            pageToken=None,
-        ).execute()
+        response = (
+            drive_client.files()
+            .list(
+                q=query.formatted,
+                spaces="drive",
+                fields="nextPageToken, files(id, name)",
+                pageToken=None,
+            )
+            .execute()
+        )
         print(f"QUERY RESPONSE:\n{response}")
 
         files = response.get("files", [])
