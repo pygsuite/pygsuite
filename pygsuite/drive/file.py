@@ -87,6 +87,15 @@ class File:
         return File(id=file.get("id"), client=object_client)
 
     @classmethod
+    def create_new(cls, title: str, client=None):
+        """Create a new Google Drive File
+        This method is overwritten by each Google Doc object, such as Spreadsheet or Presentation.
+        """
+        client = client or Clients.drive_client_v3
+        new_file = cls.create(name=title, mimetype=cls.mimetype)
+        return File(id=new_file.id, client=client)
+
+    @classmethod
     def upload(
         cls,
         filepath: str,
@@ -214,8 +223,9 @@ class File:
             # TODO: better method for determining *best* match from a set of matches
             return cls(files[0].get("id"), object_client)
         else:
-            # TODO: do we want to raise an exception or add helpful logging here?
-            return None
+            return cls.create_new(
+                title=title, drive_client=drive_client, object_client=object_client
+            )
 
     def fetch_metadata(
         self,
