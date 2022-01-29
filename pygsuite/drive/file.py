@@ -10,7 +10,7 @@ from pygsuite.auth.authorization import Clients
 from pygsuite.common.comment import Comment
 from pygsuite.common.parsing import parse_id
 from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE, FILE_MIME_TYPE_MAP
-from pygsuite.drive.query import Connector, Operator, QueryString, QueryStringGroup, QueryTerm
+from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
 from pygsuite.enums import GoogleDocFormat, PermissionType, GoogleMimeTypes
 from pygsuite.utility.decorators import lazy_property
 
@@ -195,6 +195,8 @@ class File:
         if extra_conditions:
             query = QueryStringGroup([query, extra_conditions])
 
+        # we are not handling multiple pages of matches here because
+        # we only return the first match any way
         response = (
             drive_client.files()
             .list(
@@ -208,9 +210,11 @@ class File:
         print(f"QUERY RESPONSE:\n{response}")
 
         files = response.get("files", [])
-        if files[0]:
+        if files:
+            # TODO: better method for determining *best* match from a set of matches
             return cls(files[0].get("id"), object_client)
         else:
+            # TODO: do we want to raise an exception or add helpful logging here?
             return None
 
     def fetch_metadata(
