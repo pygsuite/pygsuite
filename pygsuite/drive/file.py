@@ -224,7 +224,7 @@ class File:
             return cls(files[0].get("id"), object_client)
         else:
             return cls.create_new(
-                title=title, drive_client=drive_client, object_client=object_client
+                title=title, client=object_client
             )
 
     def fetch_metadata(
