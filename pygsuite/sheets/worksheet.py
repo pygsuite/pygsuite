@@ -1,11 +1,15 @@
-from typing import List, Optional
+import re
+from typing import List, Optional, TYPE_CHECKING
 
 import pandas as pd
-import re
 
 from pygsuite.common.style import Border
 from pygsuite.sheets.cell import Cell
 from pygsuite.sheets.helpers import alphabet_to_index, index_to_alphabet
+
+if TYPE_CHECKING:
+    from pygsuite.sheets import Spreadsheet
+
 
 # INDEX_SPLITTER = re.compile('(\d+)',s)
 
@@ -13,7 +17,7 @@ from pygsuite.sheets.helpers import alphabet_to_index, index_to_alphabet
 class Worksheet(object):
     """Worksheet object for the worksheets within a Spreadsheet"""
 
-    def __init__(self, worksheet, spreadsheet):
+    def __init__(self, worksheet, spreadsheet: "Spreadsheet"):
         """Method to initialize the class.
 
         Args:
@@ -22,11 +26,15 @@ class Worksheet(object):
         """
 
         self._worksheet = worksheet
-        self._spreadsheet = spreadsheet
+        self._spreadsheet: "Spreadsheet" = spreadsheet
         self._properties = self._worksheet["properties"]
 
     def __getitem__(self, cell_range):
         return self.values_from_range(cell_range)
+
+    def flush(self):
+        self._spreadsheet.flush()
+        return self
 
     @property
     def name(self):
@@ -44,12 +52,18 @@ class Worksheet(object):
     def column_count(self):
         return self._properties["gridProperties"]["columnCount"]
 
+    def clear(self):
+        """Method to clear all records in the sheet"""
+        worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
+        self._spreadsheet.clear_range(range=worksheet_range)
+        return self
+
     def delete_sheet(self, flush: Optional[bool] = True):
         self._spreadsheet.delete_sheet(id=self.id)
         if flush:
             self._spreadsheet.flush()
 
-    def range_from_indexes(self, startcol: str, startrow: int, endcol: str, endrow: int):
+    def range_from_indexes(self, startcol: int, startrow: int, endcol: int, endrow: int):
 
         assert startcol <= endcol
         assert startrow <= endrow
@@ -77,7 +91,7 @@ class Worksheet(object):
     def dataframe(self):
 
         worksheet_range = self.range_from_indexes(1, 1, self.column_count, self.row_count)
-        df = self._spreadsheet.get_values_from_range(worksheet_range).to_df()
+        df = self._spreadsheet.get_values_from_range(worksheet_range).to_df(header=True)
         return df
 
     def format_borders(
@@ -102,7 +116,6 @@ class Worksheet(object):
         }
 
         for border in borders:
-
             request["updateBorders"][border.position.value] = border.to_json()
 
         self._spreadsheet._spreadsheets_update_queue.append(request)

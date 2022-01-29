@@ -7,7 +7,7 @@ from pygsuite.images import ImageUploader
 from pygsuite.drive import Drive
 from pygsuite.enums import UserType, PermissionType
 
-__version__ = "0.0.14"
+__version__ = "0.0.16"
 __author__ = "Ethan Dickinson <ethan.dickinson@gmail.com>"
 __all__ = [
     "Clients",

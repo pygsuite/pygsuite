@@ -45,14 +45,14 @@ class TextRun(BaseParagraphElement):
         return TextStyle.from_doc_style(self._detail.get("textStyle"))
 
     @style.setter
-    def style(self, style: TextStyle = None):
-        fields, style = style.to_doc_style()
+    def style(self, style: TextStyle):
+        fields, style_dict = style.to_doc_style()
         self._document._mutation(
             [
                 {
                     "updateTextStyle": {
                         "range": {"startIndex": self.start_index, "endIndex": self.end_index},
-                        "textStyle": style,
+                        "textStyle": style_dict,
                         "fields": fields,
                     }
                 }

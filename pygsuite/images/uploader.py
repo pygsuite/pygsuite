@@ -1,9 +1,11 @@
 import datetime
 import json
+from typing import TYPE_CHECKING
 from typing import Union, Dict, Tuple
 from uuid import uuid4
 
-from google.cloud.storage import Client
+if TYPE_CHECKING:
+    from google.cloud.storage import Client
 
 _SERVICE_ACCOUNT_TYPE = "service_account"
 
@@ -11,12 +13,10 @@ _SERVICE_ACCOUNT_TYPE = "service_account"
 def generate_download_signed_url_v4(bucket, blob_name: str, timeout: int = 15):
     """Generates a v4 signed URL for downloading a blob.
 
-    Note that this method requires a service account key file. You can not use
+    Note that this method requires a service account key file. You cannot use
     this if you are using Application Default Credentials from Google Compute
     Engine or from the Google Cloud SDK.
     """
-    # bucket_name = 'your-bucket-name'
-    # blob_name = 'your-object-name'
 
     blob = bucket.blob(blob_name)
 
@@ -31,7 +31,9 @@ def generate_download_signed_url_v4(bucket, blob_name: str, timeout: int = 15):
 
 
 class ImageUploader:
-    def __init__(self, bucket: str, account_info: Union[Client, str, Dict], timeout: int = 15):
+    def __init__(self, bucket: str, account_info: Union["Client", str, Dict], timeout: int = 15):
+        from google.cloud.storage import Client
+
         self.account_info = account_info
         self.timeout = timeout
         self._client, self._project = (
@@ -43,13 +45,14 @@ class ImageUploader:
         self.client = Client(credentials=self._client, project=self._project)
         self.bucket = self.client.bucket(bucket)
 
-    def _generate_client(self, info: Union[Dict, str]) -> Tuple[Client, str]:
+    def _generate_client(self, info: Union[Dict, str]) -> Tuple["Client", str]:
         if not isinstance(info, dict):
-            info = json.loads(info)
-
+            info_dict = json.loads(info)
+        else:
+            info_dict = info
         # The type key should indicate that the file is either a service account
         # credentials file or an authorized user credentials file.
-        credential_type = info.get("type")
+        credential_type = info_dict.get("type")
         if credential_type != _SERVICE_ACCOUNT_TYPE:
             raise ValueError(
                 f'Invalid credential type "{credential_type}". Generating signed URLs requires a service account with appropriate permissions.'
@@ -57,7 +60,9 @@ class ImageUploader:
 
         from google.oauth2 import service_account
 
-        return service_account.Credentials.from_service_account_info(info), info.get("project_id")
+        return service_account.Credentials.from_service_account_info(info_dict), info_dict.get(
+            "project_id"
+        )
 
     def _get_signed_url(self, obj: str):
         return generate_download_signed_url_v4(self.bucket, obj, self.timeout)
