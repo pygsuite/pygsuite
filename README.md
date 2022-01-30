@@ -1,4 +1,5 @@
-![img|75x78](./docs/images/pygsuite_logo.png)
+<!-- ![img|75x78](./docs/images/pygsuite_logo.png) -->
+<img src="./docs/images/pygsuite_logo.png" width=20% height=20%>
 
 # pygsuite
 
