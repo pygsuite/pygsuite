@@ -14,7 +14,7 @@ from pygsuite.utility.decorators import retry
 class Document(File):
     """A document on google drive."""
 
-    mimetype = GoogleMimeType.DOCS
+    _mimetype = GoogleMimeType.DOCS
 
     def __init__(self, id=None, client=None, name=None, _document=None, local=False):
 

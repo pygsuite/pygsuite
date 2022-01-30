@@ -21,7 +21,7 @@ _logger = logging.getLogger(__name__)
 class File:
     """Base class for a Google Drive File"""
 
-    mimetype = GoogleMimeType.UNKNOWN
+    _mimetype = GoogleMimeType.UNKNOWN
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
@@ -37,9 +37,9 @@ class File:
         return Clients.drive_client_v3
 
     @classmethod
-    def create(
+    def _create(
         cls,
-        name: Optional[str] = None,
+        title: Optional[str] = None,
         parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[str, GoogleMimeType]] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
@@ -51,7 +51,7 @@ class File:
         """Create a new file in Google Drive.
 
         Args:
-            name (str): Name of the file.
+            title (str): Title of the file.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the folder.
                 If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
             mimetype (str): Specified type of the file to create.
@@ -70,11 +70,12 @@ class File:
 
         # create request body
         body = {
-            "name": name,
+            "name": title,
             "mimeType": mimetype,
             "parents": parent_folder_ids,
             "starred": starred,
         }
+        print(f"BODY:\n{body}")
 
         if extra_body:
             body.update(extra_body)
@@ -105,7 +106,7 @@ class File:
         return File(id=file.get("id"), client=object_client)
 
     @classmethod
-    def create_new(
+    def create(
         cls,
         title: str,
         mimetype: Optional[Union[str, GoogleMimeType]] = None,
@@ -117,15 +118,16 @@ class File:
         This method is overwritten by each Google Doc object, such as Spreadsheet or Presentation.
         """
         drive_client = drive_client or Clients.drive_client_v3
-        mimetype = mimetype or cls.mimetype
-        new_file = cls.create(name=title, mimetype=mimetype, drive_client=drive_client, **kwargs)
+        mimetype = mimetype or cls._mimetype
+        print(mimetype, str(mimetype))
+        new_file = cls._create(title=title, mimetype=mimetype, drive_client=drive_client, **kwargs)
         return cls(id=new_file.id, client=object_client)
 
     @classmethod
     def upload(
         cls,
         filepath: str,
-        name: Optional[str] = None,
+        title: Optional[str] = None,
         mimetype: Optional[str] = None,
         convert_to: Optional[Union[str, GoogleDocFormat]] = None,
         drive_client: Optional[Resource] = None,
@@ -136,7 +138,7 @@ class File:
 
         Args:
             filepath (str): Filepath of the file to upload.
-            name (str): Name of the file in Google Drive once uploaded.
+            title (str): Title of the file in Google Drive once uploaded.
             mimetype (str): Specified type of the file to create. mimetype is automatically determined if not specified.
             convert_to (str, GoogleDocFormat): Convert the upload file into a Google App file (e.g. CSV -> Google Sheet)
             drive_client (Resource): client connection to the Drive API used to create file.
@@ -155,8 +157,8 @@ class File:
         # get filename and extension
         _, extension = os.path.splitext(filepath)
 
-        # name of the file in Drive
-        name = name if name else os.path.basename(filepath)
+        # title of the file in Drive
+        title = title if title else os.path.basename(filepath)
 
         if convert_to:
             # try to coerce str into a GoogleDocFormat
@@ -180,8 +182,8 @@ class File:
             filename=filepath, mimetype=mimetype, chunksize=-1, resumable=resumable
         )
 
-        file = cls.create(
-            name=name,
+        file = cls._create(
+            title=title,
             mimetype=mimetype,
             media_body=media_body,
             drive_client=drive_client,
@@ -250,7 +252,7 @@ class File:
             # TODO: better method for determining *best* match from a set of matches
             return cls(files[0].get("id"), object_client)
         else:
-            return cls.create_new(title=title, mimetype=mimetype, object_client=object_client)
+            return cls.create(title=title, mimetype=mimetype, object_client=object_client)
 
     def copy(self):
 
@@ -355,10 +357,13 @@ class File:
 
         return [
             Comment(item)
-            for item in self.drive_client.comments().list(
+            for item in self.drive_client.comments()
+            .list(
                 fileId=self.id,
                 fields=None,
-            ).execute().get("items", [])
+            )
+            .execute()
+            .get("items", [])
         ]
 
     def update(self):

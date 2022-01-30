@@ -12,7 +12,8 @@ from .slide import Slide
 
 
 class Presentation(File):
-    mimetype = GoogleMimeType.SLIDES
+
+    _mimetype = GoogleMimeType.SLIDES
 
     def __init__(self, id, client=None):
         from pygsuite import Clients

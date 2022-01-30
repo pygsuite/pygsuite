@@ -35,9 +35,7 @@ def auth_test_clients():
 def test_folder(auth_test_clients):
     from pygsuite import Folder
 
-    yield Folder.create_new(
-        title=f"test-{uuid4()}"
-    )
+    yield Folder.get_safe(title=f"test-{uuid4()}")
 
 
 @fixture(scope="session")

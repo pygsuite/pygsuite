@@ -111,7 +111,7 @@ class ValueResponse(list):
 class Spreadsheet(File):
     """Base class for the GSuite Spreadsheets API."""
 
-    mimetype = GoogleMimeType.SHEETS
+    _mimetype = GoogleMimeType.SHEETS
 
     def __init__(self, id: str, client: Optional[Resource] = None):
         """Method to initialize the class.

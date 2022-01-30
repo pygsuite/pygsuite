@@ -12,7 +12,7 @@ from pygsuite.enums import GoogleMimeType
 class Folder(File):
     """Base class for a Google Drive Folder"""
 
-    mimetype = GoogleMimeType.FOLDER
+    _mimetype = GoogleMimeType.FOLDER
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
