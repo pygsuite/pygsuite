@@ -30,7 +30,10 @@ def test_file_sharing(test_text_file):
     from pygsuite.enums import PermissionType
 
     test_file = test_text_file
+    shared = test_file.fetch_metadata(fields=["shared"]).get("shared")
+    assert shared is False
+
     test_file.share(role=PermissionType.READER, user="sgaudet@wayfair.com")
 
-    shared = test_file.fetch_metadata(fields=["shared"]).get("shared")
+    shared = test_file.fetch_metadata(ignore_cache=True, fields=["shared"]).get("shared")
     assert shared is True
