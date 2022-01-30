@@ -26,6 +26,7 @@ def test_file_creation__specified_mimetype(auth_test_clients):
 
 def test_file_creation__specified_google_mimetype(auth_test_clients):
     from pygsuite.enums import GoogleMimeType
+
     new_file = File.create(name=f"Empty Spreadsheet {TEST_ID}", mimetype=GoogleMimeType.SHEETS)
     assert new_file.id is not None
     new_file.delete()
@@ -34,6 +35,7 @@ def test_file_creation__specified_google_mimetype(auth_test_clients):
 def test_file_creation__from_bytes(auth_test_clients):
     from io import BytesIO
     import requests
+
     response = requests.get(
         "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
     )
@@ -72,7 +74,7 @@ def test_file_creation__custom_body(auth_test_clients):
 
 
 # def test_file_upload__from_local_file__with_conversion(auth_test_clients):
-    # from pygsuite.enums import GoogleDocFormat
+# from pygsuite.enums import GoogleDocFormat
 #     upload_file = r".\assets\test data.xlsx"
 #     new_file = File.upload(
 #         filepath=upload_file,
