@@ -8,6 +8,10 @@ pages:
   - Features: features.md
   - Quickstart:
       - Auth: quickstart/auth.md
+      - Drive: quickstart/drive/toc.md
+          - Drive: quickstart/drive/drive.md
+          - File: quickstart/drive/file.md
+          - Folder: quickstart/drive/folder.md
       - Docs: quickstart/docs.md
       - Sheets: quickstart/sheets.md
       - Slides: quickstart/slides.md
