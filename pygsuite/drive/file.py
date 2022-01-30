@@ -19,7 +19,16 @@ _logger = logging.getLogger(__name__)
 
 
 class File:
-    """Base class for a Google Drive File"""
+    """Base class for a Google Drive File
+
+    Includes common, core functionality including creation, manipulation, deletion, and more.
+    Other GSuite objects are derived from this class, including:
+
+    - Folder
+    - Spreadsheet
+    - Presentation
+    - Document
+    """
 
     _mimetype = GoogleMimeType.UNKNOWN
 
@@ -34,6 +43,7 @@ class File:
 
     @lazy_property
     def drive_client(self):
+        """Google Drive API client used for file manipulations"""
         return Clients.drive_client_v3
 
     @classmethod
@@ -47,8 +57,9 @@ class File:
         extra_body: Optional[dict] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
+        **kwargs,
     ):
-        """Create a new file in Google Drive.
+        """Base create method.
 
         Args:
             title (str): Title of the file.
@@ -99,6 +110,7 @@ class File:
                 body=body,
                 media_body=media_body,
                 fields="id",
+                **kwargs,
             )
             .execute()
         )
@@ -108,19 +120,44 @@ class File:
     @classmethod
     def create(
         cls,
-        title: str,
+        title: Optional[str] = None,
+        parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[str, GoogleMimeType]] = None,
+        media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
+        starred: bool = False,
+        extra_body: Optional[dict] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
         **kwargs,
     ):
-        """Create a new Google Drive File
-        This method is overwritten by each Google Doc object, such as Spreadsheet or Presentation.
+        """Create a new Google Drive File (or child type for instances such as Spreadsheet, Presentation, etc.)
+
+        Args:
+            title (str): Title of the file.
+            parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
+                If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
+            mimetype (str): Specified type of the file to create.
+            media_body (BytesIO, MediaFileUpload, MediaIoBaseUpload): Content for the file.
+            starred (bool): Whether the user has starred the file.
+            extra_body (dict): Extra parameters for the request body.
+            drive_client (Resource): client connection to the Drive API used to create file.
+            object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
+
+        Returns the newly created pygsuite object.
         """
         drive_client = drive_client or Clients.drive_client_v3
         mimetype = mimetype or cls._mimetype
         print(mimetype, str(mimetype))
-        new_file = cls._create(title=title, mimetype=mimetype, drive_client=drive_client, **kwargs)
+        new_file = cls._create(
+            title=title,
+            parent_folder_ids=parent_folder_ids,
+            mimetype=mimetype,
+            media_body=media_body,
+            starred=starred,
+            extra_body=extra_body,
+            drive_client=drive_client,
+            **kwargs,
+        )
         return cls(id=new_file.id, client=object_client)
 
     @classmethod
@@ -128,8 +165,10 @@ class File:
         cls,
         filepath: str,
         title: Optional[str] = None,
+        parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[str] = None,
         convert_to: Optional[Union[str, GoogleDocFormat]] = None,
+        starred: bool = False,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
         **kwargs,
@@ -139,8 +178,11 @@ class File:
         Args:
             filepath (str): Filepath of the file to upload.
             title (str): Title of the file in Google Drive once uploaded.
+            parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
+                If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
             mimetype (str): Specified type of the file to create. mimetype is automatically determined if not specified.
             convert_to (str, GoogleDocFormat): Convert the upload file into a Google App file (e.g. CSV -> Google Sheet)
+            starred (bool): Whether the user has starred the file.
             drive_client (Resource): client connection to the Drive API used to create file.
             object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
         """
@@ -184,8 +226,10 @@ class File:
 
         file = cls._create(
             title=title,
+            parent_folder_ids=parent_folder_ids,
             mimetype=mimetype,
             media_body=media_body,
+            starred=starred,
             drive_client=drive_client,
             object_client=object_client,
             **kwargs,
@@ -198,6 +242,7 @@ class File:
         cls,
         title: str,
         exact_match: bool = True,
+        parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[GoogleMimeType, str]] = None,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         drive_client: Optional[Resource] = None,
@@ -208,6 +253,7 @@ class File:
         Args:
             title (str): The case-sensitive title of the file to search for.
             exact_match (bool): Whether to only match the given title exactly, or return any title containing the string.
+            parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
             mimetype (Union[GoogleMimeType, str]): A specific Google Docs type to match.
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             drive_client (Resource): client connection to the Drive API used to create file.
@@ -224,7 +270,12 @@ class File:
         title_query = QueryString(QueryTerm.NAME, operator, title)
         query = title_query
 
-        # optional type query
+        # optional folder query
+        if parent_folder_ids:
+            folder_query = QueryString(QueryTerm.PARENTS, Operator.IN, parent_folder_ids)
+            query = QueryStringGroup([query, folder_query])
+
+        # optional mimetype query
         if mimetype:
             mimetype = str(type) if isinstance(type, GoogleMimeType) else mimetype
             type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
@@ -252,7 +303,13 @@ class File:
             # TODO: better method for determining *best* match from a set of matches
             return cls(files[0].get("id"), object_client)
         else:
-            return cls.create(title=title, mimetype=mimetype, object_client=object_client)
+            _logger.info("No matching file found, creating file now...")
+            return cls.create(
+                title=title,
+                parent_folder_ids=parent_folder_ids,
+                mimetype=mimetype,
+                object_client=object_client,
+            )
 
     def copy(self):
 
