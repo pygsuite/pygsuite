@@ -35,7 +35,7 @@ def auth_test_clients():
 def test_folder(auth_test_clients):
     from pygsuite import Folder
 
-    yield Folder.get_safe(title=f"test-{uuid4()}")
+    yield Folder.get_safe(name=f"test-{uuid4()}")
 
 
 @fixture(scope="session")
@@ -43,7 +43,7 @@ def test_text_file(auth_test_clients):
     from pygsuite import File
 
     yield File.get_safe(
-        title=f"test-{uuid4()}",
+        name=f"test-{uuid4()}",
         mimetype="text/plain",
     )
 
@@ -52,27 +52,27 @@ def test_text_file(auth_test_clients):
 def test_document(auth_test_clients):
     from pygsuite import Document
 
-    yield Document.get_safe(title=f"test-{uuid4()}")
+    yield Document.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(title=f"test-static")
+    # yield Document.get_safe(name=f"test-static")
 
 
 @fixture(scope="session")
 def test_presentation(auth_test_clients):
     from pygsuite import Presentation
 
-    yield Presentation.get_safe(title=f"test-{uuid4()}")
+    yield Presentation.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(title=f"test-static")
+    # yield Document.get_safe(name=f"test-static")
 
 
 @fixture(scope="session")
 def test_sheet(auth_test_clients):
     from pygsuite import Spreadsheet
 
-    yield Spreadsheet.get_safe(title=f"test-{uuid4()}")
+    yield Spreadsheet.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(title=f"test-static")
+    # yield Document.get_safe(name=f"test-static")
 
 
 @fixture(scope="session")

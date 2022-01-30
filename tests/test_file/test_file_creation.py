@@ -7,19 +7,19 @@ TEST_ID = uuid.uuid4()
 
 
 def test_file_creation__empty_file(auth_test_clients):
-    new_file = File.create(title=f"Empty file {TEST_ID}")
+    new_file = File.create(name=f"Empty file {TEST_ID}")
     assert new_file.id is not None
     new_file.delete()
 
 
 def test_file_creation__starred_file(auth_test_clients):
-    new_file = File.create(title=f"Starred file {TEST_ID}", starred=True)
+    new_file = File.create(name=f"Starred file {TEST_ID}", starred=True)
     assert new_file.id is not None
     new_file.delete()
 
 
 def test_file_creation__specified_mimetype(auth_test_clients):
-    new_file = File.create(title=f"Empty text file {TEST_ID}", mimetype="text/plain")
+    new_file = File.create(name=f"Empty text file {TEST_ID}", mimetype="text/plain")
     assert new_file.id is not None
     new_file.delete()
 
@@ -27,7 +27,7 @@ def test_file_creation__specified_mimetype(auth_test_clients):
 def test_file_creation__specified_google_mimetype(auth_test_clients):
     from pygsuite.enums import GoogleMimeType
 
-    new_file = File.create(title=f"Empty Spreadsheet {TEST_ID}", mimetype=GoogleMimeType.SHEETS)
+    new_file = File.create(name=f"Empty Spreadsheet {TEST_ID}", mimetype=GoogleMimeType.SHEETS)
     assert new_file.id is not None
     new_file.delete()
 
@@ -42,7 +42,7 @@ def test_file_creation__from_bytes(auth_test_clients):
     bytes = BytesIO(response.content)
 
     new_file = File.create(
-        title=f"Test image file {TEST_ID}",
+        name=f"Test image file {TEST_ID}",
         mimetype="image/svg+xml",
         media_body=bytes,
     )
@@ -53,7 +53,7 @@ def test_file_creation__from_bytes(auth_test_clients):
 def test_file_creation__custom_body(auth_test_clients):
     custom_body = {"description": "minimal test of custom body"}
     new_file = File.create(
-        title=f"Custom body test {TEST_ID}",
+        name=f"Custom body test {TEST_ID}",
         mimetype="text/plain",
         extra_body=custom_body,
     )
@@ -66,7 +66,7 @@ def test_file_creation__custom_body(auth_test_clients):
 #     upload_file = r".\assets\test.txt"
 #     new_file = File.upload(
 #         filepath=upload_file,
-#         title=f"Test test upload {TEST_ID}",
+#         name=f"Test test upload {TEST_ID}",
 #         mimetype="text/plain",
 #     )
 #     assert new_file.id is not None
@@ -78,7 +78,7 @@ def test_file_creation__custom_body(auth_test_clients):
 #     upload_file = r".\assets\test data.xlsx"
 #     new_file = File.upload(
 #         filepath=upload_file,
-#         title=f"Test Excel upload {TEST_ID}",
+#         name=f"Test Excel upload {TEST_ID}",
 #         convert_to=GoogleDocFormat.SHEETS,
 #     )
 #     assert new_file.id is not None
