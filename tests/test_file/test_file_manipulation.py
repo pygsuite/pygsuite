@@ -1,7 +1,7 @@
 import logging
 
 
-def test_file_metadata__cached(test_text_file, caplog):
+def test_file_metadata__cached(auth_test_clients, test_text_file, caplog):
     caplog.set_level(logging.INFO)
 
     test_file = test_text_file
@@ -13,7 +13,7 @@ def test_file_metadata__cached(test_text_file, caplog):
     assert "Using cached metadata..." in caplog.messages
 
 
-def test_file_metadata__non_cached(test_text_file):
+def test_file_metadata__non_cached(auth_test_clients, test_text_file):
     test_file = test_text_file
     created_time = test_file.fetch_metadata(fields=["createdTime"]).get("createdTime")
     assert created_time is not None
@@ -26,7 +26,7 @@ def test_file_metadata__non_cached(test_text_file):
 #     assert comments == []
 
 
-def test_file_sharing(test_text_file):
+def test_file_sharing(auth_test_clients, test_text_file):
     from pygsuite.enums import PermissionType
 
     test_file = test_text_file

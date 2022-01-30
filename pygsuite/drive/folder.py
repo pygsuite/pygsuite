@@ -47,7 +47,7 @@ class Folder:
         new_folder = drive_client.files().create(
             body=body,
             fields="id",
-        )
+        ).execute()
 
         return Folder(id=new_folder.get("id"), client=drive_client)
 

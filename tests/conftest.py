@@ -32,6 +32,15 @@ def auth_test_clients():
 
 
 @fixture(scope="session")
+def test_folder(auth_test_clients):
+    from pygsuite import Folder
+
+    yield Folder.create(
+        name=f"test-{uuid4()}"
+    )
+
+
+@fixture(scope="session")
 def test_text_file(auth_test_clients):
     from pygsuite import File
 
