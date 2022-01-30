@@ -136,13 +136,6 @@ class Spreadsheet(File):
         self._spreadsheets_update_queue: List[Dict] = []
         self._values_update_queue: List[Dict] = []
 
-    @classmethod
-    def create_new(cls, title: str, client=None):
-        """Create a new Google Sheet"""
-        client = client or Clients.sheets_client
-        new_file = cls.create(name=title, mimetype=cls.mimetype)
-        return Spreadsheet(id=new_file.id, client=client)
-
     def __getitem__(self, key: Union[str, int]):
 
         # if the key is an integer, use the int as worksheet index

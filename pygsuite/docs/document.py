@@ -16,7 +16,7 @@ class Document(File):
 
     mimetype = GoogleMimeType.DOCS
 
-    def __init__(self, id=None, name=None, client=None, _document=None, local=False):
+    def __init__(self, id=None, client=None, name=None, _document=None, local=False):
 
         if not local:
             client = client or Clients.docs_client
@@ -25,13 +25,6 @@ class Document(File):
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
         self.auto_sync = False
-
-    @classmethod
-    def create_new(cls, title: str, client=None):
-        client = client or Clients.docs_client
-        body = {"title": title}
-        new = client.documents().create(body=body).execute()
-        return Document(id=new.get("documentId"), client=client)
 
     def id(self):
         return self._document["id"]

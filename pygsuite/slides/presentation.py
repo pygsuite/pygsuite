@@ -23,13 +23,6 @@ class Presentation(File):
         self._presentation = self.service.presentations().get(presentationId=self.id).execute()
         self._change_queue = []
 
-    @classmethod
-    def create_new(cls, title: str, client=None):
-        client = client or Clients.slides_client
-        body = {"title": title}
-        new = client.presentations().create(body=body).execute()
-        return Presentation(id=new.get("presentationId"), client=client)
-
     def __getitem__(self, item) -> Slide:
         return self.slides[item]
 
