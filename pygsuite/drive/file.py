@@ -355,7 +355,10 @@ class File:
 
         return [
             Comment(item)
-            for item in self.drive_client.comments().list(fileId=self.id).execute().get("items", [])
+            for item in self.drive_client.comments().list(
+                fileId=self.id,
+                fields=None,
+            ).execute().get("items", [])
         ]
 
     def update(self):
