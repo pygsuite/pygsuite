@@ -9,7 +9,7 @@ from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryT
 from pygsuite.enums import GoogleMimeType
 
 
-class Folder:
+class Folder(File):
     """Base class for a Google Drive Folder"""
 
     mimetype = GoogleMimeType.FOLDER
@@ -18,38 +18,6 @@ class Folder:
 
         self.id = parse_id(id) if id else None
         self.client = client or Clients.drive_client
-
-    @classmethod
-    def create(
-        cls,
-        name: str,
-        parent_folder_ids: Optional[List[str]] = None,
-        drive_client: Optional[Resource] = None,
-    ):
-        """Create a new folder with a specified location.
-
-        Args:
-            name (str): Name of the folder to create.
-            parent_folder_ids (List[str]): The IDs of the parent folders which contain the folder.
-                If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
-            drive_client (Resource): client connection to the Drive API used to create folder.
-        """
-
-        # establish a client
-        drive_client = drive_client or Clients.drive_client_v3
-
-        # create request body
-        body = {"name": name, "mimeType": str(cls.mimetype)}
-
-        if parent_folder_ids:
-            body["parents"] = parent_folder_ids
-
-        new_folder = drive_client.files().create(
-            body=body,
-            fields="id",
-        ).execute()
-
-        return Folder(id=new_folder.get("id"), client=drive_client)
 
     def get_files(
         self,
