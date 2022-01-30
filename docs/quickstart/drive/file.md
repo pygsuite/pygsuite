@@ -1,4 +1,4 @@
-This quickstart assumes that you have already authorized your client, per the [auth quickstart](./auth.md). Authorization is the same for all examples.
+_This quickstart assumes that you have already authorized your client, per the [auth quickstart](./auth.md). Authorization is the same for all examples._
 
 
 # The File object

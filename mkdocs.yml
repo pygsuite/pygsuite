@@ -15,7 +15,7 @@ pages:
       - Docs: quickstart/docs.md
       - Sheets: quickstart/sheets.md
       - Slides: quickstart/slides.md
-  - Examples:
+  - Examples: ref_examples/examples.md
       - Docs: ref_examples/docs.md
       - Sheets: ref_examples/sheets.md
       - Slides: ref_examples/slides.md
@@ -32,7 +32,11 @@ theme:
 #google_analytics:
 #  - "auto"
 markdown_extensions:
-  - codehilite
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tasklist
+  - urlize
   - admonition
   - toc:
       permalink: true

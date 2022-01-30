@@ -85,6 +85,9 @@ class QueryString:
                     "https://developers.google.com/drive/api/v3/ref-search-terms"
                 ) from e
 
+        # convert bools to JSON-friendly capitalization
+        if isinstance(self.value, bool):
+            self.value = str(self.value).lower()
         # IN comparisons reverse order to value, operator, query_term
         # ex. 'test@example.org' in writers
         if self.operator == Operator.IN:
