@@ -15,6 +15,9 @@ from pygsuite.enums import GoogleDocFormat, PermissionType, GoogleMimeType
 from pygsuite.utility.decorators import lazy_property
 
 
+_logger = logging.getLogger(__name__)
+
+
 class File:
     """Base class for a Google Drive File"""
 
@@ -102,13 +105,21 @@ class File:
         return File(id=file.get("id"), client=object_client)
 
     @classmethod
-    def create_new(cls, title: str, client=None, **kwargs):
+    def create_new(
+        cls,
+        title: str,
+        mimetype: Optional[Union[str, GoogleMimeType]] = None,
+        drive_client: Optional[Resource] = None,
+        object_client: Optional[Resource] = None,
+        **kwargs,
+    ):
         """Create a new Google Drive File
         This method is overwritten by each Google Doc object, such as Spreadsheet or Presentation.
         """
-        client = client or Clients.drive_client_v3
-        new_file = cls.create(name=title, mimetype=cls.mimetype, **kwargs)
-        return File(id=new_file.id, client=client)
+        drive_client = drive_client or Clients.drive_client_v3
+        mimetype = mimetype or cls.mimetype
+        new_file = cls.create(name=title, mimetype=mimetype, drive_client=drive_client, **kwargs)
+        return cls(id=new_file.id, client=object_client)
 
     @classmethod
     def upload(
@@ -185,7 +196,7 @@ class File:
         cls,
         title: str,
         exact_match: bool = True,
-        type: Optional[Union[GoogleMimeType, str]] = None,
+        mimetype: Optional[Union[GoogleMimeType, str]] = None,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
@@ -195,7 +206,7 @@ class File:
         Args:
             title (str): The case-sensitive title of the file to search for.
             exact_match (bool): Whether to only match the given title exactly, or return any title containing the string.
-            type (Union[GoogleMimeType, str]): A specific Google Docs type to match.
+            mimetype (Union[GoogleMimeType, str]): A specific Google Docs type to match.
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             drive_client (Resource): client connection to the Drive API used to create file.
             object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
@@ -212,8 +223,8 @@ class File:
         query = title_query
 
         # optional type query
-        if type:
-            mimetype = str(type) if isinstance(type, GoogleMimeType) else type
+        if mimetype:
+            mimetype = str(type) if isinstance(type, GoogleMimeType) else mimetype
             type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
             query = QueryStringGroup([query, type_query])
 
@@ -222,7 +233,7 @@ class File:
             query = QueryStringGroup([query, extra_conditions])
 
         # we are not handling multiple pages of matches here because
-        # we only return the first match any way
+        # we only return the first match anyway
         response = (
             drive_client.files()
             .list(
@@ -239,7 +250,7 @@ class File:
             # TODO: better method for determining *best* match from a set of matches
             return cls(files[0].get("id"), object_client)
         else:
-            return cls.create_new(title=title, client=object_client)
+            return cls.create_new(title=title, mimetype=mimetype, object_client=object_client)
 
     def copy(self):
 
@@ -292,31 +303,34 @@ class File:
             ignore_cache = True
 
         # default fields to fetch, needed by default properties
-        if fields is None:
-            fields = ["id", "kind", "name", "mimeType"]
+        _fields = ["id", "kind", "name", "mimeType"]
+        if fields:
+            _fields.extend(fields)
 
         metadata = {}
 
         # see if we have cached the file metadata already
         if ignore_cache is False:
-            try:
-                for field in fields:
+            fetch = False
+            for field in _fields:
+                try:
                     metadata[field] = self._metadata[field]
-
+                # if we cannot find a field, we need to fetch the metadata again
+                except KeyError:
+                    fetch = True
+                    break
+            if not fetch:
+                _logger.info("Using cached metadata...")
                 return metadata
-
-            # if we cannot find a field, we need to fetch the metadata again
-            except KeyError:
-                pass
 
         self._metadata = (
             self.drive_client.files().get(
                 fileId=self.id,
-                fields=f"{', '.join(fields)}",
+                fields=f"{', '.join(_fields)}",
             )
         ).execute()
 
-        for field in fields:
+        for field in _fields:
             metadata[field] = self._metadata[field]
 
         return metadata
