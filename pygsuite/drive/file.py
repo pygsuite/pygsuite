@@ -23,6 +23,7 @@ class File:
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
         self.id = parse_id(id) if id else None
+        # object-specific client
         self.client = client
 
         # metadata cache
@@ -36,9 +37,11 @@ class File:
     def create(
         cls,
         name: Optional[str] = None,
+        parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[str, GoogleMimeType]] = None,
-        body: Optional[dict] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
+        starred: bool = False,
+        extra_body: Optional[dict] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
     ):
@@ -46,9 +49,12 @@ class File:
 
         Args:
             name (str): Name of the file.
+            parent_folder_ids (List[str]): The IDs of the parent folders which contain the folder.
+                If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
             mimetype (str): Specified type of the file to create.
-            body (dict): Request body, if not provided, one is created with `name` and `mimetype` params.
             media_body (BytesIO, MediaFileUpload, MediaIoBaseUpload): Content for the file.
+            starred (bool): Whether the user has starred the file.
+            extra_body (dict): Extra parameters for the request body.
             drive_client (Resource): client connection to the Drive API used to create file.
             object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
         """
@@ -60,7 +66,15 @@ class File:
         mimetype = str(mimetype) if isinstance(mimetype, GoogleMimeType) else mimetype
 
         # create request body
-        body = {"name": name, "mimeType": mimetype} if not body else body
+        body = {
+            "name": name,
+            "mimeType": mimetype,
+            "parents": parent_folder_ids,
+            "starred": starred,
+        }
+
+        if extra_body:
+            body.update(extra_body)
 
         # handle media conversion for bytes-like objects
         if isinstance(media_body, BytesIO):
@@ -84,17 +98,16 @@ class File:
             )
             .execute()
         )
-        print(f"ID: {file.get('id')}")
 
         return File(id=file.get("id"), client=object_client)
 
     @classmethod
-    def create_new(cls, title: str, client=None):
+    def create_new(cls, title: str, client=None, **kwargs):
         """Create a new Google Drive File
         This method is overwritten by each Google Doc object, such as Spreadsheet or Presentation.
         """
         client = client or Clients.drive_client_v3
-        new_file = cls.create(name=title, mimetype=cls.mimetype)
+        new_file = cls.create(name=title, mimetype=cls.mimetype, **kwargs)
         return File(id=new_file.id, client=client)
 
     @classmethod
@@ -106,6 +119,7 @@ class File:
         convert_to: Optional[Union[str, GoogleDocFormat]] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
+        **kwargs,
     ):
         """Method to upload a local file to Google Drive.
 
@@ -160,7 +174,8 @@ class File:
             mimetype=mimetype,
             media_body=media_body,
             drive_client=drive_client,
-            client=object_client,
+            object_client=object_client,
+            **kwargs,
         )
 
         return file
@@ -225,6 +240,38 @@ class File:
             return cls(files[0].get("id"), object_client)
         else:
             return cls.create_new(title=title, client=object_client)
+
+    def copy(self):
+
+        raise NotImplementedError
+
+    def move(
+        self,
+        destination_folder_ids: List[str],
+        current_folder_ids: Optional[List[str]] = None,
+    ):
+        """Move the file from a current folder to a new folder.
+        If no current folder is specified, the current folder ID is derived.
+
+        Args:
+            destination_folder_id (str): A list of the folder IDs to move the file to.
+            current_folder_id (str): A list of the current folder IDs to remove the file from.
+        """
+        if not current_folder_ids:
+            current_folder_ids = self.fetch_metadata().get("parents")
+
+        response = (
+            self.drive_client.files()
+            .update(
+                fileId=self.id,
+                addParents=destination_folder_ids,
+                removeParents=current_folder_ids,
+                fields="parents",
+            )
+            .execute()
+        )
+
+        return response.get("parents")
 
     def fetch_metadata(
         self,
@@ -297,9 +344,13 @@ class File:
             for item in self.drive_client.comments().list(fileId=self.id).execute().get("items", [])
         ]
 
+    def update(self):
+
+        raise NotImplementedError
+
     def share(
         self,
-        role: PermissionType,
+        role: Union[PermissionType, str],
         user: Optional[str] = None,
         group: Optional[str] = None,
         domain: Optional[str] = None,
@@ -319,6 +370,7 @@ class File:
 
         permissions: List[dict] = []
 
+        # coerce any strings into a PermissionType
         role = PermissionType(role)
 
         if user:
@@ -333,6 +385,10 @@ class File:
             self.drive_client.permissions().create(
                 fileId=self.id, body=permission, supportsAllDrives=True
             ).execute()
+
+    def download(self):
+
+        raise NotImplementedError
 
     def delete(self):
         """Permanently deletes a file owned by the user without moving it to the trash."""
