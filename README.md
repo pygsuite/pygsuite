@@ -1,4 +1,6 @@
-# Pygsuite
+![logo](./docs/images/pygsuite_logo.png =75x78)
+
+# pygsuite
 
 [![Join the chat at https://gitter.im/pygsuite/community](https://badges.gitter.im/pygsuite/community.svg)](https://gitter.im/pygsuite/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
