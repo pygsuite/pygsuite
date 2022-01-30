@@ -1,4 +1,4 @@
-![logo](./docs/images/pygsuite_logo.png =75x78)
+![logo](./docs/images/pygsuite_logo.png | width=100)
 
 # pygsuite
 
