@@ -32,6 +32,16 @@ def auth_test_clients():
 
 
 @fixture(scope="session")
+def test_text_file(auth_test_clients):
+    from pygsuite import File
+
+    yield File.get_safe(
+        title=f"test-{uuid4()}",
+        mimetype="text/plain",
+    )
+
+
+@fixture(scope="session")
 def test_document(auth_test_clients):
     from pygsuite import Document
 
