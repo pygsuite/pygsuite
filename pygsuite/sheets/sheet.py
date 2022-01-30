@@ -55,28 +55,28 @@ class DateTimeRenderOption(Enum):
     FORMATTED_STRING = "FORMATTED_STRING"
 
 
-def create_new_spreadsheet(title: str, client: Optional[Resource] = None):
+def create_new_spreadsheet(name: str, client: Optional[Resource] = None):
     """Function to create a new spreadsheet given a client connection to the GSuite API,
-       and a title for the new sheet.
+       and a name for the new sheet.
 
     # TODO: add functionality to specify "filepath"?
 
     Args:
         service (googleapiclient.discovery.Resource): Connection to the Google API Sheets resource.
-        title (str): Name for the new spreadsheet document
+        name (str): Name for the new spreadsheet document
 
     Returns:
         id (str): the id of the spreadsheet
     """
 
-    if not isinstance(title, str):
+    if not isinstance(name, str):
         raise TypeError("The name of the spreadsheet must be given as a string.")
 
     from pygsuite import Clients
 
     service = client or Clients.sheets_client
 
-    request = {"properties": {"title": title}}
+    request = {"properties": {"title": name}}
 
     spreadsheet = service.spreadsheets().create(body=request, fields="spreadsheetId").execute()
     id = spreadsheet.get("spreadsheetId")

@@ -49,7 +49,7 @@ class File:
     @classmethod
     def _create(
         cls,
-        title: Optional[str] = None,
+        name: Optional[str] = None,
         parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[str, GoogleMimeType]] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
@@ -62,7 +62,7 @@ class File:
         """Base create method.
 
         Args:
-            title (str): Title of the file.
+            name (str): Name of the file.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the folder.
                 If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
             mimetype (str): Specified type of the file to create.
@@ -81,7 +81,7 @@ class File:
 
         # create request body
         body = {
-            "name": title,
+            "name": name,
             "mimeType": mimetype,
             "parents": parent_folder_ids,
             "starred": starred,
@@ -120,7 +120,7 @@ class File:
     @classmethod
     def create(
         cls,
-        title: Optional[str] = None,
+        name: Optional[str] = None,
         parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[str, GoogleMimeType]] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
@@ -133,7 +133,7 @@ class File:
         """Create a new Google Drive File (or child type for instances such as Spreadsheet, Presentation, etc.)
 
         Args:
-            title (str): Title of the file.
+            name (str): Name of the file.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
                 If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
             mimetype (str): Specified type of the file to create.
@@ -149,7 +149,7 @@ class File:
         mimetype = mimetype or cls._mimetype
         print(mimetype, str(mimetype))
         new_file = cls._create(
-            title=title,
+            name=name,
             parent_folder_ids=parent_folder_ids,
             mimetype=mimetype,
             media_body=media_body,
@@ -164,7 +164,7 @@ class File:
     def upload(
         cls,
         filepath: str,
-        title: Optional[str] = None,
+        name: Optional[str] = None,
         parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[str] = None,
         convert_to: Optional[Union[str, GoogleDocFormat]] = None,
@@ -177,7 +177,7 @@ class File:
 
         Args:
             filepath (str): Filepath of the file to upload.
-            title (str): Title of the file in Google Drive once uploaded.
+            name (str): Name of the file in Google Drive once uploaded.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
                 If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
             mimetype (str): Specified type of the file to create. mimetype is automatically determined if not specified.
@@ -199,8 +199,8 @@ class File:
         # get filename and extension
         _, extension = os.path.splitext(filepath)
 
-        # title of the file in Drive
-        title = title if title else os.path.basename(filepath)
+        # name of the file in Drive
+        name = name if name else os.path.basename(filepath)
 
         if convert_to:
             # try to coerce str into a GoogleDocFormat
@@ -225,7 +225,7 @@ class File:
         )
 
         file = cls._create(
-            title=title,
+            name=name,
             parent_folder_ids=parent_folder_ids,
             mimetype=mimetype,
             media_body=media_body,
@@ -240,7 +240,7 @@ class File:
     @classmethod
     def get_safe(
         cls,
-        title: str,
+        name: str,
         exact_match: bool = True,
         parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[GoogleMimeType, str]] = None,
@@ -251,8 +251,8 @@ class File:
         """Get a file or create one if not found
 
         Args:
-            title (str): The case-sensitive title of the file to search for.
-            exact_match (bool): Whether to only match the given title exactly, or return any title containing the string.
+            name (str): The case-sensitive name of the file to search for.
+            exact_match (bool): Whether to only match the given name exactly, or return any name containing the string.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
             mimetype (Union[GoogleMimeType, str]): A specific Google Docs type to match.
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
@@ -265,10 +265,10 @@ class File:
         # establish a client
         drive_client = drive_client or Clients.drive_client_v3
 
-        # title match query
+        # name match query
         operator = Operator.EQUAL if exact_match else Operator.CONTAINS
-        title_query = QueryString(QueryTerm.NAME, operator, title)
-        query = title_query
+        name_query = QueryString(QueryTerm.NAME, operator, name)
+        query = name_query
 
         # optional folder query
         if parent_folder_ids:
@@ -305,7 +305,7 @@ class File:
         else:
             _logger.info("No matching file found, creating file now...")
             return cls.create(
-                title=title,
+                name=name,
                 parent_folder_ids=parent_folder_ids,
                 mimetype=mimetype,
                 object_client=object_client,

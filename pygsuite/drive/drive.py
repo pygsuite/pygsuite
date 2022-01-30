@@ -38,7 +38,7 @@ class Drive:
     def find_files(
         self,
         folder_id: Optional[str] = None,
-        title: Optional[str] = None,
+        name: Optional[str] = None,
         exact_match: bool = True,
         type: Optional[Union[GoogleMimeType, str]] = None,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
@@ -48,19 +48,19 @@ class Drive:
 
         Args:
             folder_id (str): The folder ID to search within. If none is provided, a recursive search of all folders is performed.
-            title (str): The case-sensitive title of the file to search for.
-            exact_match (bool): Whether to only match the given title exactly, or return any title containing the string.
+            name (str): The case-sensitive name of the file to search for.
+            exact_match (bool): Whether to only match the given name exactly, or return any name containing the string.
             type (Union[GoogleMimeType, str]): A specific Google Docs type to match.
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             support_all_drives (bool): Whether the requesting application supports both My Drives and shared drives.
         """
         query = None
 
-        # title match query
-        if title:
+        # name match query
+        if name:
             operator = Operator.EQUAL if exact_match else Operator.CONTAINS
-            title_query = QueryString(QueryTerm.NAME, operator, title)
-            query = title_query
+            name_query = QueryString(QueryTerm.NAME, operator, name)
+            query = name_query
 
         # optional type query
         if type:
