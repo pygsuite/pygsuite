@@ -4,23 +4,22 @@ from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
-from pygsuite.drive.file import File
+from pygsuite.drive.drive_object import DriveObject
 from pygsuite.enums import GoogleMimeType
 from pygsuite.utility.decorators import retry
 from .layout import Layout
 from .slide import Slide
 
 
-class Presentation(File):
+class Presentation(DriveObject):
 
     _mimetype = GoogleMimeType.SLIDES
 
     def __init__(self, id, client=None):
-        from pygsuite import Clients
-
         self.service = client or Clients.slides_client
         self.id = parse_id(id) if id else None
-        File.__init__(self, id=id, client=client)
+        DriveObject.__init__(self, id=id, client=client)
+
         self._presentation = self.service.presentations().get(presentationId=self.id).execute()
         self._change_queue = []
 

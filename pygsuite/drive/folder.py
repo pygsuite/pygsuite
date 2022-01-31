@@ -4,12 +4,13 @@ from googleapiclient.discovery import Resource
 
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
+from pygsuite.drive.drive_object import DriveObject
 from pygsuite.drive.file import File
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
 from pygsuite.enums import GoogleMimeType
 
 
-class Folder(File):
+class Folder(DriveObject):
     """Base class for a Google Drive Folder"""
 
     _mimetype = GoogleMimeType.FOLDER
@@ -18,6 +19,8 @@ class Folder(File):
 
         self.id = parse_id(id) if id else None
         self.client = client or Clients.drive_client
+
+        DriveObject.__init__(self, id=id, client=self.client)
 
     def get_files(
         self,
@@ -59,7 +62,6 @@ class Folder(File):
             )
             .execute()
         )
-        print(f"RESPONSE:\n{response}")
 
         for file in response.get("files", []):
             files.append(File(file.get("id")))

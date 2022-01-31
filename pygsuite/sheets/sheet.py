@@ -7,7 +7,7 @@ from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
-from pygsuite.drive.file import File
+from pygsuite.drive.drive_object import DriveObject
 from pygsuite.enums import GoogleMimeType
 from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
@@ -108,7 +108,7 @@ class ValueResponse(list):
         return df
 
 
-class Spreadsheet(File):
+class Spreadsheet(DriveObject):
     """Base class for the GSuite Spreadsheets API."""
 
     _mimetype = GoogleMimeType.SHEETS
@@ -127,7 +127,7 @@ class Spreadsheet(File):
 
         self.service = client or Clients.sheets_client
         self.id = parse_id(id) if id else None
-        File.__init__(self, id=id, client=client)
+        DriveObject.__init__(self, id=id, client=client)
 
         self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
         self._properties = self._spreadsheet.get("properties")

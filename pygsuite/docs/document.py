@@ -6,12 +6,12 @@ from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
-from pygsuite.drive.file import File
+from pygsuite.drive.drive_object import DriveObject
 from pygsuite.enums import GoogleMimeType
 from pygsuite.utility.decorators import retry
 
 
-class Document(File):
+class Document(DriveObject):
     """A document on google drive."""
 
     _mimetype = GoogleMimeType.DOCS
@@ -21,7 +21,8 @@ class Document(File):
         if not local:
             client = client or Clients.docs_client
         self.service = client
-        File.__init__(self, id=parse_id(id) if id else None, client=client)
+        self.id = parse_id(id) if id else None
+        DriveObject.__init__(self, id=id, client=client)
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
         self.auto_sync = False
