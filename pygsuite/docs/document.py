@@ -7,14 +7,14 @@ from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
 from pygsuite.drive.drive_object import DriveObject
-from pygsuite.enums import GoogleMimeType
+from pygsuite.enums import MimeType
 from pygsuite.utility.decorators import retry
 
 
 class Document(DriveObject):
     """A document on google drive."""
 
-    _mimetype = GoogleMimeType.DOCS
+    _mimetype = MimeType.DOCS
 
     def __init__(self, id=None, client=None, name=None, _document=None, local=False):
 

@@ -17,7 +17,7 @@ class UserType(Enum):
     ANYONE = "anyone"
 
 
-class GoogleMimeType(Enum):
+class MimeType(Enum):
     SHEETS = "application/vnd.google-apps.spreadsheet"
     DOCS = "application/vnd.google-apps.document"
     SLIDES = "application/vnd.google-apps.presentation"

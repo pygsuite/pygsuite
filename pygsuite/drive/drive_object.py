@@ -11,7 +11,7 @@ from pygsuite.common.comment import Comment
 from pygsuite.common.parsing import parse_id
 from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE, FILE_MIME_TYPE_MAP
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
-from pygsuite.enums import GoogleDocFormat, PermissionType, GoogleMimeType
+from pygsuite.enums import GoogleDocFormat, PermissionType, MimeType
 from pygsuite.utility.decorators import lazy_property
 
 
@@ -31,7 +31,7 @@ class DriveObject:
     - Document
     """
 
-    _mimetype = GoogleMimeType.UNKNOWN
+    _mimetype = MimeType.UNKNOWN
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 

@@ -3,7 +3,7 @@ from typing import Optional, Union
 from pygsuite import Clients
 from pygsuite.drive.folder import Folder
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
-from pygsuite.enums import GoogleMimeType, PermissionType, UserType
+from pygsuite.enums import MimeType, PermissionType, UserType
 
 
 DRIVE_V3_API_URL = "https://www.googleapis.com/drive/v3/files"
@@ -22,7 +22,7 @@ class Drive:
         client = client or Clients.drive_client_v3
         self.service = client
 
-    def _find_files(self, type: GoogleMimeType, name: Optional[str] = None):
+    def _find_files(self, type: MimeType, name: Optional[str] = None):
         q = f'mimeType="{type}"'
         if name:
             q += f' and name = "{name}"'
@@ -40,7 +40,7 @@ class Drive:
         folder_id: Optional[str] = None,
         name: Optional[str] = None,
         exact_match: bool = True,
-        type: Optional[Union[GoogleMimeType, str]] = None,
+        type: Optional[Union[MimeType, str]] = None,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         support_all_drives: bool = False,
     ):
@@ -50,7 +50,7 @@ class Drive:
             folder_id (str): The folder ID to search within. If none is provided, a recursive search of all folders is performed.
             name (str): The case-sensitive name of the file to search for.
             exact_match (bool): Whether to only match the given name exactly, or return any name containing the string.
-            type (Union[GoogleMimeType, str]): A specific Google Docs type to match.
+            type (Union[MimeType, str]): A specific Google Docs type to match.
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             support_all_drives (bool): Whether the requesting application supports both My Drives and shared drives.
         """
@@ -64,7 +64,7 @@ class Drive:
 
         # optional type query
         if type:
-            mimetype = str(type) if isinstance(type, GoogleMimeType) else type
+            mimetype = str(type) if isinstance(type, MimeType) else type
             type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
             query = QueryStringGroup([query, type_query]) if query else type_query
 

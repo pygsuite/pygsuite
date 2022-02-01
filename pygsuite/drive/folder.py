@@ -7,13 +7,13 @@ from pygsuite.common.parsing import parse_id
 from pygsuite.drive.drive_object import DriveObject
 from pygsuite.drive.file import File
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
-from pygsuite.enums import GoogleMimeType
+from pygsuite.enums import MimeType
 
 
 class Folder(DriveObject):
     """Base class for a Google Drive Folder"""
 
-    _mimetype = GoogleMimeType.FOLDER
+    _mimetype = MimeType.FOLDER
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
