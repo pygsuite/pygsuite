@@ -52,7 +52,7 @@ class DriveObject:
         cls,
         name: Optional[str] = None,
         parent_folder_ids: Optional[List[str]] = None,
-        mimetype: Optional[Union[str, GoogleMimeType]] = None,
+        mimetype: Optional[Union[str, MimeType]] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
         starred: bool = False,
         extra_body: Optional[dict] = None,
@@ -66,7 +66,7 @@ class DriveObject:
             name (str): Name of the file.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the folder.
                 If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
-            mimetype (str): Specified type of the file to create.
+            mimetype (Union[str, MimeType]): Specified type of the file to create.
             media_body (BytesIO, MediaFileUpload, MediaIoBaseUpload): Content for the file.
             starred (bool): Whether the user has starred the file.
             extra_body (dict): Extra parameters for the request body.
@@ -78,7 +78,7 @@ class DriveObject:
         drive_client = drive_client or Clients.drive_client_v3
 
         # handle Google mimetypes
-        mimetype = str(mimetype) if isinstance(mimetype, GoogleMimeType) else mimetype
+        mimetype = str(mimetype) if mimetype is not None else None
 
         # create request body
         body = {
@@ -123,7 +123,7 @@ class DriveObject:
         cls,
         name: Optional[str] = None,
         parent_folder_ids: Optional[List[str]] = None,
-        mimetype: Optional[Union[str, GoogleMimeType]] = None,
+        mimetype: Optional[Union[str, MimeType]] = None,
         media_body: Optional[Union[BytesIO, MediaFileUpload, MediaIoBaseUpload]] = None,
         starred: bool = False,
         extra_body: Optional[dict] = None,
@@ -137,7 +137,7 @@ class DriveObject:
             name (str): Name of the file.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
                 If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
-            mimetype (str): Specified type of the file to create.
+            mimetype (Union[str, MimeType]): Specified type of the file to create.
             media_body (BytesIO, MediaFileUpload, MediaIoBaseUpload): Content for the file.
             starred (bool): Whether the user has starred the file.
             extra_body (dict): Extra parameters for the request body.
@@ -148,11 +148,11 @@ class DriveObject:
         """
         drive_client = drive_client or Clients.drive_client_v3
         mimetype = mimetype or cls._mimetype
-        print(mimetype, str(mimetype))
+
         new_file = cls._create(
             name=name,
             parent_folder_ids=parent_folder_ids,
-            mimetype=mimetype,
+            mimetype=str(mimetype),
             media_body=media_body,
             starred=starred,
             extra_body=extra_body,
@@ -167,7 +167,7 @@ class DriveObject:
         filepath: str,
         name: Optional[str] = None,
         parent_folder_ids: Optional[List[str]] = None,
-        mimetype: Optional[str] = None,
+        mimetype: Optional[Union[str, MimeType]] = None,
         convert_to: Optional[Union[str, GoogleDocFormat]] = None,
         starred: bool = False,
         drive_client: Optional[Resource] = None,
@@ -181,7 +181,7 @@ class DriveObject:
             name (str): Name of the file in Google Drive once uploaded.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
                 If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
-            mimetype (str): Specified type of the file to create. mimetype is automatically determined if not specified.
+            mimetype (Union[str, MimeType]): Specified type of the file to create. mimetype is automatically determined if not specified.
             convert_to (str, GoogleDocFormat): Convert the upload file into a Google App file (e.g. CSV -> Google Sheet)
             starred (bool): Whether the user has starred the file.
             drive_client (Resource): client connection to the Drive API used to create file.
@@ -202,6 +202,9 @@ class DriveObject:
 
         # name of the file in Drive
         name = name if name else os.path.basename(filepath)
+
+        # handle MimeType enums
+        mimetype = str(mimetype) if mimetype is not None else None
 
         if convert_to:
             # try to coerce str into a GoogleDocFormat
@@ -244,7 +247,7 @@ class DriveObject:
         name: str,
         exact_match: bool = True,
         parent_folder_ids: Optional[List[str]] = None,
-        mimetype: Optional[Union[GoogleMimeType, str]] = None,
+        mimetype: Optional[Union[MimeType, str]] = None,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
@@ -278,7 +281,7 @@ class DriveObject:
 
         # optional mimetype query
         if mimetype:
-            mimetype = str(type) if isinstance(type, GoogleMimeType) else mimetype
+            mimetype = str(mimetype)
             type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
             query = QueryStringGroup([query, type_query])
 
