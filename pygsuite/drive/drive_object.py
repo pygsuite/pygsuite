@@ -305,6 +305,7 @@ class DriveObject:
         files = response.get("files", [])
         if files:
             # TODO: better method for determining *best* match from a set of matches
+            _logger.info("Matching file found, returning existing file...")
             return cls(files[0].get("id"), object_client)
         else:
             _logger.info("No matching file found, creating file now...")

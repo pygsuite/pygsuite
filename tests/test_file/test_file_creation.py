@@ -1,3 +1,4 @@
+import logging
 import uuid
 from os.path import abspath, dirname, join
 
@@ -84,3 +85,17 @@ def test_file_upload__from_local_file__with_conversion(auth_test_clients):
     )
     assert new_file.id is not None
     new_file.delete()
+
+
+def test_file__get_safe(auth_test_clients, caplog):
+    from pygsuite.enums import MimeType
+
+    caplog.set_level(logging.INFO)
+
+    new_file = File.create(name=f"My Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
+
+    file_to_find = File.get_safe(name=f"My Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
+    assert new_file.id == file_to_find.id
+    assert "Matching file found, returning existing file..." in caplog.messages
+
+    file_to_find.delete()
