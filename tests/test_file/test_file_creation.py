@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from pygsuite.drive import File
@@ -25,9 +26,9 @@ def test_file_creation__specified_mimetype(auth_test_clients):
 
 
 def test_file_creation__specified_google_mimetype(auth_test_clients):
-    from pygsuite.enums import GoogleMimeType
+    from pygsuite.enums import MimeType
 
-    new_file = File.create(name=f"Empty Spreadsheet {TEST_ID}", mimetype=GoogleMimeType.SHEETS)
+    new_file = File.create(name=f"Empty Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
     assert new_file.id is not None
     new_file.delete()
 
@@ -61,25 +62,27 @@ def test_file_creation__custom_body(auth_test_clients):
     new_file.delete()
 
 
-# TODO: how can we import local files in GitHub actions?
-# def test_file_upload__from_local_file(auth_test_clients):
-#     upload_file = r".\assets\test.txt"
-#     new_file = File.upload(
-#         filepath=upload_file,
-#         name=f"Test test upload {TEST_ID}",
-#         mimetype="text/plain",
-#     )
-#     assert new_file.id is not None
-#     new_file.delete()
+def test_file_upload__from_local_file(auth_test_clients):
+    upload_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + r"\test_file\assets\test.txt"
+    print(upload_file)
+    # upload_file = r".\assets\test.txt"
+    new_file = File.upload(
+        filepath=upload_file,
+        name=f"Test test upload {TEST_ID}",
+        mimetype="text/plain",
+    )
+    assert new_file.id is not None
+    new_file.delete()
 
 
-# def test_file_upload__from_local_file__with_conversion(auth_test_clients):
-# from pygsuite.enums import GoogleDocFormat
-#     upload_file = r".\assets\test data.xlsx"
-#     new_file = File.upload(
-#         filepath=upload_file,
-#         name=f"Test Excel upload {TEST_ID}",
-#         convert_to=GoogleDocFormat.SHEETS,
-#     )
-#     assert new_file.id is not None
-#     new_file.delete()
+def test_file_upload__from_local_file__with_conversion(auth_test_clients):
+    from pygsuite.enums import GoogleDocFormat
+    # upload_file = r".\assets\test data.xlsx"
+    upload_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + r"\test_file\assets\test data.xlsx"
+    new_file = File.upload(
+        filepath=upload_file,
+        name=f"Test Excel upload {TEST_ID}",
+        convert_to=GoogleDocFormat.SHEETS,
+    )
+    assert new_file.id is not None
+    new_file.delete()
