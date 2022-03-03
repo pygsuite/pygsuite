@@ -39,7 +39,7 @@ def execute_paginated_command(
     """Iteratively execute a request over pages.
 
     Args:
-        client (Resource): Resource used to execute the API call. 
+        client (Resource): Resource used to execute the API call.
         method (str): Resource method to call with kwargs.
         fetch_field (str): Field name to return as the result from API responses.
         max_results (Optional[int]): Maximum number of results to return, defaults to unbounded (None).
