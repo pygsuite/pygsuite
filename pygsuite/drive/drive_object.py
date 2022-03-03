@@ -98,10 +98,9 @@ class DriveObject:
             # if a mimetype is not provided, find best match
             if not mimetype:
                 logging.warning("No mimetype specified, attempting to determine one.")
-
                 import magic
-
-                mimetype = magic.from_buffer(media_body.read())
+                mimetype = magic.from_buffer(media_body.read(2048), mime=True)
+                logging.info(f"MimeType found for file: {mimetype}")
 
             media_body = MediaIoBaseUpload(fd=media_body, mimetype=mimetype)
 

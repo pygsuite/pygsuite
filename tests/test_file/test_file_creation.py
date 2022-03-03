@@ -63,6 +63,24 @@ def test_file_creation__custom_body(auth_test_clients):
     new_file.delete()
 
 
+def test_file_creation__inferred_mimetype(auth_test_clients, caplog):
+    from io import BytesIO
+
+    caplog.set_level(logging.INFO)
+
+    upload_file = join(dirname(dirname(abspath(__file__))), "test_file", "assets", "dummy.pdf")
+    with open(upload_file, "rb") as excel_file:
+        excel_bytes = BytesIO(excel_file.read())
+
+    new_file = File.create(
+        name=f"Test MimeType Infer {TEST_ID}",
+        media_body=excel_bytes,
+    )
+    assert new_file.id is not None
+    assert "No mimetype specified, attempting to determine one." in caplog.messages
+    assert "MimeType found for file: application/pdf" in caplog.messages
+
+
 def test_file_upload__from_local_file(auth_test_clients):
     upload_file = join(dirname(dirname(abspath(__file__))), "test_file", "assets", "test.txt")
     print(upload_file)
