@@ -32,6 +32,7 @@ class DriveObject:
     """
 
     _mimetype = MimeType.UNKNOWN
+    _base_url = "https://drive.google.com/file/d/{}/view"
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
@@ -413,6 +414,11 @@ class DriveObject:
     def mimetype(self):
 
         return self.fetch_metadata().get("mimeType")
+
+    @property
+    def url(self):
+
+        return self._base_url.format(self.id)
 
     @property
     def comments(self) -> List[Comment]:

@@ -15,6 +15,7 @@ class Document(DriveObject):
     """A document on google drive."""
 
     _mimetype = MimeType.DOCS
+    _base_url = "https://docs.google.com/document/d/{}/edit"
 
     def __init__(self, id=None, client=None, name=None, _document=None, local=False):
 

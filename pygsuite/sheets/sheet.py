@@ -112,6 +112,7 @@ class Spreadsheet(DriveObject):
     """Base class for the GSuite Spreadsheets API."""
 
     _mimetype = MimeType.SHEETS
+    _base_url = "https://docs.google.com/spreadsheets/d/{}/edit"
 
     def __init__(self, id: str, client: Optional[Resource] = None):
         """Method to initialize the class.
@@ -370,7 +371,3 @@ class Spreadsheet(DriveObject):
         self.insert_data(insert_range=insert_range, values=values, major_dimension=major_dimension)
 
         return self
-
-    @property
-    def url(self):
-        return f"https://docs.google.com/spreadsheets/d/{self.id}"

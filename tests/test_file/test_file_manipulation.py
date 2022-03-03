@@ -19,6 +19,11 @@ def test_file_metadata__non_cached(auth_test_clients, test_text_file):
     assert created_time is not None
 
 
+def test_file_url(auth_test_clients, test_sheet):
+    sheet = test_sheet
+    assert sheet.url == f"https://docs.google.com/spreadsheets/d/{sheet.id}/edit"
+
+
 # TODO: add some comments and check content
 # def test_file_comments(test_text_file):
 #     test_file = test_text_file

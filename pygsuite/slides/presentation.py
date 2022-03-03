@@ -14,6 +14,7 @@ from .slide import Slide
 class Presentation(DriveObject):
 
     _mimetype = MimeType.SLIDES
+    _base_url = "https://docs.google.com/presentation/d/{}/edit"
 
     def __init__(self, id, client=None):
         self.service = client or Clients.slides_client

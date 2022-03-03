@@ -11,6 +11,7 @@ class File(DriveObject):
     """Base class for a Google Drive File"""
 
     _mimetype = MimeType.UNKNOWN
+    _base_url = "https://drive.google.com/file/d/{}/view"
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
