@@ -35,44 +35,58 @@ def auth_test_clients():
 def test_folder(auth_test_clients):
     from pygsuite import Folder
 
-    yield Folder.get_safe(name=f"test-{uuid4()}")
+    test_dir = Folder.get_safe(name=f"test-{uuid4()}")
+
+    yield test_dir
+
+    test_dir.delete()
 
 
 @fixture(scope="session")
 def test_text_file(auth_test_clients):
     from pygsuite import File
 
-    yield File.get_safe(
+    test_file = File.get_safe(
         name=f"test-{uuid4()}",
         mimetype="text/plain",
     )
+
+    yield test_file
+
+    test_file.delete()
 
 
 @fixture(scope="session")
 def test_document(auth_test_clients):
     from pygsuite import Document
 
-    yield Document.get_safe(name=f"test-{uuid4()}")
+    test_doc = Document.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(name=f"test-static")
+    yield test_doc
+
+    test_doc.delete()
 
 
 @fixture(scope="session")
 def test_presentation(auth_test_clients):
     from pygsuite import Presentation
 
-    yield Presentation.get_safe(name=f"test-{uuid4()}")
+    test_slides = Presentation.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(name=f"test-static")
+    yield test_slides
+
+    test_slides.delete()
 
 
 @fixture(scope="session")
 def test_sheet(auth_test_clients):
     from pygsuite import Spreadsheet
 
-    yield Spreadsheet.get_safe(name=f"test-{uuid4()}")
+    test_sheet = Spreadsheet.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(name=f"test-static")
+    yield test_sheet
+
+    test_sheet.delete()
 
 
 @fixture(scope="session")
