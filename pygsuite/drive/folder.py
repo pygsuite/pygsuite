@@ -8,6 +8,7 @@ from pygsuite.drive.drive_object import DriveObject
 from pygsuite.drive.file import File
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
 from pygsuite.enums import MimeType
+from pygsuite.utility.requests import execute_paginated_command
 
 
 class Folder(DriveObject):
@@ -35,8 +36,6 @@ class Folder(DriveObject):
             support_all_drives (bool): Whether the requesting application supports both My Drives and shared drives.
         """
         query = None
-        files = []
-        page_token = None
 
         if self.id:
             query = QueryString(QueryTerm.PARENTS, Operator.IN, self.id)
@@ -50,41 +49,15 @@ class Folder(DriveObject):
 
         query = query.formatted if query else query
 
-        response = (
-            self.client.files()
-            .list(
-                q=query,
-                spaces="drive",
-                fields="nextPageToken, files(id, name)",
-                pageToken=page_token,
-                supportsAllDrives=support_all_drives,
-                includeItemsFromAllDrives=support_all_drives,
-            )
-            .execute()
+        files = execute_paginated_command(
+            client=self.client.files(),
+            method="list",
+            fetch_field="files",
+            q=query,
+            spaces="drive",
+            fields="nextPageToken, files(id, name)",
+            supportsAllDrives=support_all_drives,
+            includeItemsFromAllDrives=support_all_drives,
         )
 
-        for file in response.get("files", []):
-            files.append(File(file.get("id")))
-
-        page_token = response.get("nextPageToken", None)
-
-        while page_token is not None:
-            response = (
-                self.client.files()
-                .list(
-                    q=query,
-                    spaces="drive",
-                    fields="nextPageToken, files(id, name)",
-                    pageToken=page_token,
-                    supportsAllDrives=support_all_drives,
-                    includeItemsFromAllDrives=support_all_drives,
-                )
-                .execute()
-            )
-
-            for file in response.get("files", []):
-                files.append(File(file.get("id")))
-
-            page_token = response.get("nextPageToken", None)
-
-        return files
+        return [File(file.get("id")) for file in files]
