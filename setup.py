@@ -1,7 +1,6 @@
 # type: ignore
 import ast
 import re
-import sys
 
 import setuptools
 
@@ -13,15 +12,8 @@ with open("pygsuite/__init__.py", "rb") as f:
         raise SystemExit(1)
     version = str(ast.literal_eval(_match.group(1)))
 
-# for windows machines, we need to update the python-magic requirement
-# python-magic-bin should be installed on windows, which includes DLLs
-# reference: https://github.com/ahupp/python-magic#installation
-windows = sys.platform in ["win32", "cygwin"]
-
 with open("requirements.txt", "r") as f:
     install_requires = [line.strip() for line in f.readlines()]
-    if windows:
-        install_requires[install_requires.index("python-magic")] = "python-magic-bin"
 
 setuptools.setup(
     name="pygsuite",

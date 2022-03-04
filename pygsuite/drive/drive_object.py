@@ -3,6 +3,7 @@ import logging
 import os
 from typing import List, Optional, Union
 
+import filetype
 from googleapiclient.discovery import Resource
 from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 
@@ -98,8 +99,7 @@ class DriveObject:
             # if a mimetype is not provided, find best match
             if not mimetype:
                 logging.warning("No mimetype specified, attempting to determine one.")
-                import magic
-                mimetype = magic.from_buffer(media_body.read(2048), mime=True)
+                mimetype = filetype.guess_mime(media_body.read(2048))
                 logging.info(f"MimeType found for file: {mimetype}")
 
             media_body = MediaIoBaseUpload(fd=media_body, mimetype=mimetype)
