@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from googleapiclient.discovery import Resource
 
@@ -27,13 +27,15 @@ class Folder(DriveObject):
         self,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         support_all_drives: bool = False,
-    ):
+    ) -> List[File]:
         """The files in a given folder. If no folder ID is given in the instance,
         a recursive search is performed from the Drive root.
 
         Args:
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             support_all_drives (bool): Whether the requesting application supports both My Drives and shared drives.
+
+        Returns a list of any Files found.
         """
         query = None
 
