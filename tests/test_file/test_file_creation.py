@@ -9,24 +9,28 @@ TEST_ID = uuid.uuid4()
 
 
 def test_file_creation__empty_file(auth_test_clients):
+    """Test for base file creation"""
     new_file = File.create(name=f"Empty file {TEST_ID}")
     assert new_file.id is not None
     new_file.delete()
 
 
 def test_file_creation__starred_file(auth_test_clients):
+    """Test to create a new file and add it to the user's starred items."""
     new_file = File.create(name=f"Starred file {TEST_ID}", starred=True)
     assert new_file.id is not None
     new_file.delete()
 
 
 def test_file_creation__specified_mimetype(auth_test_clients):
+    """Test to create a new, empty file of a specified type."""
     new_file = File.create(name=f"Empty text file {TEST_ID}", mimetype="text/plain")
     assert new_file.id is not None
     new_file.delete()
 
 
 def test_file_creation__specified_google_mimetype(auth_test_clients):
+    """Test to create a new, empty file of a specified Google Docs type."""
     from pygsuite.enums import MimeType
 
     new_file = File.create(name=f"Empty Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
@@ -35,6 +39,7 @@ def test_file_creation__specified_google_mimetype(auth_test_clients):
 
 
 def test_file_creation__from_bytes(auth_test_clients):
+    """Test to create a new file from bytes/"""
     from io import BytesIO
     import requests
 
@@ -53,6 +58,7 @@ def test_file_creation__from_bytes(auth_test_clients):
 
 
 def test_file_creation__custom_body(auth_test_clients):
+    """Test to confirm flexibility for a custom request body from a user."""
     custom_body = {"description": "minimal test of custom body"}
     new_file = File.create(
         name=f"Custom body test {TEST_ID}",
@@ -64,6 +70,7 @@ def test_file_creation__custom_body(auth_test_clients):
 
 
 def test_file_creation__inferred_mimetype(auth_test_clients, caplog):
+    """Test to confirm a mimetype is inferred when none is provided."""
     from io import BytesIO
 
     caplog.set_level(logging.INFO)
@@ -82,6 +89,7 @@ def test_file_creation__inferred_mimetype(auth_test_clients, caplog):
 
 
 def test_file_upload__from_local_file(auth_test_clients):
+    """Test to create a new file from a local file upload."""
     upload_file = join(dirname(dirname(abspath(__file__))), "test_file", "assets", "test.txt")
     print(upload_file)
     new_file = File.upload(
@@ -94,7 +102,9 @@ def test_file_upload__from_local_file(auth_test_clients):
 
 
 def test_file_upload__from_local_file__with_conversion(auth_test_clients):
+    """Test to create a new file from a local file upload and convert it to a Google app type."""
     from pygsuite.enums import GoogleDocFormat
+
     upload_file = join(dirname(dirname(abspath(__file__))), "test_file", "assets", "test data.xlsx")
     new_file = File.upload(
         filepath=upload_file,
@@ -106,6 +116,7 @@ def test_file_upload__from_local_file__with_conversion(auth_test_clients):
 
 
 def test_file__get_safe(auth_test_clients, caplog):
+    """Test to get or create a file by name."""
     from pygsuite.enums import MimeType
 
     caplog.set_level(logging.INFO)
