@@ -29,10 +29,7 @@ def test_get_folder_files(auth_test_clients, test_folder):
     )
 
     child_files = test_folder.get_files()
-    print(new_file_1.id, new_file_2.id)
-    print(child_files)
     for file in child_files:
-        print(file.id)
         assert file.id in [new_file_1.id, new_file_2.id]
 
     new_file_1.delete()

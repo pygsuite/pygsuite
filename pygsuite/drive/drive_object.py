@@ -89,7 +89,6 @@ class DriveObject:
             "parents": parent_folder_ids,
             "starred": starred,
         }
-        print(f"BODY:\n{body}")
 
         if extra_body:
             body.update(extra_body)

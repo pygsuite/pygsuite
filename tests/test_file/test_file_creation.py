@@ -91,7 +91,6 @@ def test_file_creation__inferred_mimetype(auth_test_clients, caplog):
 def test_file_upload__from_local_file(auth_test_clients):
     """Test to create a new file from a local file upload."""
     upload_file = join(dirname(dirname(abspath(__file__))), "test_file", "assets", "test.txt")
-    print(upload_file)
     new_file = File.upload(
         filepath=upload_file,
         name=f"Test test upload {TEST_ID}",
