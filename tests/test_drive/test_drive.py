@@ -23,7 +23,9 @@ def test_drive__find_files(auth_test_clients, test_filled_folder):
     """Test of basic find_files functionality."""
     filled_folder, child_text_file, child_sheets_file = test_filled_folder
 
-    files = Drive().find_files(folder_id=filled_folder.id,)
+    files = Drive().find_files(
+        folder_id=filled_folder.id,
+    )
     assert all(
         test_file.id in [file.id for file in files]
         for test_file in [child_text_file, child_sheets_file]
@@ -76,9 +78,7 @@ def test_drive__find_files__support_all_drives(auth_test_clients, test_filled_fo
 def test_drive__copy_file(auth_test_clients, test_text_file, test_folder):
     """Test of method to copy a file."""
     new_file = Drive().copy_file(
-        file_id=test_text_file.id,
-        title="test-copied-file",
-        folder_id=test_folder.id
+        file_id=test_text_file.id, title="test-copied-file", folder_id=test_folder.id
     )
     assert new_file.get("id") is not None
     new = File(id=new_file.id)
