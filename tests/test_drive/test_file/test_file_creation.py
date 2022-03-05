@@ -76,7 +76,7 @@ def test_file_creation__inferred_mimetype(auth_test_clients, caplog):
     caplog.set_level(logging.INFO)
 
     upload_file = join(
-        dirname(dirname(abspath(__file__))), "test_drive", "test_file", "assets", "dummy.pdf"
+        dirname(dirname(abspath(__file__))), "test_file", "assets", "dummy.pdf"
     )
     with open(upload_file, "rb") as excel_file:
         excel_bytes = BytesIO(excel_file.read())
@@ -93,7 +93,7 @@ def test_file_creation__inferred_mimetype(auth_test_clients, caplog):
 def test_file_upload__from_local_file(auth_test_clients):
     """Test to create a new file from a local file upload."""
     upload_file = join(
-        dirname(dirname(abspath(__file__))), "test_drive", "test_file", "assets", "test.txt"
+        dirname(dirname(abspath(__file__))), "test_file", "assets", "test.txt"
     )
     new_file = File.upload(
         filepath=upload_file,
@@ -109,7 +109,7 @@ def test_file_upload__from_local_file__with_conversion(auth_test_clients):
     from pygsuite.enums import GoogleDocFormat
 
     upload_file = join(
-        dirname(dirname(abspath(__file__))), "test_drive", "test_file", "assets", "test data.xlsx"
+        dirname(dirname(abspath(__file__))), "test_file", "assets", "test data.xlsx"
     )
     new_file = File.upload(
         filepath=upload_file,
