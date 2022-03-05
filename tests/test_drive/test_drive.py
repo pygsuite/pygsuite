@@ -81,5 +81,5 @@ def test_drive__copy_file(auth_test_clients, test_text_file, test_folder):
         file_id=test_text_file.id, title="test-copied-file", folder_id=test_folder.id
     )
     assert new_file.get("id") is not None
-    new = File(id=new_file.id)
+    new = File(id=new_file.get("id"))
     new.delete()
