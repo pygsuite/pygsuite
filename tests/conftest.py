@@ -43,6 +43,30 @@ def test_folder(auth_test_clients):
 
 
 @fixture(scope="session")
+def test_filled_folder(auth_test_clients):
+    from pygsuite import File, Folder
+    from pygsuite.enums import MimeType
+
+    filled_folder = Folder.get_safe(name=f"Filled folder {uuid4()}")
+    child_text_file = File.get_safe(
+        name=f"Child text file {uuid4()}",
+        parent_folder_ids=[filled_folder.id],
+        mimetype="text/plain",
+    )
+    child_sheets_file = File.get_safe(
+        name=f"Child text file {uuid4()}",
+        parent_folder_ids=[filled_folder.id],
+        mimetype=MimeType.SHEETS,
+    )
+
+    yield filled_folder, child_text_file, child_sheets_file
+
+    child_text_file.delete()
+    child_sheets_file.delete()
+    filled_folder.delete()
+
+
+@fixture(scope="session")
 def test_text_file(auth_test_clients):
     from pygsuite import File
 
