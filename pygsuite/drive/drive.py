@@ -4,7 +4,7 @@ from typing import Optional, Union
 from pygsuite import Clients
 from pygsuite.drive.folder import Folder
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
-from pygsuite.enums import MimeType, PermissionType, UserType
+from pygsuite.enums import MimeType
 
 
 DRIVE_V3_API_URL = "https://www.googleapis.com/drive/v3/files"
@@ -83,25 +83,6 @@ class Drive:
         files = folder.get_files(extra_conditions=query, support_all_drives=support_all_drives)
 
         return files
-
-    def update_file_permissions(
-        self, file_id, address, role=PermissionType.READER, type=UserType.USER
-    ):
-        """Deprecate this in favor of the object specific methods"""
-        batch = self.service.new_batch_http_request(callback=default_callback)
-        user_permission = {"type": type.value, "role": role.value, "emailAddress": address}
-        batch.add(
-            self.service.permissions().create(fileId=file_id, body=user_permission, fields="id")
-        )
-        batch.execute()
-
-    def create_file(self, file_id, address, role=PermissionType.READER, type=UserType.USER):
-        batch = self.service.new_batch_http_request(callback=default_callback)
-        user_permission = {"type": type.value, "role": role.value, "emailAddress": address}
-        batch.add(
-            self.service.permissions().create(fileId=file_id, body=user_permission, fields="id")
-        )
-        batch.execute()
 
     def copy_file(self, file_id, title: str, folder_id: str):
         body = {"name": title, "parents": [folder_id]}
