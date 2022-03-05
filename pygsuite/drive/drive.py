@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional, Union
 
 from pygsuite import Clients
@@ -21,6 +22,12 @@ class Drive:
     def __init__(self, client=None):
         client = client or Clients.drive_client_v3
         self.service = client
+
+        # warn users about deprecation
+        warnings.warn((
+            "This object and its methods will be deprecated soon."
+            "Please consider using a drive.File or drive.Folder object instead"
+        ), DeprecationWarning)
 
     def _find_files(self, type: MimeType, name: Optional[str] = None):
         q = f'mimeType="{type}"'

@@ -11,7 +11,7 @@ from pygsuite.auth.authorization import Clients
 from pygsuite.common.comment import Comment
 from pygsuite.common.parsing import parse_id
 from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE, FILE_MIME_TYPE_MAP
-from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
+from pygsuite.drive.query import Connector, Operator, QueryString, QueryStringGroup, QueryTerm
 from pygsuite.enums import GoogleDocFormat, PermissionType, MimeType
 from pygsuite.utility.decorators import lazy_property
 
@@ -275,7 +275,12 @@ class DriveObject:
 
         # optional folder query
         if parent_folder_ids:
-            folder_query = QueryString(QueryTerm.PARENTS, Operator.IN, parent_folder_ids)
+            folder_queries = []
+            for id in parent_folder_ids:
+                folder_query = QueryString(QueryTerm.PARENTS, Operator.IN, id)
+                folder_queries.append(folder_query)
+            folder_query = QueryStringGroup(folder_queries, [Connector.OR for query in folder_queries[:-1]])
+
             query = QueryStringGroup([query, folder_query])
 
         # optional mimetype query
