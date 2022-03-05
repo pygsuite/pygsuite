@@ -1,6 +1,6 @@
 import pytest
 
-from pygsuite.drive import Drive
+from pygsuite.drive import Drive, File
 
 
 def test_drive__deprecation_warning(auth_test_clients):
@@ -81,3 +81,5 @@ def test_drive__copy_file(auth_test_clients, test_text_file, test_folder):
         folder_id=test_folder.id
     )
     assert new_file.get("id") is not None
+    new = File(id=new_file.id)
+    new.delete()
