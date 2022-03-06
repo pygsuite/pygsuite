@@ -1,0 +1,3 @@
+# Authorization
+
+::: pygsuite.auth.authorization
