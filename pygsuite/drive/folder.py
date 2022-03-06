@@ -15,6 +15,7 @@ class Folder(DriveObject):
     """Base class for a Google Drive Folder"""
 
     _mimetype = MimeType.FOLDER
+    _base_url = "https://drive.google.com/drive/folders/{}"
 
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 

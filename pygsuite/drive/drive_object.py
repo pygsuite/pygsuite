@@ -203,7 +203,7 @@ class DriveObject:
         name = name if name else os.path.basename(filepath)
 
         # handle MimeType enums
-        mimetype = str(mimetype) if mimetype is not None else None
+        mimetype = str(mimetype) if mimetype is not None else cls._mimetype
 
         if convert_to:
             # try to coerce str into a GoogleDocFormat
