@@ -1,5 +1,6 @@
 from os.path import abspath, dirname, join
 
+import pytest
 from pandas import DataFrame
 from pandas.testing import assert_frame_equal
 
@@ -8,6 +9,7 @@ from pygsuite.common.style import Border, BorderPosition, BorderStyle
 from pygsuite.sheets import Worksheet, SheetProperties, Cell, CellFormat
 
 
+@pytest.mark.run(order=1)
 def test_spreadsheet__create_new(auth_test_clients):
     new_spreadsheet = Spreadsheet.create(
         name="New Empty Spreadsheet",
@@ -16,6 +18,7 @@ def test_spreadsheet__create_new(auth_test_clients):
     new_spreadsheet.delete()
 
 
+@pytest.mark.run(order=2)
 def test_spreadsheet__upload_excel(auth_test_clients):
     upload_file = join(dirname(dirname(abspath(__file__))), "test_sheets", "assets", "test data.xlsx")
     uploaded_sheet = Spreadsheet.upload(
@@ -28,12 +31,14 @@ def test_spreadsheet__upload_excel(auth_test_clients):
     uploaded_sheet.delete()
 
 
+@pytest.mark.run(order=3)
 def test_spreadsheet__list_worksheets(auth_test_clients, test_sheet):
     assert len(test_sheet.worksheets) == 1
     assert isinstance(test_sheet[0], Worksheet)
     assert isinstance(test_sheet["Sheet1"], Worksheet)
 
 
+@pytest.mark.run(order=4)
 def test_spreadsheet__add_worksheets(auth_test_clients, test_sheet):
     test_sheet.create_sheet(SheetProperties(title="Sheet2"))
     test_sheet.flush()
@@ -44,6 +49,7 @@ def test_spreadsheet__add_worksheets(auth_test_clients, test_sheet):
     assert len(test_sheet.worksheets) == 3
 
 
+@pytest.mark.run(order=5)
 def test_spreadsheet__remove_worksheets(auth_test_clients, test_sheet):
     test_sheet.delete_sheet(title="Sheet2")
     test_sheet.flush()
@@ -53,6 +59,7 @@ def test_spreadsheet__remove_worksheets(auth_test_clients, test_sheet):
     assert len(test_sheet.worksheets) == 1
 
 
+@pytest.mark.run(order=6)
 def test_spreadsheet__insert_data__from_df(auth_test_clients, test_sheet):
     df = DataFrame(data={"col1": [1, 2], "col2": [3, 4]})
 
@@ -63,6 +70,7 @@ def test_spreadsheet__insert_data__from_df(auth_test_clients, test_sheet):
     assert response.get("values_update_response")[0].get("updatedRange") == "Sheet1!A1:B3"
 
 
+@pytest.mark.run(order=7)
 def test_spreadsheet__insert_data__from_list(auth_test_clients, test_sheet):
     test_sheet.create_sheet(SheetProperties(title="Sheet2"))
 
@@ -80,6 +88,7 @@ def test_spreadsheet__insert_data__from_list(auth_test_clients, test_sheet):
     assert response.get("values_update_response")[0].get("updatedRange") == "Sheet2!A1:C4"
 
 
+@pytest.mark.run(order=8)
 def test_spreadsheet__format_cells(auth_test_clients, test_sheet):
     cell_format = CellFormat(
         text_format=TextStyle(bold=True)
@@ -99,6 +108,7 @@ def test_spreadsheet__format_cells(auth_test_clients, test_sheet):
     assert response is not None
 
 
+@pytest.mark.run(order=9)
 def test_spreadsheet__format_borders(auth_test_clients, test_sheet):
     bottom_border = Border(
         position=BorderPosition.BOTTOM,
@@ -117,6 +127,7 @@ def test_spreadsheet__format_borders(auth_test_clients, test_sheet):
     assert response is not None
 
 
+@pytest.mark.run(order=10)
 def test_spreadsheet__read_data_to_df(auth_test_clients, test_sheet):
     df = DataFrame(data={"col1": [1, 2], "col2": [3, 4]})
 
@@ -129,6 +140,7 @@ def test_spreadsheet__read_data_to_df(auth_test_clients, test_sheet):
     assert assert_frame_equal(spreadsheet_data, df) is None
 
 
+@pytest.mark.run(order=11)
 def test_spreadsheet__read_data_to_list(auth_test_clients, test_sheet):
     spreadsheet_data = test_sheet.to_list(
         cell_range="Sheet2!A1:C4",
@@ -143,6 +155,7 @@ def test_spreadsheet__read_data_to_list(auth_test_clients, test_sheet):
     assert spreadsheet_data == values
 
 
+@pytest.mark.run(order=12)
 def test_spreadsheet__clear_range(auth_test_clients, test_sheet):
     test_sheet.clear_range(range="Sheet1!A1:B3")
     test_sheet.clear_range(range="Sheet2!A1:C4")
@@ -153,6 +166,7 @@ def test_spreadsheet__clear_range(auth_test_clients, test_sheet):
     assert (len(sheet_1) == 0 and len(sheet_2) == 0)
 
 
+@pytest.mark.run(order=13)
 def test_spreadsheet__insert_data__from_df__in_worksheet(auth_test_clients, test_sheet):
     df = DataFrame(data={"col1": [1, 2], "col2": [3, 4]})
 
@@ -163,6 +177,7 @@ def test_spreadsheet__insert_data__from_df__in_worksheet(auth_test_clients, test
     assert test_sheet["Sheet1"].values == [["col1", "col2"], ["1", "3"], ["2", "4"]]
 
 
+@pytest.mark.run(order=14)
 def test_spreadsheet__insert_data__from_list__in_worksheet(auth_test_clients, test_sheet):
     values = [
         ["A", "B", "C"],
@@ -178,6 +193,7 @@ def test_spreadsheet__insert_data__from_list__in_worksheet(auth_test_clients, te
     assert test_sheet["Sheet2"].values == [["A", "B", "C"], ["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
 
 
+@pytest.mark.run(order=15)
 def test_spreadsheet__clear_range__in_worksheet(auth_test_clients, test_sheet):
     test_sheet["Sheet1"].clear()
     test_sheet["Sheet2"].clear()
