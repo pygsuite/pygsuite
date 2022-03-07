@@ -203,8 +203,14 @@ class DriveObject:
         name = name if name else os.path.basename(filepath)
 
         # handle MimeType enums
-        mimetype = str(mimetype) if mimetype is not None else cls._mimetype
+        mimetype = str(mimetype) if mimetype is not None else None
 
+        # first use the given mimetype (which can be None) to specify the upload file's mimetype
+        media_body = MediaFileUpload(
+            filename=filepath, mimetype=mimetype, chunksize=-1, resumable=resumable
+        )
+
+        # next, if converting, determine the mimetype of the Google app to convert to
         if convert_to:
             # try to coerce str into a GoogleDocFormat
             if isinstance(convert_to, str):
@@ -223,11 +229,7 @@ class DriveObject:
                     f"File extension {extension.lower()} is not supported with the Google Document type {convert_to.value}"
                 ) from e
 
-        media_body = MediaFileUpload(
-            filename=filepath, mimetype=mimetype, chunksize=-1, resumable=resumable
-        )
-
-        file = cls._create(
+        file = cls.create(
             name=name,
             parent_folder_ids=parent_folder_ids,
             mimetype=mimetype,

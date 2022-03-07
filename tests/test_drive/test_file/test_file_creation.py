@@ -121,9 +121,14 @@ def test_file__get_safe(auth_test_clients, caplog):
     caplog.set_level(logging.INFO)
 
     new_file = File.create(name=f"My Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
+    existing_file_id = new_file.id
 
     file_to_find = File.get_safe(name=f"My Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
-    assert new_file.id == file_to_find.id
+    assert file_to_find.id == existing_file_id
     assert "Matching file found, returning existing file..." in caplog.messages
-
     file_to_find.delete()
+
+    file_to_create = File.get_safe(name=f"My Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
+    assert (file_to_create.id is not None and file_to_create.id != existing_file_id)
+    assert "No matching file found, creating file now..." in caplog.messages
+    file_to_create.delete()

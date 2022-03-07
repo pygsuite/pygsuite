@@ -106,7 +106,7 @@ def test_presentation(auth_test_clients):
 def test_sheet(auth_test_clients):
     from pygsuite import Spreadsheet
 
-    test_sheet = Spreadsheet.get_safe(name=f"test-{uuid4()}")
+    test_sheet = Spreadsheet.create(name=f"test-{uuid4()}")
 
     yield test_sheet
 
