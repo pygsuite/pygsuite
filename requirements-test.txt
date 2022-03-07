@@ -1,7 +1,7 @@
 black==21.11b1
 wheel
 pytest
-ptest-ordering
+pytest-ordering
 pytest-xdist
 google-cloud-storage
 requests
