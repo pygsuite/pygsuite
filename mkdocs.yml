@@ -2,87 +2,7 @@ site_name: Pygsuite Documentation
 repo_url: https://github.com/greenmtnboy/pygsuite
 repo_name: pygsuite
 docs_dir: docs
-nav:
-  - Introduction:
-    - Overview: index.md
-    - Goals: goals.md
-    - Features: features.md
-  - Tutorials:
-    - Auth: tutorials/auth/auth.md
-    - Drive:
-      - Drive: tutorials/drive/drive.md
-      - File: tutorials/drive/file.md
-      - Folder: tutorials/drive/folder.md
-    - Sheets: tutorials/sheets/sheets.md
-    - Slides: tutorials/slides/slides.md
-    - Docs: tutorials/docs/docs.md
-    - Images: tutorials/images/images.md
-  - How to Guides:
-    - Auth: how_to_guides/auth/auth.md
-    - Drive:
-      - File: how_to_guides/drive/file.md
-      - Folder: how_to_guides/drive/folder.md
-    - Sheets: how_to_guides/sheets/sheets.md
-    - Slides: how_to_guides/slides/slides.md
-    - Docs: how_to_guides/docs/docs.md
-  - Reference Guides:
-    - Auth: reference/auth/auth.md
-    - Drive:
-      - DriveObject: reference/drive/drive_object.md
-      - File: reference/drive/file.md
-      - Folder: reference/drive/folder.md
-    - Sheets:
-      - Spreadsheet: reference/sheets/sheet.md
-      - Worksheet: reference/sheets/worksheet.md
-      - Cell: reference/sheets/cell.md
-      - SheetProperties: reference/sheets/sheet_properties.md
-    - Slides:
-      - Presentation: reference/slides/presentation.md
-      - Slide: reference/slides/slide.md
-      - ElementProperties: reference/slides/element_properties.md
-      - PageElement: reference/slides/page_element.md
-      - Page Elements:
-        - BaseElement: reference/slides/page_elements/base_element.md
-        - Chart: reference/slides/page_elements/chart.md
-        - Common: reference/slides/page_elements/common.md
-        - Image: reference/slides/page_elements/image.md
-        - Line: reference/slides/page_elements/line.md
-        - Placeholder: reference/slides/page_elements/placeholder.md
-        - Shape: reference/slides/page_elements/shape.md
-        - Table: reference/slides/page_elements/table.md
-        - Text: reference/slides/page_elements/text.md
-        - Video: reference/slides/page_elements/video.md
-        - WordArt: reference/slides/page_elements/word_art.md
-      - Layout: reference/slides/layout.md
-      - Enums: reference/slides/enums.md
-    - Docs:
-      - Document: reference/docs/document.md
-      - Headers: reference/docs/headers.md
-      - Title: reference/docs/title.md
-      - Body: reference/docs/body.md
-      - Footers: reference/docs/footers.md
-      - Footnotes: reference/docs/footnotes.md
-      - Element: reference/docs/element.md
-      - Doc Elements:
-        - BaseElement: reference/docs/doc_elements/base_element.md
-        - Paragraph: reference/docs/doc_elements/paragraph.md
-        - Paragraph Elements:
-          - AutoText: reference/docs/doc_elements/paragraph_elements/auto_text.md
-          - BaseParagraphElement: reference/docs/doc_elements/paragraph_elements/base_paragraph_element.md
-          - ColumnBreak: reference/docs/doc_elements/paragraph_elements/column_break.md
-          - Equation: reference/docs/doc_elements/paragraph_elements/equation.md
-          - FootnoteReference: reference/docs/doc_elements/paragraph_elements/footnote_reference.md
-          - HorizontalRule: reference/docs/doc_elements/paragraph_elements/horizontal_rule.md
-          - InlineObjectElement: reference/docs/doc_elements/paragraph_elements/inline_object_element.md
-          - PageBreak: reference/docs/doc_elements/paragraph_elements/page_break.md
-          - TextRun: reference/docs/doc_elements/paragraph_elements/text_run.md
-        - SectionBreak: reference/docs/doc_elements/section_break.md
-        - Headers: reference/docs/doc_elements/headers.md
-        - Footers: reference/docs/doc_elements/footers.md
-        - Footnotes: reference/docs/doc_elements/footnotes.md
-        - TableOfContents: reference/docs/doc_elements/table_of_contents.md
-        - Table: reference/docs/doc_elements/table.md
-  - Explanation: explanation/information.md
+# the `nav` is created by literate-nav in SUMMARY.md
 theme:
   name: material
   palette:
@@ -98,10 +18,20 @@ markdown_extensions:
   - toc:
       permalink: true
 plugins:
+  - search
+  - section-index
+  - gen-files:
+      scripts:
+        - docs/generate_reference_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
   - mkdocstrings:
       handlers:
         python:
           selection:
             docstring_style: google
+            show_if_no_docstring: true
+          rendering:
+            show_submodules: no
       watch:
-      - pygsuite
+        - pygsuite
