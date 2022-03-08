@@ -16,11 +16,6 @@ def test_presentation(test_presentation):
 def test_layouts(test_presentation):
 
     deck = test_presentation
-    print(deck.layouts)
-    test_layout = deck.layouts["Title slide"]
-
-    for element in test_layout.elements:
-        print(element)
 
     deck.add_slide(
         layout=deck.layouts["Title slide"],

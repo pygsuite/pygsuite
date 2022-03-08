@@ -1,5 +1,6 @@
-pandas>=1.0.5
-jinja2>=2.11.0
+filetype
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
+jinja2>=2.11.0
+pandas>=1.0.5

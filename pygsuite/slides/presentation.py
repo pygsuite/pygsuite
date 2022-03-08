@@ -3,32 +3,26 @@ from typing import Dict, Union, Optional, Any
 from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
-from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
-from pygsuite.enums import FileTypes
+from pygsuite.drive.drive_object import DriveObject
+from pygsuite.enums import MimeType
 from pygsuite.utility.decorators import retry
 from .layout import Layout
 from .slide import Slide
 
 
 class Presentation(DriveObject):
-    file_type = FileTypes.SLIDES
+
+    _mimetype = MimeType.SLIDES
+    _base_url = "https://docs.google.com/presentation/d/{}/edit"
 
     def __init__(self, id, client=None):
-        from pygsuite import Clients
-
         self.service = client or Clients.slides_client
         self.id = parse_id(id) if id else None
         DriveObject.__init__(self, id=id, client=client)
+
         self._presentation = self.service.presentations().get(presentationId=self.id).execute()
         self._change_queue = []
-
-    @classmethod
-    def create_new(cls, title: str, client=None):
-        client = client or Clients.slides_client
-        body = {"title": title}
-        new = client.presentations().create(body=body).execute()
-        return Presentation(id=new.get("presentationId"), client=client)
 
     def __getitem__(self, item) -> Slide:
         return self.slides[item]

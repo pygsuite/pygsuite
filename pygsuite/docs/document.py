@@ -1,37 +1,32 @@
 from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
-from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
 from pygsuite.docs.body import Body
 from pygsuite.docs.footers import Footers
 from pygsuite.docs.footnotes import Footnotes
 from pygsuite.docs.headers import Headers
-from pygsuite.enums import FileTypes
+from pygsuite.drive.drive_object import DriveObject
+from pygsuite.enums import MimeType
 from pygsuite.utility.decorators import retry
 
 
 class Document(DriveObject):
-    """A document on google drive. """
+    """A document on google drive."""
 
-    file_type = FileTypes.DOCS
+    _mimetype = MimeType.DOCS
+    _base_url = "https://docs.google.com/document/d/{}/edit"
 
-    def __init__(self, id=None, name=None, client=None, _document=None, local=False):
+    def __init__(self, id=None, client=None, name=None, _document=None, local=False):
 
         if not local:
             client = client or Clients.docs_client
         self.service = client
-        DriveObject.__init__(self, id=parse_id(id) if id else None, client=client)
+        self.id = parse_id(id) if id else None
+        DriveObject.__init__(self, id=id, client=client)
         self._document = _document or client.documents().get(documentId=self.id).execute()
         self._change_queue = []
         self.auto_sync = False
-
-    @classmethod
-    def create_new(cls, title: str, client=None):
-        client = client or Clients.docs_client
-        body = {"title": title}
-        new = client.documents().create(body=body).execute()
-        return Document(id=new.get("documentId"), client=client)
 
     def id(self):
         return self._document["id"]

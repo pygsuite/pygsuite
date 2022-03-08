@@ -2,39 +2,36 @@ site_name: Pygsuite Documentation
 repo_url: https://github.com/greenmtnboy/pygsuite
 repo_name: pygsuite
 docs_dir: docs
-pages:
-  - Overview: index.md
-  - Goals: goals.md
-  - Features: features.md
-  - Quickstart:
-      - Auth: quickstart/auth.md
-      - Docs: quickstart/docs.md
-      - Sheets: quickstart/sheets.md
-      - Slides: quickstart/slides.md
-  - Examples:
-      - Docs: ref_examples/docs.md
-      - Sheets: ref_examples/sheets.md
-      - Slides: ref_examples/slides.md
-  - Reference:
-      - Slides: reference/markdown/slides.md
-      - Sheets: reference/markdown/sheets.md
-      - Docs: reference/markdown/docs.md
+# the `nav` is created by literate-nav in SUMMARY.md
 theme:
   name: material
   palette:
     primary: cyan
     accent: deep orange
-
-#google_analytics:
-#  - "auto"
 markdown_extensions:
-  - codehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tasklist
   - admonition
   - toc:
       permalink: true
-
-#  - pymdownx.emoji:
-#      emoji_index: !!python/name:pymdownx.emoji.twemoji
-#      emoji_generator: !!python/name:pymdownx.emoji.to_svg
-
-
+plugins:
+  - search
+  - section-index
+  - gen-files:
+      scripts:
+        - docs/generate_reference_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: google
+            show_if_no_docstring: true
+          rendering:
+            show_submodules: no
+      watch:
+        - pygsuite

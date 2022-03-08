@@ -11,9 +11,6 @@ if TYPE_CHECKING:
     from pygsuite.sheets import Spreadsheet
 
 
-# INDEX_SPLITTER = re.compile('(\d+)',s)
-
-
 class Worksheet(object):
     """Worksheet object for the worksheets within a Spreadsheet"""
 

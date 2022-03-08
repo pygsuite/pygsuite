@@ -6,9 +6,9 @@ from googleapiclient.discovery import Resource
 from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
-from pygsuite.common.drive_object import DriveObject
 from pygsuite.common.parsing import parse_id
-from pygsuite.enums import FileTypes
+from pygsuite.drive.drive_object import DriveObject
+from pygsuite.enums import MimeType
 from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
@@ -55,35 +55,6 @@ class DateTimeRenderOption(Enum):
     FORMATTED_STRING = "FORMATTED_STRING"
 
 
-def create_new_spreadsheet(title: str, client: Optional[Resource] = None):
-    """Function to create a new spreadsheet given a client connection to the GSuite API,
-       and a title for the new sheet.
-
-    # TODO: add functionality to specify "filepath"?
-
-    Args:
-        service (googleapiclient.discovery.Resource): Connection to the Google API Sheets resource.
-        title (str): Name for the new spreadsheet document
-
-    Returns:
-        id (str): the id of the spreadsheet
-    """
-
-    if not isinstance(title, str):
-        raise TypeError("The name of the spreadsheet must be given as a string.")
-
-    from pygsuite import Clients
-
-    service = client or Clients.sheets_client
-
-    request = {"properties": {"title": title}}
-
-    spreadsheet = service.spreadsheets().create(body=request, fields="spreadsheetId").execute()
-    id = spreadsheet.get("spreadsheetId")
-
-    return Spreadsheet(client=service, id=id)
-
-
 class ValueResponse(list):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -111,7 +82,8 @@ class ValueResponse(list):
 class Spreadsheet(DriveObject):
     """Base class for the GSuite Spreadsheets API."""
 
-    file_type = FileTypes.SHEETS
+    _mimetype = MimeType.SHEETS
+    _base_url = "https://docs.google.com/spreadsheets/d/{}/edit"
 
     def __init__(self, id: str, client: Optional[Resource] = None):
         """Method to initialize the class.
@@ -135,13 +107,6 @@ class Spreadsheet(DriveObject):
         # queues to add to and run in flush()
         self._spreadsheets_update_queue: List[Dict] = []
         self._values_update_queue: List[Dict] = []
-
-    @classmethod
-    def create_new(cls, title: str, client=None):
-        client = client or Clients.sheets_client
-        body = {"properties": {"title": title}}
-        new = client.spreadsheets().create(body=body).execute()
-        return Spreadsheet(id=new.get("spreadsheetId"), client=client)
 
     def __getitem__(self, key: Union[str, int]):
 
@@ -377,7 +342,3 @@ class Spreadsheet(DriveObject):
         self.insert_data(insert_range=insert_range, values=values, major_dimension=major_dimension)
 
         return self
-
-    @property
-    def url(self):
-        return f"https://docs.google.com/spreadsheets/d/{self.id}"

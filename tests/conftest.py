@@ -32,30 +32,85 @@ def auth_test_clients():
 
 
 @fixture(scope="session")
+def test_folder(auth_test_clients):
+    from pygsuite import Folder
+
+    test_dir = Folder.get_safe(name=f"test-{uuid4()}")
+
+    yield test_dir
+
+    test_dir.delete()
+
+
+@fixture(scope="session")
+def test_filled_folder(auth_test_clients):
+    from pygsuite import File, Folder
+    from pygsuite.enums import MimeType
+
+    filled_folder = Folder.get_safe(name=f"Filled folder {uuid4()}")
+    child_text_file = File.get_safe(
+        name=f"Child text file {uuid4()}",
+        parent_folder_ids=[filled_folder.id],
+        mimetype="text/plain",
+    )
+    child_sheets_file = File.get_safe(
+        name=f"Child text file {uuid4()}",
+        parent_folder_ids=[filled_folder.id],
+        mimetype=MimeType.SHEETS,
+    )
+
+    yield filled_folder, child_text_file, child_sheets_file
+
+    child_text_file.delete()
+    child_sheets_file.delete()
+    filled_folder.delete()
+
+
+@fixture(scope="session")
+def test_text_file(auth_test_clients):
+    from pygsuite import File
+
+    test_file = File.get_safe(
+        name=f"test-{uuid4()}",
+        mimetype="text/plain",
+    )
+
+    yield test_file
+
+    test_file.delete()
+
+
+@fixture(scope="session")
 def test_document(auth_test_clients):
     from pygsuite import Document
 
-    yield Document.get_safe(title=f"test-{uuid4()}")
+    test_doc = Document.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(title=f"test-static")
+    yield test_doc
+
+    test_doc.delete()
 
 
 @fixture(scope="session")
 def test_presentation(auth_test_clients):
     from pygsuite import Presentation
 
-    yield Presentation.get_safe(title=f"test-{uuid4()}")
+    test_slides = Presentation.get_safe(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(title=f"test-static")
+    yield test_slides
+
+    test_slides.delete()
 
 
 @fixture(scope="session")
 def test_sheet(auth_test_clients):
     from pygsuite import Spreadsheet
 
-    yield Spreadsheet.get_safe(title=f"test-{uuid4()}")
+    test_sheet = Spreadsheet.create(name=f"test-{uuid4()}")
 
-    # yield Document.get_safe(title=f"test-static")
+    yield test_sheet
+
+    test_sheet.delete()
 
 
 @fixture(scope="session")
