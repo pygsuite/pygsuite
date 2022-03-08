@@ -2,7 +2,7 @@
 
 # pygsuite
 
-Pygsuite is a light, pythonic wrapper around the core Google provided API clients.
+**pygsuite** is a lightweight, pythonic wrapper around the core Google provided API clients.
 It offers efficient APIs for batch requests to automate the creation, manipulation, and management of GSuite content. 
 
 Pygsuite's code is hosted on GitHub.
@@ -11,13 +11,13 @@ You can read more about the raw GSuite APIs here [here](https://developers.googl
 
 ## Install
 
-`pygsuite` is [hosted on PyPI](https://pypi.org/project/pygsuite/), and is installable with [pip](https://pip.pypa.io/en/stable/):
+**pygsuite** is [hosted on PyPI](https://pypi.org/project/pygsuite/), and is installable with [pip](https://pip.pypa.io/en/stable/):
 
 ```bash
 $ pip install pygsuite
 ```
 
-To use the image upload helpers in `pygsuite`, use the `images` optional installation extras:
+To use the image upload helpers in **pygsuite**, use the `images` optional installation extras:
 
 ```bash
 $ pip install pygsuite[images]

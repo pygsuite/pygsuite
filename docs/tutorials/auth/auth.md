@@ -1,6 +1,6 @@
 # Authorization
 
-Authorization is the first thing you will accomplish in getting started working with `pygsuite`, _and it can be tricky_! This tutorial will walk you through the basics of setting up authentication for your Google account, and using those credentials to authenticate in `pygsuite`.
+Authorization is the first thing you will accomplish in getting started working with **pygsuite**, _and it can be tricky_! This tutorial will walk you through the basics of setting up authentication for your Google account, and using those credentials to authenticate in **pygsuite**.
 
 ## Understanding the basics
 

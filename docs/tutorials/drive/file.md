@@ -1,10 +1,10 @@
 # Files
 
-Using `pygsuite`, creating an manipulating Google Drive files is easy (and maybe even fun).
+Using **pygsuite**, creating and manipulating Google Drive files is easy (and maybe even fun).
 
 ## Creating files
 
-Creating a file in `pygsuite` is fast and simple:
+Creating a file in **pygsuite** is fast and simple:
 
 ```python
 from pygsuite import File

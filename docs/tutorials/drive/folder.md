@@ -1,6 +1,6 @@
 # Folders
 
-`pygsuite` makes it simple to search and organize content in Google Drive folders.
+**pygsuite** makes it simple to search and organize content in Google Drive folders.
 
 ## Creating folders
 
