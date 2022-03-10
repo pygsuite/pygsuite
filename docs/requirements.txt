@@ -1,6 +1,6 @@
-markdown-urlize
-mkdocs-gen-files
-mkdocs-literate-nav
-mkdocs-material
-mkdocs-section-index
-mkdocstrings
+markdown-urlize==0.2.0
+mkdocs-gen-files==0.3.4
+mkdocs-literate-nav==0.4.1
+mkdocs-material==8.2.5
+mkdocs-section-index==0.3.3
+mkdocstrings[python]==0.18.1
