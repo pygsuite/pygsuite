@@ -1,5 +1,3 @@
-<img src="./images/pygsuite_logo.png" width=20% height=20%>
-
 # pygsuite
 
 **pygsuite** is a lightweight, pythonic wrapper around the core Google provided API clients.
