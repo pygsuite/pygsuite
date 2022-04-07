@@ -9,7 +9,7 @@ from pygsuite.drive.file import File
 from pygsuite.drive.folder import Folder
 from pygsuite.enums import UserType, PermissionType
 
-__version__ = "0.0.17"
+__version__ = "0.0.18"
 __author__ = "Ethan Dickinson <ethan.dickinson@gmail.com>"
 __all__ = [
     "Clients",

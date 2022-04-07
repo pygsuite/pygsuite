@@ -249,6 +249,7 @@ class DriveObject:
         exact_match: bool = True,
         parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[MimeType, str]] = None,
+        support_all_drives: bool = False,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
@@ -260,6 +261,7 @@ class DriveObject:
             exact_match (bool): Whether to only match the given name exactly, or return any name containing the string.
             parent_folder_ids (List[str]): The IDs of the parent folders which contain the file.
             mimetype (Union[GoogleMimeType, str]): A specific Google Docs type to match.
+            support_all_drives (bool): Whether or not to search both My Drives and shared drives.
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             drive_client (Resource): client connection to the Drive API used to create file.
             object_client (Resource): optional domain client (e.g. SHEETS client) used by the created object.
@@ -304,6 +306,8 @@ class DriveObject:
                 spaces="drive",
                 fields="nextPageToken, files(id, name)",
                 pageToken=None,
+                supportsAllDrives=support_all_drives,
+                includeItemsFromAllDrives=support_all_drives,
             )
             .execute()
         )

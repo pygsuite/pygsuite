@@ -144,6 +144,25 @@ print(new_or_existing.url)
     If so, you will see something like this: `No matching file found, creating file now...`
 <!-- prettier-ignore-end -->
 
+### Fetching files outside your Drive
+
+Similar to many other Drive objects and methods, use the `support_all_drives` parameter to specify a search that
+includes objects outside your personal Drive that may be shared with / created by you:
+
+```python
+from pygsuite import File
+from pygsuite.enums import MimeType
+
+new_or_existing = File.get_safe(
+    name="My Friend's Spreadsheet",
+    parent_folder_ids=["1EdtzquPnXhDNNo_gjUOJMl83Sm9BV3la"],
+    mimetype=MimeType.MS_EXCEL,
+    support_all_drives=True,
+)
+
+print(new_or_existing.url)
+```
+
 ## Copying files
 
 Coming soon!
