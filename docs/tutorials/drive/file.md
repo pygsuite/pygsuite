@@ -149,7 +149,7 @@ print(new_or_existing.url)
 Similar to many other Drive objects and methods, use the `support_all_drives` parameter to specify a search that
 includes objects outside your personal Drive that may be shared with / created by you:
 
-```python
+```python hl_lines="8"
 from pygsuite import File
 from pygsuite.enums import MimeType
 
