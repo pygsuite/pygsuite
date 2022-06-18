@@ -23,6 +23,7 @@ class MimeType(Enum):
     SHEETS = "application/vnd.google-apps.spreadsheet"
     DOCS = "application/vnd.google-apps.document"
     SLIDES = "application/vnd.google-apps.presentation"
+    FORMS = "application/vnd.google-apps.form"
     FOLDER = "application/vnd.google-apps.folder"
     # Some other common MIME Types for convenience:
     # Text files
@@ -48,3 +49,4 @@ class GoogleDocFormat(Enum):
     DRAWINGS = "Drawings"
     SLIDES = "Presentations"
     SCRIPTS = "App Scripts"
+    FORMS = "Forms"

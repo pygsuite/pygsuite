@@ -1,0 +1,8 @@
+from enum import Enum
+
+
+class GoToAction(Enum):
+    GO_TO_ACTION_UNSPECIFIED = 'GO_TO_ACTION_UNSPECIFIED'
+    NEXT_SECTION = 'NEXT_SECTION'
+    RESTART_FORM = 'RESTART_FORM'
+    SUBMIT_FORM = 'SUBMIT_FORM'

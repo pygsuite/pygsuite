@@ -1,10 +1,9 @@
+
+# pygsuite
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/pygsuite/pygsuite/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/pygsuite.svg)](https://pypi.org/project/pygsuite/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/pygsuite.svg)](https://pypi.python.org/pypi/pygsuite)
 [![Downloads](https://img.shields.io/badge/dynamic/json.svg?label=downloads&url=https%3A%2F%2Fpypistats.org%2Fapi%2Fpackages%2Fpygsuite%2Frecent&query=data.last_month&colorB=brightgreen&suffix=%2FMonth)](https://pypistats.org/packages/pygsuite)
-
-# pygsuite
-
 [![Join the chat at https://gitter.im/pygsuite/community](https://badges.gitter.im/pygsuite/community.svg)](https://gitter.im/pygsuite/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This package provides utilities for working GSuite products such as sheets, docs, and slides 
@@ -16,6 +15,7 @@ It currently offers abstractions for
 - Sheets
 - Slides
 - Docs
+- Forms
 
 ## Install
 

@@ -1,0 +1,4 @@
+
+
+class FatalApiException(Exception):
+    pass
