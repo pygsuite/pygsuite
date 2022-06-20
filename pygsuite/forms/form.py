@@ -1,12 +1,24 @@
+from typing import Optional, TYPE_CHECKING, Union
+
 from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
 from pygsuite.drive.drive_object import DriveObject
 from pygsuite.enums import MimeType
+from pygsuite.forms.enums import ItemType
+from pygsuite.forms.update_requests.create_item import CreateItemRequest
 from pygsuite.utility.decorators import retry
-from .form_settings import FormSettings
 from .item import Item
+
+if TYPE_CHECKING:
+    from .page_break_item import PageBreakItem
+    from .question_item import QuestionItem
+    from .question_group_item import QuestionGroupItem
+    from .text_item import TextItem
+    from .video_item import VideoItem
+    from .image_item import ImageItem
+
 
 class Form(DriveObject):
     """A form on google drive."""
@@ -27,7 +39,7 @@ class Form(DriveObject):
     def id(self):
         return self._form["id"]
 
-    def _mutation(self, reqs, flush:bool=False):
+    def _mutation(self, reqs, flush: bool = False):
         if not reqs:
             return None
         self._change_queue += reqs
@@ -62,7 +74,7 @@ class Form(DriveObject):
 
     @property
     def items(self):
-        return [Item(item, self, idx) for idx, item in enumerate(self._form.get('items',[]))]
+        return [Item(item, self, idx) for idx, item in enumerate(self._form.get('items', []))]
 
     # def delete(self, start=0, end=None, flush=True):
     #     end = end or self.body.end_index
@@ -80,3 +92,40 @@ class Form(DriveObject):
     @property
     def url(self):
         return f"https://drive.google.com/forms/d/{self.id}"
+
+    def add_item(self, title: str, description: str, item: Union[
+        "PageBreakItem", "TextItem", "VideoItem", "ImageItem", "QuestionItem", "QuestionGroupItem"],
+                 location: Optional[int] = None, **kwargs):
+        if not location:
+            location = len(self.items)
+        new = {'title': title,
+               'description': description,
+               }
+        new[ItemType(item).value] = item._info
+        item = Item(info=new, form=self._form, location=location)
+        # locally modify
+        self._form['items'].insert(location, new)
+        # and add synchronization request to queue
+        self._mutation([CreateItemRequest(item=item, location=location).request])
+
+    # def add_item(self,  title:str, description:str, item_type:ItemType, location:Optional[int] = None, **kwargs):
+    #     if not location:
+    #         location = len(self.items)
+    #     new = {'title': title,
+    #            'description':description,
+    #            }
+    #     enriched = {}
+    #
+    #     if item_type == ItemType.TEXT_ITEM:
+    #         pass
+    #     elif item_type == ItemType.IMAGE_ITEM:
+    #         enriched['']
+    #     elif item_type == ItemType.QUESTION_ITEM:
+    #
+    #     new[item_type.value] = enriched
+    #     item = Item(info=new, form=self._form, location=location)
+    #     # locally modify
+    #     self._form['items'].insert(new, index=location)
+    #     # and add synchronization request to queue
+    #     self._mutation([CreateItemRequest(item=item, location=location).request])
+    #
