@@ -19,11 +19,11 @@ class BatchUpdateFormResponse(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if form:
+        if form is not None:
             generated['form'] =  form._info 
-        if replies:
+        if replies is not None:
             generated['replies'] =  replies 
-        if write_control:
+        if write_control is not None:
             generated['writeControl'] =  write_control._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -35,10 +35,10 @@ class BatchUpdateFormResponse(BaseFormItem):
     
     @form.setter
     def form(self, value: "Form"):
-        if self._info['form'] == value:
+        if self._info.get('form',None) == value:
             return
         self._info['form'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def replies(self)->List["Response"]:
@@ -47,10 +47,10 @@ class BatchUpdateFormResponse(BaseFormItem):
     
     @replies.setter
     def replies(self, value: List["Response"]):
-        if self._info['replies'] == value:
+        if self._info.get('replies',None) == value:
             return
         self._info['replies'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def write_control(self)->"WriteControl":
@@ -58,9 +58,10 @@ class BatchUpdateFormResponse(BaseFormItem):
     
     @write_control.setter
     def write_control(self, value: "WriteControl"):
-        if self._info['writeControl'] == value:
+        if self._info.get('writeControl',None) == value:
             return
         self._info['writeControl'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

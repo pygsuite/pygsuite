@@ -14,9 +14,9 @@ class MediaProperties(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if alignment:
+        if alignment is not None:
             generated['alignment'] =  alignment 
-        if width:
+        if width is not None:
             generated['width'] =  width 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,10 +28,10 @@ class MediaProperties(BaseFormItem):
     
     @alignment.setter
     def alignment(self, value: str):
-        if self._info['alignment'] == value:
+        if self._info.get('alignment',None) == value:
             return
         self._info['alignment'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def width(self)->int:
@@ -39,9 +39,10 @@ class MediaProperties(BaseFormItem):
     
     @width.setter
     def width(self, value: int):
-        if self._info['width'] == value:
+        if self._info.get('width',None) == value:
             return
         self._info['width'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

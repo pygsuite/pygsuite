@@ -28,23 +28,23 @@ class Item(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if description:
+        if description is not None:
             generated['description'] =  description 
-        if image_item:
+        if image_item is not None:
             generated['imageItem'] =  image_item._info 
-        if item_id:
+        if item_id is not None:
             generated['itemId'] =  item_id 
-        if page_break_item:
+        if page_break_item is not None:
             generated['pageBreakItem'] =  page_break_item._info 
-        if question_group_item:
+        if question_group_item is not None:
             generated['questionGroupItem'] =  question_group_item._info 
-        if question_item:
+        if question_item is not None:
             generated['questionItem'] =  question_item._info 
-        if text_item:
+        if text_item is not None:
             generated['textItem'] =  text_item._info 
-        if title:
+        if title is not None:
             generated['title'] =  title 
-        if video_item:
+        if video_item is not None:
             generated['videoItem'] =  video_item._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -56,10 +56,10 @@ class Item(BaseFormItem):
     
     @description.setter
     def description(self, value: str):
-        if self._info['description'] == value:
+        if self._info.get('description',None) == value:
             return
         self._info['description'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def image_item(self)->"ImageItem":
@@ -67,10 +67,10 @@ class Item(BaseFormItem):
     
     @image_item.setter
     def image_item(self, value: "ImageItem"):
-        if self._info['imageItem'] == value:
+        if self._info.get('imageItem',None) == value:
             return
         self._info['imageItem'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def item_id(self)->str:
@@ -78,10 +78,10 @@ class Item(BaseFormItem):
     
     @item_id.setter
     def item_id(self, value: str):
-        if self._info['itemId'] == value:
+        if self._info.get('itemId',None) == value:
             return
         self._info['itemId'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def page_break_item(self)->"PageBreakItem":
@@ -89,10 +89,10 @@ class Item(BaseFormItem):
     
     @page_break_item.setter
     def page_break_item(self, value: "PageBreakItem"):
-        if self._info['pageBreakItem'] == value:
+        if self._info.get('pageBreakItem',None) == value:
             return
         self._info['pageBreakItem'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def question_group_item(self)->"QuestionGroupItem":
@@ -100,10 +100,10 @@ class Item(BaseFormItem):
     
     @question_group_item.setter
     def question_group_item(self, value: "QuestionGroupItem"):
-        if self._info['questionGroupItem'] == value:
+        if self._info.get('questionGroupItem',None) == value:
             return
         self._info['questionGroupItem'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def question_item(self)->"QuestionItem":
@@ -111,10 +111,10 @@ class Item(BaseFormItem):
     
     @question_item.setter
     def question_item(self, value: "QuestionItem"):
-        if self._info['questionItem'] == value:
+        if self._info.get('questionItem',None) == value:
             return
         self._info['questionItem'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def text_item(self)->"TextItem":
@@ -122,10 +122,10 @@ class Item(BaseFormItem):
     
     @text_item.setter
     def text_item(self, value: "TextItem"):
-        if self._info['textItem'] == value:
+        if self._info.get('textItem',None) == value:
             return
         self._info['textItem'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def title(self)->str:
@@ -133,10 +133,10 @@ class Item(BaseFormItem):
     
     @title.setter
     def title(self, value: str):
-        if self._info['title'] == value:
+        if self._info.get('title',None) == value:
             return
         self._info['title'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def video_item(self)->"VideoItem":
@@ -144,9 +144,10 @@ class Item(BaseFormItem):
     
     @video_item.setter
     def video_item(self, value: "VideoItem"):
-        if self._info['videoItem'] == value:
+        if self._info.get('videoItem',None) == value:
             return
         self._info['videoItem'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

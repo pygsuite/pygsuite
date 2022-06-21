@@ -15,7 +15,7 @@ class Response(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if create_item:
+        if create_item is not None:
             generated['createItem'] =  create_item._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -27,9 +27,10 @@ class Response(BaseFormItem):
     
     @create_item.setter
     def create_item(self, value: "CreateItemResponse"):
-        if self._info['createItem'] == value:
+        if self._info.get('createItem',None) == value:
             return
         self._info['createItem'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

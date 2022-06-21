@@ -17,11 +17,11 @@ class ChoiceQuestion(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if options:
+        if options is not None:
             generated['options'] =  options 
-        if shuffle:
+        if shuffle is not None:
             generated['shuffle'] =  shuffle 
-        if type:
+        if type is not None:
             generated['type'] =  type 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -34,10 +34,10 @@ class ChoiceQuestion(BaseFormItem):
     
     @options.setter
     def options(self, value: List["Option"]):
-        if self._info['options'] == value:
+        if self._info.get('options',None) == value:
             return
         self._info['options'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def shuffle(self)->bool:
@@ -45,10 +45,10 @@ class ChoiceQuestion(BaseFormItem):
     
     @shuffle.setter
     def shuffle(self, value: bool):
-        if self._info['shuffle'] == value:
+        if self._info.get('shuffle',None) == value:
             return
         self._info['shuffle'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def type(self)->str:
@@ -56,9 +56,10 @@ class ChoiceQuestion(BaseFormItem):
     
     @type.setter
     def type(self, value: str):
-        if self._info['type'] == value:
+        if self._info.get('type',None) == value:
             return
         self._info['type'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

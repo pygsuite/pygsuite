@@ -18,11 +18,11 @@ class BatchUpdateFormRequest(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if include_form_in_response:
+        if include_form_in_response is not None:
             generated['includeFormInResponse'] =  include_form_in_response 
-        if requests:
+        if requests is not None:
             generated['requests'] =  requests 
-        if write_control:
+        if write_control is not None:
             generated['writeControl'] =  write_control._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -34,10 +34,10 @@ class BatchUpdateFormRequest(BaseFormItem):
     
     @include_form_in_response.setter
     def include_form_in_response(self, value: bool):
-        if self._info['includeFormInResponse'] == value:
+        if self._info.get('includeFormInResponse',None) == value:
             return
         self._info['includeFormInResponse'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def requests(self)->List["Request"]:
@@ -46,10 +46,10 @@ class BatchUpdateFormRequest(BaseFormItem):
     
     @requests.setter
     def requests(self, value: List["Request"]):
-        if self._info['requests'] == value:
+        if self._info.get('requests',None) == value:
             return
         self._info['requests'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def write_control(self)->"WriteControl":
@@ -57,9 +57,24 @@ class BatchUpdateFormRequest(BaseFormItem):
     
     @write_control.setter
     def write_control(self, value: "WriteControl"):
-        if self._info['writeControl'] == value:
+        if self._info.get('writeControl',None) == value:
             return
         self._info['writeControl'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    
+    @property
+    def wire_format(self)->dict:
+        base = 'BatchUpdateForm'
+        base = base[0].lower() + base[1:]
+        request = self._info
+        components = 'batch_update_form_request'.split('_')
+        # if it's an update, we need to provide an update mask
+        # generate this automatically to cinlude all fields
+        if components[0] == 'update':
+            if not self.update_mask:
+                target_field = [field for field in request.keys() if field not in ['update_mask', 'location']][0]           
+                self._info['updateMask'] = ','.join(request[target_field].keys())
+        return {base:self._info}
+    

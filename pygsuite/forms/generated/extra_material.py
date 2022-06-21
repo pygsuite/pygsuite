@@ -17,9 +17,9 @@ class ExtraMaterial(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if link:
+        if link is not None:
             generated['link'] =  link._info 
-        if video:
+        if video is not None:
             generated['video'] =  video._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -31,10 +31,10 @@ class ExtraMaterial(BaseFormItem):
     
     @link.setter
     def link(self, value: "TextLink"):
-        if self._info['link'] == value:
+        if self._info.get('link',None) == value:
             return
         self._info['link'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def video(self)->"VideoLink":
@@ -42,9 +42,10 @@ class ExtraMaterial(BaseFormItem):
     
     @video.setter
     def video(self, value: "VideoLink"):
-        if self._info['video'] == value:
+        if self._info.get('video',None) == value:
             return
         self._info['video'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

@@ -1,7 +1,8 @@
 from os import environ, path
-
+from logging import getLogger
 from pygsuite.enums import GoogleDocFormat
 
+logger = getLogger('pygsuite')
 
 # AUTH
 def get_credentials():

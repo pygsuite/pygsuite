@@ -16,9 +16,9 @@ class VideoItem(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if caption:
+        if caption is not None:
             generated['caption'] =  caption 
-        if video:
+        if video is not None:
             generated['video'] =  video._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -30,10 +30,10 @@ class VideoItem(BaseFormItem):
     
     @caption.setter
     def caption(self, value: str):
-        if self._info['caption'] == value:
+        if self._info.get('caption',None) == value:
             return
         self._info['caption'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def video(self)->"Video":
@@ -41,9 +41,10 @@ class VideoItem(BaseFormItem):
     
     @video.setter
     def video(self, value: "Video"):
-        if self._info['video'] == value:
+        if self._info.get('video',None) == value:
             return
         self._info['video'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

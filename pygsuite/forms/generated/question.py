@@ -31,25 +31,25 @@ class Question(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if choice_question:
+        if choice_question is not None:
             generated['choiceQuestion'] =  choice_question._info 
-        if date_question:
+        if date_question is not None:
             generated['dateQuestion'] =  date_question._info 
-        if file_upload_question:
+        if file_upload_question is not None:
             generated['fileUploadQuestion'] =  file_upload_question._info 
-        if grading:
+        if grading is not None:
             generated['grading'] =  grading._info 
-        if question_id:
+        if question_id is not None:
             generated['questionId'] =  question_id 
-        if required:
+        if required is not None:
             generated['required'] =  required 
-        if row_question:
+        if row_question is not None:
             generated['rowQuestion'] =  row_question._info 
-        if scale_question:
+        if scale_question is not None:
             generated['scaleQuestion'] =  scale_question._info 
-        if text_question:
+        if text_question is not None:
             generated['textQuestion'] =  text_question._info 
-        if time_question:
+        if time_question is not None:
             generated['timeQuestion'] =  time_question._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -61,10 +61,10 @@ class Question(BaseFormItem):
     
     @choice_question.setter
     def choice_question(self, value: "ChoiceQuestion"):
-        if self._info['choiceQuestion'] == value:
+        if self._info.get('choiceQuestion',None) == value:
             return
         self._info['choiceQuestion'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def date_question(self)->"DateQuestion":
@@ -72,10 +72,10 @@ class Question(BaseFormItem):
     
     @date_question.setter
     def date_question(self, value: "DateQuestion"):
-        if self._info['dateQuestion'] == value:
+        if self._info.get('dateQuestion',None) == value:
             return
         self._info['dateQuestion'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def file_upload_question(self)->"FileUploadQuestion":
@@ -83,10 +83,10 @@ class Question(BaseFormItem):
     
     @file_upload_question.setter
     def file_upload_question(self, value: "FileUploadQuestion"):
-        if self._info['fileUploadQuestion'] == value:
+        if self._info.get('fileUploadQuestion',None) == value:
             return
         self._info['fileUploadQuestion'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def grading(self)->"Grading":
@@ -94,10 +94,10 @@ class Question(BaseFormItem):
     
     @grading.setter
     def grading(self, value: "Grading"):
-        if self._info['grading'] == value:
+        if self._info.get('grading',None) == value:
             return
         self._info['grading'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def question_id(self)->str:
@@ -105,10 +105,10 @@ class Question(BaseFormItem):
     
     @question_id.setter
     def question_id(self, value: str):
-        if self._info['questionId'] == value:
+        if self._info.get('questionId',None) == value:
             return
         self._info['questionId'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def required(self)->bool:
@@ -116,10 +116,10 @@ class Question(BaseFormItem):
     
     @required.setter
     def required(self, value: bool):
-        if self._info['required'] == value:
+        if self._info.get('required',None) == value:
             return
         self._info['required'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def row_question(self)->"RowQuestion":
@@ -127,10 +127,10 @@ class Question(BaseFormItem):
     
     @row_question.setter
     def row_question(self, value: "RowQuestion"):
-        if self._info['rowQuestion'] == value:
+        if self._info.get('rowQuestion',None) == value:
             return
         self._info['rowQuestion'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def scale_question(self)->"ScaleQuestion":
@@ -138,10 +138,10 @@ class Question(BaseFormItem):
     
     @scale_question.setter
     def scale_question(self, value: "ScaleQuestion"):
-        if self._info['scaleQuestion'] == value:
+        if self._info.get('scaleQuestion',None) == value:
             return
         self._info['scaleQuestion'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def text_question(self)->"TextQuestion":
@@ -149,10 +149,10 @@ class Question(BaseFormItem):
     
     @text_question.setter
     def text_question(self, value: "TextQuestion"):
-        if self._info['textQuestion'] == value:
+        if self._info.get('textQuestion',None) == value:
             return
         self._info['textQuestion'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def time_question(self)->"TimeQuestion":
@@ -160,9 +160,10 @@ class Question(BaseFormItem):
     
     @time_question.setter
     def time_question(self, value: "TimeQuestion"):
-        if self._info['timeQuestion'] == value:
+        if self._info.get('timeQuestion',None) == value:
             return
         self._info['timeQuestion'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

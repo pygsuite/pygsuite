@@ -13,7 +13,7 @@ class Location(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if index:
+        if index is not None:
             generated['index'] =  index 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -25,9 +25,10 @@ class Location(BaseFormItem):
     
     @index.setter
     def index(self, value: int):
-        if self._info['index'] == value:
+        if self._info.get('index',None) == value:
             return
         self._info['index'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

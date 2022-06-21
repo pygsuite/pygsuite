@@ -25,7 +25,7 @@ class {{target.class_name}}(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         {% for arg in target.props if arg.read_only is false() %}
-        if {{arg.base}}:
+        if {{arg.base}} is not None:
             generated['{{arg.camel_case}}'] = {% if not arg.is_basic_type %} {{arg.base}}._info {% else %} {{ arg.base }} {% endif %}{% endfor %}
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -38,12 +38,27 @@ class {{target.class_name}}(BaseFormItem):
     
     @{{prop.base}}.setter
     def {{prop.base}}(self, value: {% if prop.is_basic_type %}{{prop.type }}{% else %}"{{ prop.type }}"{% endif %}):
-        if self._info['{{prop.camel_case}}'] == value:
+        if self._info.get('{{prop.camel_case}}',None) == value:
             return
         self._info['{{prop.camel_case}}'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request]){% endif %}
+        {% endif %}
     {% endfor %}
-
+    
+    {% if target.class_name.endswith('Request') %}
+    @property
+    def wire_format(self)->dict:
+        base = '{{target.class_name.replace('Request', '')}}'
+        base = base[0].lower() + base[1:]
+        request = self._info
+        components = '{{target.snake}}'.split('_')
+        # if it's an update, we need to provide an update mask
+        # generate this automatically to cinlude all fields
+        if components[0] == 'update':
+            if not self.update_mask:
+                target_field = [field for field in request.keys() if field not in ['update_mask', 'location']][0]           
+                self._info['updateMask'] = ','.join(request[target_field].keys())
+        return {base:self._info}
+    {% endif %}
 
 ''')
 

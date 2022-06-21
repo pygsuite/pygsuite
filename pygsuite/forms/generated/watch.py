@@ -16,9 +16,9 @@ class Watch(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if event_type:
+        if event_type is not None:
             generated['eventType'] =  event_type 
-        if target:
+        if target is not None:
             generated['target'] =  target._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -38,10 +38,10 @@ class Watch(BaseFormItem):
     
     @event_type.setter
     def event_type(self, value: str):
-        if self._info['eventType'] == value:
+        if self._info.get('eventType',None) == value:
             return
         self._info['eventType'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def expire_time(self)->str:
@@ -61,9 +61,10 @@ class Watch(BaseFormItem):
     
     @target.setter
     def target(self, value: "WatchTarget"):
-        if self._info['target'] == value:
+        if self._info.get('target',None) == value:
             return
         self._info['target'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

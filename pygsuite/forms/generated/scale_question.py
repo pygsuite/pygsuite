@@ -16,13 +16,13 @@ class ScaleQuestion(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if high:
+        if high is not None:
             generated['high'] =  high 
-        if high_label:
+        if high_label is not None:
             generated['highLabel'] =  high_label 
-        if low:
+        if low is not None:
             generated['low'] =  low 
-        if low_label:
+        if low_label is not None:
             generated['lowLabel'] =  low_label 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -34,10 +34,10 @@ class ScaleQuestion(BaseFormItem):
     
     @high.setter
     def high(self, value: int):
-        if self._info['high'] == value:
+        if self._info.get('high',None) == value:
             return
         self._info['high'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def high_label(self)->str:
@@ -45,10 +45,10 @@ class ScaleQuestion(BaseFormItem):
     
     @high_label.setter
     def high_label(self, value: str):
-        if self._info['highLabel'] == value:
+        if self._info.get('highLabel',None) == value:
             return
         self._info['highLabel'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def low(self)->int:
@@ -56,10 +56,10 @@ class ScaleQuestion(BaseFormItem):
     
     @low.setter
     def low(self, value: int):
-        if self._info['low'] == value:
+        if self._info.get('low',None) == value:
             return
         self._info['low'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def low_label(self)->str:
@@ -67,9 +67,10 @@ class ScaleQuestion(BaseFormItem):
     
     @low_label.setter
     def low_label(self, value: str):
-        if self._info['lowLabel'] == value:
+        if self._info.get('lowLabel',None) == value:
             return
         self._info['lowLabel'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

@@ -22,15 +22,15 @@ class Grading(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if correct_answers:
+        if correct_answers is not None:
             generated['correctAnswers'] =  correct_answers._info 
-        if general_feedback:
+        if general_feedback is not None:
             generated['generalFeedback'] =  general_feedback._info 
-        if point_value:
+        if point_value is not None:
             generated['pointValue'] =  point_value 
-        if when_right:
+        if when_right is not None:
             generated['whenRight'] =  when_right._info 
-        if when_wrong:
+        if when_wrong is not None:
             generated['whenWrong'] =  when_wrong._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -42,10 +42,10 @@ class Grading(BaseFormItem):
     
     @correct_answers.setter
     def correct_answers(self, value: "CorrectAnswers"):
-        if self._info['correctAnswers'] == value:
+        if self._info.get('correctAnswers',None) == value:
             return
         self._info['correctAnswers'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def general_feedback(self)->"Feedback":
@@ -53,10 +53,10 @@ class Grading(BaseFormItem):
     
     @general_feedback.setter
     def general_feedback(self, value: "Feedback"):
-        if self._info['generalFeedback'] == value:
+        if self._info.get('generalFeedback',None) == value:
             return
         self._info['generalFeedback'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def point_value(self)->int:
@@ -64,10 +64,10 @@ class Grading(BaseFormItem):
     
     @point_value.setter
     def point_value(self, value: int):
-        if self._info['pointValue'] == value:
+        if self._info.get('pointValue',None) == value:
             return
         self._info['pointValue'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def when_right(self)->"Feedback":
@@ -75,10 +75,10 @@ class Grading(BaseFormItem):
     
     @when_right.setter
     def when_right(self, value: "Feedback"):
-        if self._info['whenRight'] == value:
+        if self._info.get('whenRight',None) == value:
             return
         self._info['whenRight'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def when_wrong(self)->"Feedback":
@@ -86,9 +86,10 @@ class Grading(BaseFormItem):
     
     @when_wrong.setter
     def when_wrong(self, value: "Feedback"):
-        if self._info['whenWrong'] == value:
+        if self._info.get('whenWrong',None) == value:
             return
         self._info['whenWrong'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

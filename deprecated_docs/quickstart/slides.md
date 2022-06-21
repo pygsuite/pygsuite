@@ -89,7 +89,7 @@ prez.add_slide(
 )
 ```
 
-Then we can loop through the countdown to add ours slides.
+Then we can loop through the countdown to add our slides.
 
 ```python
 for idx in reversed(range(1, 5)):

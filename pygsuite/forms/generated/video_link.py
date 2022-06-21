@@ -14,9 +14,9 @@ class VideoLink(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if display_text:
+        if display_text is not None:
             generated['displayText'] =  display_text 
-        if youtube_uri:
+        if youtube_uri is not None:
             generated['youtubeUri'] =  youtube_uri 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,10 +28,10 @@ class VideoLink(BaseFormItem):
     
     @display_text.setter
     def display_text(self, value: str):
-        if self._info['displayText'] == value:
+        if self._info.get('displayText',None) == value:
             return
         self._info['displayText'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def youtube_uri(self)->str:
@@ -39,9 +39,10 @@ class VideoLink(BaseFormItem):
     
     @youtube_uri.setter
     def youtube_uri(self, value: str):
-        if self._info['youtubeUri'] == value:
+        if self._info.get('youtubeUri',None) == value:
             return
         self._info['youtubeUri'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

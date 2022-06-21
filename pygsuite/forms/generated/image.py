@@ -17,11 +17,11 @@ class Image(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if alt_text:
+        if alt_text is not None:
             generated['altText'] =  alt_text 
-        if properties:
+        if properties is not None:
             generated['properties'] =  properties._info 
-        if source_uri:
+        if source_uri is not None:
             generated['sourceUri'] =  source_uri 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -33,10 +33,10 @@ class Image(BaseFormItem):
     
     @alt_text.setter
     def alt_text(self, value: str):
-        if self._info['altText'] == value:
+        if self._info.get('altText',None) == value:
             return
         self._info['altText'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def content_uri(self)->str:
@@ -48,10 +48,10 @@ class Image(BaseFormItem):
     
     @properties.setter
     def properties(self, value: "MediaProperties"):
-        if self._info['properties'] == value:
+        if self._info.get('properties',None) == value:
             return
         self._info['properties'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def source_uri(self)->str:
@@ -59,9 +59,10 @@ class Image(BaseFormItem):
     
     @source_uri.setter
     def source_uri(self, value: str):
-        if self._info['sourceUri'] == value:
+        if self._info.get('sourceUri',None) == value:
             return
         self._info['sourceUri'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

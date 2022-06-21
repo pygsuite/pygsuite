@@ -44,4 +44,5 @@ class FormResponse(BaseFormItem):
     def total_score(self)->number:
         return self._info.get('totalScore')
     
-
+    
+    

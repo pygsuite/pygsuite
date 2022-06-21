@@ -13,7 +13,7 @@ class QuizSettings(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if is_quiz:
+        if is_quiz is not None:
             generated['isQuiz'] =  is_quiz 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -25,9 +25,10 @@ class QuizSettings(BaseFormItem):
     
     @is_quiz.setter
     def is_quiz(self, value: bool):
-        if self._info['isQuiz'] == value:
+        if self._info.get('isQuiz',None) == value:
             return
         self._info['isQuiz'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

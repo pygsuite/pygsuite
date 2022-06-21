@@ -23,4 +23,5 @@ class FileUploadAnswers(BaseFormItem):
         return [FileUploadAnswer(object_info=v) for v in self._info.get('answers')]
         
     
-
+    
+    

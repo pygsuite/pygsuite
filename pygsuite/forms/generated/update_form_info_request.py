@@ -16,9 +16,9 @@ class UpdateFormInfoRequest(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if info:
+        if info is not None:
             generated['info'] =  info._info 
-        if update_mask:
+        if update_mask is not None:
             generated['updateMask'] =  update_mask 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -30,10 +30,10 @@ class UpdateFormInfoRequest(BaseFormItem):
     
     @info.setter
     def info(self, value: "Info"):
-        if self._info['info'] == value:
+        if self._info.get('info',None) == value:
             return
         self._info['info'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def update_mask(self)->str:
@@ -41,9 +41,24 @@ class UpdateFormInfoRequest(BaseFormItem):
     
     @update_mask.setter
     def update_mask(self, value: str):
-        if self._info['updateMask'] == value:
+        if self._info.get('updateMask',None) == value:
             return
         self._info['updateMask'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    
+    @property
+    def wire_format(self)->dict:
+        base = 'UpdateFormInfo'
+        base = base[0].lower() + base[1:]
+        request = self._info
+        components = 'update_form_info_request'.split('_')
+        # if it's an update, we need to provide an update mask
+        # generate this automatically to cinlude all fields
+        if components[0] == 'update':
+            if not self.update_mask:
+                target_field = [field for field in request.keys() if field not in ['update_mask', 'location']][0]           
+                self._info['updateMask'] = ','.join(request[target_field].keys())
+        return {base:self._info}
+    

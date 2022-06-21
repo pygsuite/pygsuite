@@ -14,9 +14,9 @@ class Info(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if description:
+        if description is not None:
             generated['description'] =  description 
-        if title:
+        if title is not None:
             generated['title'] =  title 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,10 +28,10 @@ class Info(BaseFormItem):
     
     @description.setter
     def description(self, value: str):
-        if self._info['description'] == value:
+        if self._info.get('description',None) == value:
             return
         self._info['description'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def document_title(self)->str:
@@ -43,9 +43,10 @@ class Info(BaseFormItem):
     
     @title.setter
     def title(self, value: str):
-        if self._info['title'] == value:
+        if self._info.get('title',None) == value:
             return
         self._info['title'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

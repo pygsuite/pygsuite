@@ -30,4 +30,5 @@ class Grade(BaseFormItem):
     def score(self)->number:
         return self._info.get('score')
     
-
+    
+    

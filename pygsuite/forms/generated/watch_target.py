@@ -15,7 +15,7 @@ class WatchTarget(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if topic:
+        if topic is not None:
             generated['topic'] =  topic._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -27,9 +27,10 @@ class WatchTarget(BaseFormItem):
     
     @topic.setter
     def topic(self, value: "CloudPubsubTopic"):
-        if self._info['topic'] == value:
+        if self._info.get('topic',None) == value:
             return
         self._info['topic'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

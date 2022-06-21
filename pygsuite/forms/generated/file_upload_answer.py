@@ -28,4 +28,5 @@ class FileUploadAnswer(BaseFormItem):
     def mime_type(self)->str:
         return self._info.get('mimeType')
     
-
+    
+    

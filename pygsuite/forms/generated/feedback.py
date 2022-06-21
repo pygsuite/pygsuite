@@ -16,9 +16,9 @@ class Feedback(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if material:
+        if material is not None:
             generated['material'] =  material 
-        if text:
+        if text is not None:
             generated['text'] =  text 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -31,10 +31,10 @@ class Feedback(BaseFormItem):
     
     @material.setter
     def material(self, value: List["ExtraMaterial"]):
-        if self._info['material'] == value:
+        if self._info.get('material',None) == value:
             return
         self._info['material'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def text(self)->str:
@@ -42,9 +42,10 @@ class Feedback(BaseFormItem):
     
     @text.setter
     def text(self, value: str):
-        if self._info['text'] == value:
+        if self._info.get('text',None) == value:
             return
         self._info['text'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

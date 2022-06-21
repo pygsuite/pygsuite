@@ -13,7 +13,7 @@ class TimeQuestion(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if duration:
+        if duration is not None:
             generated['duration'] =  duration 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -25,9 +25,10 @@ class TimeQuestion(BaseFormItem):
     
     @duration.setter
     def duration(self, value: bool):
-        if self._info['duration'] == value:
+        if self._info.get('duration',None) == value:
             return
         self._info['duration'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

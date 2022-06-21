@@ -20,4 +20,5 @@ class TextAnswer(BaseFormItem):
     def value(self)->str:
         return self._info.get('value')
     
-
+    
+    

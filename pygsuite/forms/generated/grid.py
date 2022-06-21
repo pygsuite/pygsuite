@@ -16,9 +16,9 @@ class Grid(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if columns:
+        if columns is not None:
             generated['columns'] =  columns._info 
-        if shuffle_questions:
+        if shuffle_questions is not None:
             generated['shuffleQuestions'] =  shuffle_questions 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -30,10 +30,10 @@ class Grid(BaseFormItem):
     
     @columns.setter
     def columns(self, value: "ChoiceQuestion"):
-        if self._info['columns'] == value:
+        if self._info.get('columns',None) == value:
             return
         self._info['columns'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def shuffle_questions(self)->bool:
@@ -41,9 +41,10 @@ class Grid(BaseFormItem):
     
     @shuffle_questions.setter
     def shuffle_questions(self, value: bool):
-        if self._info['shuffleQuestions'] == value:
+        if self._info.get('shuffleQuestions',None) == value:
             return
         self._info['shuffleQuestions'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

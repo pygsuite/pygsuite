@@ -16,13 +16,13 @@ class FileUploadQuestion(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if folder_id:
+        if folder_id is not None:
             generated['folderId'] =  folder_id 
-        if max_file_size:
+        if max_file_size is not None:
             generated['maxFileSize'] =  max_file_size 
-        if max_files:
+        if max_files is not None:
             generated['maxFiles'] =  max_files 
-        if types:
+        if types is not None:
             generated['types'] =  types 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -34,10 +34,10 @@ class FileUploadQuestion(BaseFormItem):
     
     @folder_id.setter
     def folder_id(self, value: str):
-        if self._info['folderId'] == value:
+        if self._info.get('folderId',None) == value:
             return
         self._info['folderId'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def max_file_size(self)->str:
@@ -45,10 +45,10 @@ class FileUploadQuestion(BaseFormItem):
     
     @max_file_size.setter
     def max_file_size(self, value: str):
-        if self._info['maxFileSize'] == value:
+        if self._info.get('maxFileSize',None) == value:
             return
         self._info['maxFileSize'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def max_files(self)->int:
@@ -56,10 +56,10 @@ class FileUploadQuestion(BaseFormItem):
     
     @max_files.setter
     def max_files(self, value: int):
-        if self._info['maxFiles'] == value:
+        if self._info.get('maxFiles',None) == value:
             return
         self._info['maxFiles'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def types(self)->List["str"]:
@@ -68,9 +68,10 @@ class FileUploadQuestion(BaseFormItem):
     
     @types.setter
     def types(self, value: List["str"]):
-        if self._info['types'] == value:
+        if self._info.get('types',None) == value:
             return
         self._info['types'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

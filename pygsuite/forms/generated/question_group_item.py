@@ -19,11 +19,11 @@ class QuestionGroupItem(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if grid:
+        if grid is not None:
             generated['grid'] =  grid._info 
-        if image:
+        if image is not None:
             generated['image'] =  image._info 
-        if questions:
+        if questions is not None:
             generated['questions'] =  questions 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -35,10 +35,10 @@ class QuestionGroupItem(BaseFormItem):
     
     @grid.setter
     def grid(self, value: "Grid"):
-        if self._info['grid'] == value:
+        if self._info.get('grid',None) == value:
             return
         self._info['grid'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def image(self)->"Image":
@@ -46,10 +46,10 @@ class QuestionGroupItem(BaseFormItem):
     
     @image.setter
     def image(self, value: "Image"):
-        if self._info['image'] == value:
+        if self._info.get('image',None) == value:
             return
         self._info['image'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def questions(self)->List["Question"]:
@@ -58,9 +58,10 @@ class QuestionGroupItem(BaseFormItem):
     
     @questions.setter
     def questions(self, value: List["Question"]):
-        if self._info['questions'] == value:
+        if self._info.get('questions',None) == value:
             return
         self._info['questions'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

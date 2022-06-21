@@ -13,7 +13,7 @@ class CorrectAnswer(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if value:
+        if value is not None:
             generated['value'] =  value 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -25,9 +25,10 @@ class CorrectAnswer(BaseFormItem):
     
     @value.setter
     def value(self, value: str):
-        if self._info['value'] == value:
+        if self._info.get('value',None) == value:
             return
         self._info['value'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

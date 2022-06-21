@@ -14,9 +14,9 @@ class WriteControl(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if required_revision_id:
+        if required_revision_id is not None:
             generated['requiredRevisionId'] =  required_revision_id 
-        if target_revision_id:
+        if target_revision_id is not None:
             generated['targetRevisionId'] =  target_revision_id 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,10 +28,10 @@ class WriteControl(BaseFormItem):
     
     @required_revision_id.setter
     def required_revision_id(self, value: str):
-        if self._info['requiredRevisionId'] == value:
+        if self._info.get('requiredRevisionId',None) == value:
             return
         self._info['requiredRevisionId'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def target_revision_id(self)->str:
@@ -39,9 +39,10 @@ class WriteControl(BaseFormItem):
     
     @target_revision_id.setter
     def target_revision_id(self, value: str):
-        if self._info['targetRevisionId'] == value:
+        if self._info.get('targetRevisionId',None) == value:
             return
         self._info['targetRevisionId'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

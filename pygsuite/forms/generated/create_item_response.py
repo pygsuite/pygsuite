@@ -14,9 +14,9 @@ class CreateItemResponse(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if item_id:
+        if item_id is not None:
             generated['itemId'] =  item_id 
-        if question_id:
+        if question_id is not None:
             generated['questionId'] =  question_id 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,10 +28,10 @@ class CreateItemResponse(BaseFormItem):
     
     @item_id.setter
     def item_id(self, value: str):
-        if self._info['itemId'] == value:
+        if self._info.get('itemId',None) == value:
             return
         self._info['itemId'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def question_id(self)->List["str"]:
@@ -40,9 +40,10 @@ class CreateItemResponse(BaseFormItem):
     
     @question_id.setter
     def question_id(self, value: List["str"]):
-        if self._info['questionId'] == value:
+        if self._info.get('questionId',None) == value:
             return
         self._info['questionId'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

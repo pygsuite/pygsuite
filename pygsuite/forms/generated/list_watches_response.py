@@ -15,7 +15,7 @@ class ListWatchesResponse(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if watches:
+        if watches is not None:
             generated['watches'] =  watches 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,9 +28,10 @@ class ListWatchesResponse(BaseFormItem):
     
     @watches.setter
     def watches(self, value: List["Watch"]):
-        if self._info['watches'] == value:
+        if self._info.get('watches',None) == value:
             return
         self._info['watches'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

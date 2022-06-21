@@ -16,9 +16,9 @@ class ListFormResponsesResponse(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if next_page_token:
+        if next_page_token is not None:
             generated['nextPageToken'] =  next_page_token 
-        if responses:
+        if responses is not None:
             generated['responses'] =  responses 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -30,10 +30,10 @@ class ListFormResponsesResponse(BaseFormItem):
     
     @next_page_token.setter
     def next_page_token(self, value: str):
-        if self._info['nextPageToken'] == value:
+        if self._info.get('nextPageToken',None) == value:
             return
         self._info['nextPageToken'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def responses(self)->List["FormResponse"]:
@@ -42,9 +42,10 @@ class ListFormResponsesResponse(BaseFormItem):
     
     @responses.setter
     def responses(self, value: List["FormResponse"]):
-        if self._info['responses'] == value:
+        if self._info.get('responses',None) == value:
             return
         self._info['responses'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

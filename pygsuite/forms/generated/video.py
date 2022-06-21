@@ -16,9 +16,9 @@ class Video(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if properties:
+        if properties is not None:
             generated['properties'] =  properties._info 
-        if youtube_uri:
+        if youtube_uri is not None:
             generated['youtubeUri'] =  youtube_uri 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -30,10 +30,10 @@ class Video(BaseFormItem):
     
     @properties.setter
     def properties(self, value: "MediaProperties"):
-        if self._info['properties'] == value:
+        if self._info.get('properties',None) == value:
             return
         self._info['properties'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def youtube_uri(self)->str:
@@ -41,9 +41,10 @@ class Video(BaseFormItem):
     
     @youtube_uri.setter
     def youtube_uri(self, value: str):
-        if self._info['youtubeUri'] == value:
+        if self._info.get('youtubeUri',None) == value:
             return
         self._info['youtubeUri'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

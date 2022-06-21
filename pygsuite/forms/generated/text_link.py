@@ -14,9 +14,9 @@ class TextLink(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if display_text:
+        if display_text is not None:
             generated['displayText'] =  display_text 
-        if uri:
+        if uri is not None:
             generated['uri'] =  uri 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,10 +28,10 @@ class TextLink(BaseFormItem):
     
     @display_text.setter
     def display_text(self, value: str):
-        if self._info['displayText'] == value:
+        if self._info.get('displayText',None) == value:
             return
         self._info['displayText'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def uri(self)->str:
@@ -39,9 +39,10 @@ class TextLink(BaseFormItem):
     
     @uri.setter
     def uri(self, value: str):
-        if self._info['uri'] == value:
+        if self._info.get('uri',None) == value:
             return
         self._info['uri'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

@@ -13,7 +13,7 @@ class CloudPubsubTopic(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if topic_name:
+        if topic_name is not None:
             generated['topicName'] =  topic_name 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -25,9 +25,10 @@ class CloudPubsubTopic(BaseFormItem):
     
     @topic_name.setter
     def topic_name(self, value: str):
-        if self._info['topicName'] == value:
+        if self._info.get('topicName',None) == value:
             return
         self._info['topicName'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

@@ -15,7 +15,7 @@ class ImageItem(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if image:
+        if image is not None:
             generated['image'] =  image._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -27,9 +27,10 @@ class ImageItem(BaseFormItem):
     
     @image.setter
     def image(self, value: "Image"):
-        if self._info['image'] == value:
+        if self._info.get('image',None) == value:
             return
         self._info['image'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

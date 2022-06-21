@@ -14,9 +14,9 @@ class DateQuestion(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if include_time:
+        if include_time is not None:
             generated['includeTime'] =  include_time 
-        if include_year:
+        if include_year is not None:
             generated['includeYear'] =  include_year 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -28,10 +28,10 @@ class DateQuestion(BaseFormItem):
     
     @include_time.setter
     def include_time(self, value: bool):
-        if self._info['includeTime'] == value:
+        if self._info.get('includeTime',None) == value:
             return
         self._info['includeTime'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def include_year(self)->bool:
@@ -39,9 +39,10 @@ class DateQuestion(BaseFormItem):
     
     @include_year.setter
     def include_year(self, value: bool):
-        if self._info['includeYear'] == value:
+        if self._info.get('includeYear',None) == value:
             return
         self._info['includeYear'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    

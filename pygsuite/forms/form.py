@@ -1,15 +1,16 @@
-from typing import Optional, TYPE_CHECKING, Union
+from typing import Optional, TYPE_CHECKING, Union, List
 
 from googleapiclient.errors import HttpError
 
 from pygsuite import Clients
 from pygsuite.common.parsing import parse_id
+from pygsuite.constants import logger
 from pygsuite.drive.drive_object import DriveObject
 from pygsuite.enums import MimeType
 from pygsuite.forms.enums import ItemType
+from pygsuite.forms.generated.form import Form as BaseForm
 from pygsuite.forms.update_requests.create_item import CreateItemRequest
 from pygsuite.utility.decorators import retry
-from pygsuite.forms.generated.form import Form as BaseForm
 from .item import Item
 
 if TYPE_CHECKING:
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     from .image_item import ImageItem
 
 
-class Form( BaseForm, DriveObject):
+class Form(BaseForm, DriveObject):
     """A form on google drive."""
 
     _mimetype = MimeType.FORMS
@@ -33,7 +34,7 @@ class Form( BaseForm, DriveObject):
         self.service = client
         self.id = parse_id(id) if id else None
         DriveObject.__init__(self, id=id, client=client)
-        BaseForm.__init__(self, object_info = _form or client.forms().get(formId=self.id).execute()  )
+        BaseForm.__init__(self, object_info=_form or client.forms().get(formId=self.id).execute())
         self._change_queue = []
         self.auto_sync = False
 
@@ -60,9 +61,10 @@ class Form( BaseForm, DriveObject):
                     final.append(i)
             else:
                 final.append(item)
+        for z in final:
+            logger.debug(z)
         if not base:
             return []
-        print(final)
         out = (
             self.service.forms()
                 .batchUpdate(body={"requests": final}, formId=self.id)
@@ -73,9 +75,43 @@ class Form( BaseForm, DriveObject):
         self.refresh()
         return out
 
-    # @property
-    # def items(self):
-    #     return [Item(item, self, idx) for idx, item in enumerate(self._form.get('items', []))]
+    @property
+    def info(self) -> "Info":
+        from pygsuite.forms.generated.update_form_info_request import UpdateFormInfoRequest
+        from pygsuite.forms.synchronizer import WatchedDictionary
+        item = super().info
+        # manually set update mask here
+        uf = lambda: self._mutation([
+            UpdateFormInfoRequest(info=item, update_mask='*' ).wire_format])
+        print(item._info)
+        item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
+        return item
+
+    @property
+    def settings(self) ->"FormSettings":
+        from pygsuite.forms.generated.update_settings_request import UpdateSettingsRequest
+        from pygsuite.forms.synchronizer import WatchedDictionary
+        item = super().settings
+        uf = lambda: self._mutation([
+            UpdateSettingsRequest(settings=item, ).wire_format])
+        item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
+        return item
+
+    @property
+    def items(self) -> List["Item"]:
+        from pygsuite.forms.generated.update_item_request import UpdateItemRequest
+        from pygsuite.forms.generated.location import Location
+        from pygsuite.forms.synchronizer import WatchedDictionary
+        base = super().items
+
+        def mutation_factory(parent, item, idx):
+            uf = lambda: parent._mutation(
+                [UpdateItemRequest(item=item, location=Location(index=idx)).wire_format])
+            return uf
+
+        for idx, item in enumerate(base):
+            item._info = WatchedDictionary(parent_dict=item._info, update_factory=mutation_factory(self, item, idx))
+        return base
 
     # def delete(self, start=0, end=None, flush=True):
     #     end = end or self.body.end_index

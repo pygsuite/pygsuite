@@ -19,11 +19,11 @@ class Form(BaseFormItem):
                 object_info: Optional[Dict] = None):
         generated = {}
         
-        if info:
+        if info is not None:
             generated['info'] =  info._info 
-        if items:
+        if items is not None:
             generated['items'] =  items 
-        if settings:
+        if settings is not None:
             generated['settings'] =  settings._info 
         object_info = object_info or generated
         super().__init__(object_info=object_info)
@@ -39,10 +39,10 @@ class Form(BaseFormItem):
     
     @info.setter
     def info(self, value: "Info"):
-        if self._info['info'] == value:
+        if self._info.get('info',None) == value:
             return
         self._info['info'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def items(self)->List["Item"]:
@@ -51,10 +51,10 @@ class Form(BaseFormItem):
     
     @items.setter
     def items(self, value: List["Item"]):
-        if self._info['items'] == value:
+        if self._info.get('items',None) == value:
             return
         self._info['items'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
     @property
     def linked_sheet_id(self)->str:
@@ -74,9 +74,10 @@ class Form(BaseFormItem):
     
     @settings.setter
     def settings(self, value: "FormSettings"):
-        if self._info['settings'] == value:
+        if self._info.get('settings',None) == value:
             return
         self._info['settings'] = value
-        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+        
     
-
+    
+    
