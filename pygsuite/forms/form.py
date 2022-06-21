@@ -9,6 +9,7 @@ from pygsuite.enums import MimeType
 from pygsuite.forms.enums import ItemType
 from pygsuite.forms.update_requests.create_item import CreateItemRequest
 from pygsuite.utility.decorators import retry
+from pygsuite.forms.generated.form import Form as BaseForm
 from .item import Item
 
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
     from .image_item import ImageItem
 
 
-class Form(DriveObject):
+class Form( BaseForm, DriveObject):
     """A form on google drive."""
 
     _mimetype = MimeType.FORMS
@@ -32,7 +33,7 @@ class Form(DriveObject):
         self.service = client
         self.id = parse_id(id) if id else None
         DriveObject.__init__(self, id=id, client=client)
-        self._form = _form or client.forms().get(formId=self.id).execute()
+        BaseForm.__init__(self, object_info = _form or client.forms().get(formId=self.id).execute()  )
         self._change_queue = []
         self.auto_sync = False
 
@@ -72,9 +73,9 @@ class Form(DriveObject):
         self.refresh()
         return out
 
-    @property
-    def items(self):
-        return [Item(item, self, idx) for idx, item in enumerate(self._form.get('items', []))]
+    # @property
+    # def items(self):
+    #     return [Item(item, self, idx) for idx, item in enumerate(self._form.get('items', []))]
 
     # def delete(self, start=0, end=None, flush=True):
     #     end = end or self.body.end_index

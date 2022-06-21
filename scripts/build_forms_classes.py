@@ -1,52 +1,154 @@
+'''This file contains the code used to generate base Forms classes off the provided google reference implementation.'''
+
+import re
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Optional
+
 from googleapiclient.discovery import Resource, build
 from jinja2 import Template
 
+file_template = Template('''
+from typing import TYPE_CHECKING, Optional, Dict, Union, List
 
-basic = Template('''
-from .base_object import BaseFormItem
+from pygsuite.forms.base_object import BaseFormItem
+{% if dependency %}
+{% for item in dependency %}from pygsuite.forms.generated.{{item.snake}} import {{item.original}}
+{% endfor %}{% endif %}
 
-class {{title}}(BaseFormItem):
-    def __init__(self, info: dict, form):
-        super().__init__(info, form)
-{% for arg in args %}
+class {{target.class_name}}(BaseFormItem):
+    """
+    {{ target.description }}
+    """
+    def __init__(self, {% for arg in target.props if arg.read_only is false() %}
+                {{arg.base}}: Optional[{% if not arg.is_basic_type %}"{{arg.type}}"{% else %}{{ arg.type }}{% endif %}] = None,{% endfor %}
+                object_info: Optional[Dict] = None):
+        generated = {}
+        {% for arg in target.props if arg.read_only is false() %}
+        if {{arg.base}}:
+            generated['{{arg.camel_case}}'] = {% if not arg.is_basic_type %} {{arg.base}}._info {% else %} {{ arg.base }} {% endif %}{% endfor %}
+        object_info = object_info or generated
+        super().__init__(object_info=object_info)
+    
+    {% for prop in target.props %}
     @property
-    def {{ arg.snake }}(self):
-        return self._info.get('{{ arg.original }}')
-        
-    @{{ arg.snake }}.setter
-    def {{ arg.snake }}(self, value):
-        self._info['{{ arg.original }}'] = value
-        
-{% endfor %}    
+    def {{prop.base}}(self)->{% if prop.is_basic_type %}{{prop.type }}{% else %}"{{ prop.type }}"{% endif %}:
+        {% if prop.is_list %}return [{% if prop.class_name %}{{prop.class_name}}(object_info=v){% else %}v{% endif %} for v in self._info.get('{{prop.camel_case}}')]
+        {% else %}return {% if prop.is_basic_type %}self._info.get('{{prop.camel_case}}'){% else %}{{ prop.type }}(object_info=self._info.get('{{prop.camel_case}}')){% endif %}{% endif %}{% if not prop.read_only %}
+    
+    @{{prop.base}}.setter
+    def {{prop.base}}(self, value: {% if prop.is_basic_type %}{{prop.type }}{% else %}"{{ prop.type }}"{% endif %}):
+        if self._info['{{prop.camel_case}}'] == value:
+            return
+        self._info['{{prop.camel_case}}'] = value
+        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request]){% endif %}
+    {% endfor %}
+
+
 ''')
 
-'''{
-  "includeTime": boolean,
-  "includeYear": boolean
-}'''
-import re
-from dataclasses import dataclass
 
 @dataclass
 class ArgInfo:
-    snake:str
-    original:str
-title = 'DateQuestion'
-args =  ['includeTime', 'includeYear']
+    original: str
+    value: dict
+    description: str
+    # type: str
+    # is_basic_type: bool
+    # is_list: bool
+    read_only: bool
+    base: str = None
+    camel_case: str = None
 
-processed_args = [ArgInfo('_'.join([z.lower() for z in re.split('(?=[A-Z])', v)]), v) for v in args]
-t = basic.render(title=title,args= processed_args)
-#t = basic.render(title= 'QuizSettings',args= ['isQuiz'])
-#t = basic.render(title='FormSettings',args= ['quiz_settings'])
-print(t)
+    def __post_init__(self):
+        self.base = '_'.join([z.lower() for z in re.split('(?=[A-Z])', self.original)])
+        self.camel_case = self.original
+
+    @property
+    def is_basic_type(self):
+        return self.value.get('$ref', False) is False
+
+    @property
+    def is_list(self) -> bool:
+        return self.value.get('type', 'str') == 'array'
+
+    @property
+    def type(self):
+        return build_type(self.value)
+
+    @property
+    def class_name(self):
+        if not self.value.get('items'):
+            return None
+        return self.value['items'].get('$ref', None)
 
 
-def build_classes(resource:Resource):
-    created = []
+@dataclass
+class Target:
+    class_name: str
+    description: str
+    props: List[ArgInfo]
+    snake: Optional[str] = None
+
+    def __post_init__(self):
+        self.snake = '_'.join([z.lower() for z in re.split('(?=[A-Z])', self.class_name.strip()) if z])
+
+
+@dataclass
+class Dependency:
+    original: str
+    snake: str = None
+
+    def __post_init__(self):
+        self.snake = '_'.join([z.lower() for z in re.split('(?=[A-Z])', self.original.strip()) if z])
+
+
+def map_type(input: str):
+    if input == 'string':
+        return 'str'
+    elif input == 'array':
+        return 'list'
+    elif input == 'boolean':
+        return 'bool'
+    elif input =='integer':
+        return 'int'
+    return input
+
+
+def build_type(avalue: dict) -> str:
+    basic_type = avalue.get('$ref', map_type(avalue.get('type', 'str')))
+    if basic_type == 'list':
+        detail = avalue['items']
+        return f"""List["{build_type(detail)}"]"""
+    return basic_type
+
+
+def build_classes(resource: Resource):
+    base_path = Path(__file__)
+    new_parent = base_path.parent.parent / 'pygsuite' / 'forms' / 'generated'
     for key, value in resource._rootDesc['schemas'].items():
         print(key)
         print(value)
-        print('-----------')
+        # {'fileUploadAnswers': {'$ref': 'FileUploadAnswers', 'description': 'Output only. The answers to a file upload question.', 'readOnly': True}
+        # 'questionId': {'description': "Output only. The question's ID. See also Question.question_id.", 'readOnly': True, 'type': 'string'}
+        # 'items': {'description': "Required. A list of the form's items, which can include section headers, questions, embedded media, etc.", 'items': {'$ref': 'Item'}, 'type': 'array'}
+        dependency = []
+        for akey, avalue in value['properties'].items():
+            if avalue.get('$ref'):
+                dependency.append(Dependency(original=avalue['$ref']))
+            elif avalue.get('type', 'str') == 'array':
+                if avalue['items'].get('$ref'):
+                    dependency.append(Dependency(original=avalue['items'].get('$ref')))
+        target = Target(description=value['description'], class_name=value['id'], props=
+        [ArgInfo(original=akey, description=avalue['description'],
+                 value=avalue,
+                 read_only=avalue.get('readOnly', False)) for akey, avalue in
+         value['properties'].items()])
+        rendered = file_template.render(dependency=dependency, target=target)
+        print(rendered)
+
+        with open(new_parent / f'{target.snake}.py', 'w') as f:
+            f.write(rendered)
 
 
 if __name__ == "__main__":

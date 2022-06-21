@@ -1,0 +1,50 @@
+
+from typing import TYPE_CHECKING, Optional, Dict, Union, List
+
+from pygsuite.forms.base_object import BaseFormItem
+
+from pygsuite.forms.generated.form_response import FormResponse
+
+
+class ListFormResponsesResponse(BaseFormItem):
+    """
+    Response to a ListFormResponsesRequest.
+    """
+    def __init__(self, 
+                next_page_token: Optional[str] = None,
+                responses: Optional[List["FormResponse"]] = None,
+                object_info: Optional[Dict] = None):
+        generated = {}
+        
+        if next_page_token:
+            generated['nextPageToken'] =  next_page_token 
+        if responses:
+            generated['responses'] =  responses 
+        object_info = object_info or generated
+        super().__init__(object_info=object_info)
+    
+    
+    @property
+    def next_page_token(self)->str:
+        return self._info.get('nextPageToken')
+    
+    @next_page_token.setter
+    def next_page_token(self, value: str):
+        if self._info['nextPageToken'] == value:
+            return
+        self._info['nextPageToken'] = value
+        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+    
+    @property
+    def responses(self)->List["FormResponse"]:
+        return [FormResponse(object_info=v) for v in self._info.get('responses')]
+        
+    
+    @responses.setter
+    def responses(self, value: List["FormResponse"]):
+        if self._info['responses'] == value:
+            return
+        self._info['responses'] = value
+        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+    
+

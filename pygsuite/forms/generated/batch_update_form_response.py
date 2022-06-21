@@ -1,0 +1,66 @@
+
+from typing import TYPE_CHECKING, Optional, Dict, Union, List
+
+from pygsuite.forms.base_object import BaseFormItem
+
+from pygsuite.forms.generated.form import Form
+from pygsuite.forms.generated.response import Response
+from pygsuite.forms.generated.write_control import WriteControl
+
+
+class BatchUpdateFormResponse(BaseFormItem):
+    """
+    Response to a BatchUpdateFormRequest.
+    """
+    def __init__(self, 
+                form: Optional["Form"] = None,
+                replies: Optional[List["Response"]] = None,
+                write_control: Optional["WriteControl"] = None,
+                object_info: Optional[Dict] = None):
+        generated = {}
+        
+        if form:
+            generated['form'] =  form._info 
+        if replies:
+            generated['replies'] =  replies 
+        if write_control:
+            generated['writeControl'] =  write_control._info 
+        object_info = object_info or generated
+        super().__init__(object_info=object_info)
+    
+    
+    @property
+    def form(self)->"Form":
+        return Form(object_info=self._info.get('form'))
+    
+    @form.setter
+    def form(self, value: "Form"):
+        if self._info['form'] == value:
+            return
+        self._info['form'] = value
+        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+    
+    @property
+    def replies(self)->List["Response"]:
+        return [Response(object_info=v) for v in self._info.get('replies')]
+        
+    
+    @replies.setter
+    def replies(self, value: List["Response"]):
+        if self._info['replies'] == value:
+            return
+        self._info['replies'] = value
+        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+    
+    @property
+    def write_control(self)->"WriteControl":
+        return WriteControl(object_info=self._info.get('writeControl'))
+    
+    @write_control.setter
+    def write_control(self, value: "WriteControl"):
+        if self._info['writeControl'] == value:
+            return
+        self._info['writeControl'] = value
+        #self._form._mutation([UpdateItemRequest(item=self, location=self.location).request])
+    
+

@@ -1,7 +1,6 @@
 class BaseFormItem(object):
-    def __init__(self, info, form):
-        self._info = info
-        self._form = form
+    def __init__(self, object_info):
+        self._info = object_info
 
     def __repr__(self):
         # output = []
