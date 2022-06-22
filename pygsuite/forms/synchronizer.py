@@ -1,4 +1,9 @@
-from typing import Any, Iterable, Callable, overload, SupportsIndex, Union
+from typing import Any, Iterable, Callable, overload, Union
+
+try:
+    from typing import SupportsIndex
+except ImportError:
+    SupportsIndex = None  # type: ignore
 
 
 class WatchedList(list):
@@ -8,8 +13,8 @@ class WatchedList(list):
         self,
         iterable: Iterable,
         update_factory: Callable[[Any, int], None],
-        create_factory: Callable[[Any, SupportsIndex], None],
-        delete_factory: Callable[[Union[SupportsIndex, slice]], None],
+        create_factory: Callable[[Any, "SupportsIndex"], None],
+        delete_factory: Callable[[Union["SupportsIndex", slice]], None],
         move_factory: Callable[[int, int], None],
     ):
         self.initialized = False
@@ -22,7 +27,7 @@ class WatchedList(list):
         self.sync_changes: bool = True
 
     @overload
-    def __setitem__(self, key: SupportsIndex, value: Any) -> None:
+    def __setitem__(self, key: "SupportsIndex", value: Any) -> None:
         raise NotImplementedError
 
     @overload
@@ -35,12 +40,12 @@ class WatchedList(list):
         if current != value and self.sync_changes:
             self.update_factory(value, key)
 
-    def insert(self, __index: SupportsIndex, __object) -> None:
+    def insert(self, __index: "SupportsIndex", __object) -> None:
         super().insert(__index, __object)
         if self.sync_changes:
             self.create_factory(__object, __index)
 
-    def __delitem__(self, key: Union[SupportsIndex, slice]) -> None:
+    def __delitem__(self, key: Union["SupportsIndex", slice]) -> None:
         if self.sync_changes:
             self.delete_factory(key)
         super().__delitem__(key)
