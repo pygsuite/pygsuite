@@ -6,10 +6,10 @@
 [![Downloads](https://img.shields.io/badge/dynamic/json.svg?label=downloads&url=https%3A%2F%2Fpypistats.org%2Fapi%2Fpackages%2Fpygsuite%2Frecent&query=data.last_month&colorB=brightgreen&suffix=%2FMonth)](https://pypistats.org/packages/pygsuite)
 [![Join the chat at https://gitter.im/pygsuite/community](https://badges.gitter.im/pygsuite/community.svg)](https://gitter.im/pygsuite/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This package provides utilities for working GSuite products such as sheets, docs, and slides 
-in a pythonic, object-oriented way.
+This package provides utilities for working with g-suite products such as docs, forms, sheets, and slides 
+in an intuitive, pythonic, object-oriented way. TLDR; it wraps the drive APIs nicely.
 
-It currently offers abstractions for
+It currently offers abstractions for the following:
 
 - Drive
 - Sheets
