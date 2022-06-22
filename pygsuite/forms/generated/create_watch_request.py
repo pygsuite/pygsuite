@@ -1,8 +1,6 @@
-
-from typing import TYPE_CHECKING, Optional, Dict, Union, List
+from typing import Optional, Dict
 
 from pygsuite.forms.base_object import BaseFormItem
-
 from pygsuite.forms.generated.watch import Watch
 
 
@@ -10,56 +8,45 @@ class CreateWatchRequest(BaseFormItem):
     """
     Create a new watch.
     """
-    def __init__(self, 
-                watch: Optional["Watch"] = None,
-                watch_id: Optional[str] = None,
-                object_info: Optional[Dict] = None):
-        generated = {}
-        
+
+    def __init__(
+        self,
+        watch: Optional["Watch"] = None,
+        watch_id: Optional[str] = None,
+        object_info: Optional[Dict] = None,
+    ):
+        generated: Dict = {}
+
         if watch is not None:
-            generated['watch'] =  watch._info 
+            generated["watch"] = watch._info
         if watch_id is not None:
-            generated['watchId'] =  watch_id 
+            generated["watchId"] = watch_id
         object_info = object_info or generated
         super().__init__(object_info=object_info)
-    
-    
+
     @property
-    def watch(self)->"Watch":
-        return Watch(object_info=self._info.get('watch'))
-    
+    def watch(self) -> "Watch":
+        return Watch(object_info=self._info.get("watch"))
+
     @watch.setter
     def watch(self, value: "Watch"):
-        if self._info.get('watch',None) == value:
+        if self._info.get("watch", None) == value:
             return
-        self._info['watch'] = value
-        
-    
+        self._info["watch"] = value
+
     @property
-    def watch_id(self)->str:
-        return self._info.get('watchId')
-    
+    def watch_id(self) -> str:
+        return self._info.get("watchId")
+
     @watch_id.setter
     def watch_id(self, value: str):
-        if self._info.get('watchId',None) == value:
+        if self._info.get("watchId", None) == value:
             return
-        self._info['watchId'] = value
-        
-    
-    
-    
+        self._info["watchId"] = value
+
     @property
-    def wire_format(self)->dict:
-        base = 'CreateWatch'
+    def wire_format(self) -> dict:
+        base = "CreateWatch"
         base = base[0].lower() + base[1:]
-        request = self._info
-        components = 'create_watch_request'.split('_')
-        # if it's an update, we *may* need to provide an update mask
-        # generate this automatically to include all fields
-        # can be optionally overridden when creating synchronization method
-        if components[0] == 'update':
-            if not self.update_mask:
-                target_field = [field for field in request.keys() if field not in ['update_mask', 'location']][0]           
-                self._info['updateMask'] = ','.join(request[target_field].keys())
-        return {base:self._info}
-    
+
+        return {base: self._info}

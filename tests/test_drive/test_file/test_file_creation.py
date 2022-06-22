@@ -49,9 +49,7 @@ def test_file_creation__from_bytes(auth_test_clients):
     bytes = BytesIO(response.content)
 
     new_file = File.create(
-        name=f"Test image file {TEST_ID}",
-        mimetype="image/svg+xml",
-        media_body=bytes,
+        name=f"Test image file {TEST_ID}", mimetype="image/svg+xml", media_body=bytes
     )
     assert new_file.id is not None
     new_file.delete()
@@ -61,9 +59,7 @@ def test_file_creation__custom_body(auth_test_clients):
     """Test to confirm flexibility for a custom request body from a user."""
     custom_body = {"description": "minimal test of custom body"}
     new_file = File.create(
-        name=f"Custom body test {TEST_ID}",
-        mimetype="text/plain",
-        extra_body=custom_body,
+        name=f"Custom body test {TEST_ID}", mimetype="text/plain", extra_body=custom_body
     )
     assert new_file.id is not None
     new_file.delete()
@@ -79,10 +75,7 @@ def test_file_creation__inferred_mimetype(auth_test_clients, caplog):
     with open(upload_file, "rb") as excel_file:
         excel_bytes = BytesIO(excel_file.read())
 
-    new_file = File.create(
-        name=f"Test MimeType Infer {TEST_ID}",
-        media_body=excel_bytes,
-    )
+    new_file = File.create(name=f"Test MimeType Infer {TEST_ID}", media_body=excel_bytes)
     assert new_file.id is not None
     assert "No mimetype specified, attempting to determine one." in caplog.messages
     assert "MimeType found for file: application/pdf" in caplog.messages
@@ -92,9 +85,7 @@ def test_file_upload__from_local_file(auth_test_clients):
     """Test to create a new file from a local file upload."""
     upload_file = join(dirname(dirname(abspath(__file__))), "test_file", "assets", "test.txt")
     new_file = File.upload(
-        filepath=upload_file,
-        name=f"Test test upload {TEST_ID}",
-        mimetype="text/plain",
+        filepath=upload_file, name=f"Test test upload {TEST_ID}", mimetype="text/plain"
     )
     assert new_file.id is not None
     new_file.delete()
@@ -106,9 +97,7 @@ def test_file_upload__from_local_file__with_conversion(auth_test_clients):
 
     upload_file = join(dirname(dirname(abspath(__file__))), "test_file", "assets", "test data.xlsx")
     new_file = File.upload(
-        filepath=upload_file,
-        name=f"Test Excel upload {TEST_ID}",
-        convert_to=GoogleDocFormat.SHEETS,
+        filepath=upload_file, name=f"Test Excel upload {TEST_ID}", convert_to=GoogleDocFormat.SHEETS
     )
     assert new_file.id is not None
     new_file.delete()
@@ -129,6 +118,6 @@ def test_file__get_safe(auth_test_clients, caplog):
     file_to_find.delete()
 
     file_to_create = File.get_safe(name=f"My Spreadsheet {TEST_ID}", mimetype=MimeType.SHEETS)
-    assert (file_to_create.id is not None and file_to_create.id != existing_file_id)
+    assert file_to_create.id is not None and file_to_create.id != existing_file_id
     assert "No matching file found, creating file now..." in caplog.messages
     file_to_create.delete()

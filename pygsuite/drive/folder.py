@@ -20,14 +20,14 @@ class Folder(DriveObject):
     def __init__(self, id: str = None, client: Optional[Resource] = None):
 
         self.id = parse_id(id) if id else None
-        self.client = client or Clients.drive_client
+        self.client: Resource = client or Clients.drive_client
 
         DriveObject.__init__(self, id=id, client=self.client)
 
     def get_files(
         self,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
-        support_all_drives: bool = False,
+        support_all_drives: bool = True,
     ) -> List[File]:
         """The files in a given folder. If no folder ID is given in the instance,
         a recursive search is performed from the Drive root.
@@ -38,19 +38,15 @@ class Folder(DriveObject):
 
         Returns a list of any Files found.
         """
-        query = None
+        query_components: List[Union[QueryString, QueryStringGroup]] = []
 
         if self.id:
-            query = QueryString(QueryTerm.PARENTS, Operator.IN, self.id)
+            query_components.append(QueryString(QueryTerm.PARENTS, Operator.IN, self.id))
 
         if extra_conditions:
-            query = (
-                QueryStringGroup([query, extra_conditions])
-                if query is not None
-                else extra_conditions
-            )
+            query_components.append(extra_conditions)
 
-        query = query.formatted if query else query
+        query = QueryStringGroup(query_components).formatted if query_components else None
 
         files = execute_paginated_command(
             client=self.client.files(),

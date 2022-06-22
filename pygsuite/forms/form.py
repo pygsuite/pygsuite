@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from googleapiclient.errors import HttpError
 
@@ -9,13 +9,21 @@ from pygsuite.constants import logger
 from pygsuite.drive.drive_object import DriveObject
 from pygsuite.enums import MimeType
 from pygsuite.exceptions import FatalHttpError
+from pygsuite.forms.generated.create_item_request import CreateItemRequest
+from pygsuite.forms.generated.delete_item_request import DeleteItemRequest
 from pygsuite.forms.generated.form import Form as BaseForm
-from pygsuite.forms.synchronizer import WatchedList, WatchedDictionary
+from pygsuite.forms.generated.location import Location
+from pygsuite.forms.generated.move_item_request import MoveItemRequest
+from pygsuite.forms.generated.update_form_info_request import UpdateFormInfoRequest
+from pygsuite.forms.generated.update_item_request import UpdateItemRequest
+from pygsuite.forms.synchronizer import WatchedDictionary
+from pygsuite.forms.synchronizer import WatchedList
 from pygsuite.utility.decorators import retry
 
 if TYPE_CHECKING:
     from .generated.form_settings import FormSettings
     from .generated.info import Info
+    from .generated.item import Item
 
 
 class Form(BaseForm, DriveObject):
@@ -31,13 +39,36 @@ class Form(BaseForm, DriveObject):
             client = client or Clients.forms_client
         self.service = client
         self.id = parse_id(id) if id else None
-        DriveObject.__init__(self, id=id, client=client)
+        DriveObject.__init__(self, id=self.id, client=client)
         BaseForm.__init__(self, object_info=_form or client.forms().get(formId=self.id).execute())
-        self._change_queue = []
-        self.auto_sync = False
+        self._change_queue: List = []
+        self.auto_sync: bool = False
 
-    def id(self):
-        return self._form["id"]
+        def update_factory(idx, item):
+            self._mutation([UpdateItemRequest(item=item, location=Location(index=idx)).wire_format])
+
+        self.items_update_factory = update_factory
+
+        def delete_factory(idx):
+            self._mutation([DeleteItemRequest(location=Location(index=idx)).wire_format])
+
+        self.items_delete_factory = delete_factory
+
+        def move_factory(original_idx, new_idx):
+            self._mutation(
+                [
+                    MoveItemRequest(
+                        new_location=Location(new_idx), original_location=Location(original_idx)
+                    ).wire_format
+                ]
+            )
+
+        self.items_move_factory = move_factory
+
+        def create_factory(item, idx):
+            self._mutation([CreateItemRequest(item, location=Location(idx)).wire_format])
+
+        self.items_create_factory = create_factory
 
     def _mutation(self, reqs, flush: bool = False):
         if not reqs:
@@ -47,6 +78,18 @@ class Form(BaseForm, DriveObject):
             return self.flush()
 
     @retry(HttpError, tries=3, delay=5, backoff=3, fatal_exceptions=(FatalHttpError,))
+    def batch_update(self, requests):
+        try:
+            return (
+                self.service.forms()
+                .batchUpdate(body={"requests": requests}, formId=self.id)
+                .execute()["replies"]
+            )
+        except HttpError as e:
+            if e.status_code in FATAL_HTTP_CODES:
+                raise FatalHttpError(e.resp, e.content, e.uri)
+            raise e
+
     def flush(self, reverse=False):
         if reverse:
             base = reversed(self._change_queue)
@@ -63,74 +106,78 @@ class Form(BaseForm, DriveObject):
             logger.debug(z)
         if not base:
             return []
-        try:
-            out = (
-                self.service.forms()
-                .batchUpdate(body={"requests": final}, formId=self.id)
-                .execute()["replies"]
-            )
-        except HttpError as e:
-            if e.status_code in FATAL_HTTP_CODES:
-                raise FatalHttpError(e.resp, e.content, e.uri)
-            raise e
+        out = self.batch_update(final)
         self._change_queue = []
         self.refresh()
         return out
 
     @property
     def info(self) -> "Info":
-        from pygsuite.forms.generated.update_form_info_request import UpdateFormInfoRequest
-        from pygsuite.forms.synchronizer import WatchedDictionary
-
         item = super().info
         # manually set update mask here
-        uf = lambda: self._mutation([UpdateFormInfoRequest(info=item, update_mask="*").wire_format])
+        if isinstance(item._info, WatchedDictionary):
+            return item
+        uf = lambda: self._mutation(  # noqa: E731
+            [UpdateFormInfoRequest(info=item, update_mask="*").wire_format]
+        )
         item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
         return item
+
+    @info.setter
+    def info(self, item: "Info"):
+        uf = lambda: self._mutation(  # noqa: E731
+            [UpdateFormInfoRequest(info=item, update_mask="*").wire_format]
+        )
+
+        item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
+        super(Form, self.__class__).info.fset(self, item)  # type: ignore
 
     @property
     def settings(self) -> "FormSettings":
         from pygsuite.forms.generated.update_settings_request import UpdateSettingsRequest
 
         settings = super().settings
-        uf = lambda: self._mutation([UpdateSettingsRequest(settings=settings).wire_format])
+        if isinstance(settings._info, WatchedDictionary):
+            return settings
+        uf = lambda: self._mutation(  # noqa: E731
+            [UpdateSettingsRequest(settings=settings).wire_format]
+        )
         settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
         return settings
 
+    @settings.setter
+    def settings(self, settings: "FormSettings"):
+        from pygsuite.forms.generated.update_settings_request import UpdateSettingsRequest
+
+        uf = lambda: self._mutation(  # noqa: E731
+            [UpdateSettingsRequest(settings=settings).wire_format]
+        )
+        settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
+        super(Form, self.__class__).settings.fset(self, settings)  # type:ignore
+
     @property
-    def items(self) -> WatchedList["Item"]:
-        from pygsuite.forms.generated.update_item_request import UpdateItemRequest
-        from pygsuite.forms.generated.delete_item_request import DeleteItemRequest
-        from pygsuite.forms.generated.move_item_request import MoveItemRequest
-        from pygsuite.forms.generated.create_item_request import CreateItemRequest
-        from pygsuite.forms.generated.location import Location
-
-        def update_factory(idx, item):
-            self._mutation([UpdateItemRequest(item=item, location=Location(index=idx)).wire_format])
-
-        def delete_factory(idx):
-            self._mutation([DeleteItemRequest(location=Location(index=idx)).wire_format])
-
-        def move_factory(original_idx, new_idx):
-            self._mutation(
-                [
-                    MoveItemRequest(
-                        new_location=Location(new_idx), original_location=Location(original_idx)
-                    ).wire_format
-                ]
-            )
-
-        def create_factory(item, idx):
-            self._mutation([CreateItemRequest(item, location=Location(idx)).wire_format])
-
+    def items(self) -> List["Item"]:
         base = super().items
+        if isinstance(base, WatchedList):
+            return base
         return WatchedList(
             iterable=base,
-            update_factory=update_factory,
-            delete_factory=delete_factory,
-            move_factory=move_factory,
-            create_factory=create_factory,
+            update_factory=self.items_update_factory,
+            delete_factory=self.items_delete_factory,
+            move_factory=self.items_move_factory,
+            create_factory=self.items_create_factory,
         )
+
+    @items.setter
+    def items(self, items: List):
+        items = WatchedList(
+            iterable=items,
+            update_factory=self.items_update_factory,
+            delete_factory=self.items_delete_factory,
+            move_factory=self.items_move_factory,
+            create_factory=self.items_create_factory,
+        )
+        super(Form, self.__class__).items.fset(self, items)  # type: ignore
 
     @retry(HttpError, tries=3, delay=5, backoff=3, fatal_exceptions=(FatalHttpError,))
     def refresh(self):

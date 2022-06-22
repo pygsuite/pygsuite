@@ -10,7 +10,7 @@ class RetriableException(Exception):
     pass
 
 
-@retry(exceptions=[RetriableException], tries=5, delay=5, backoff=3)
+@retry(exceptions=(RetriableException), tries=5, delay=5, backoff=3)
 def execute_with_backoff(request):
     """Execute API call with retries and backoff.
     """

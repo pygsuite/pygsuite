@@ -4,7 +4,7 @@ from pygsuite.enums import GoogleDocFormat
 
 logger = getLogger("pygsuite")
 
-# AUTH
+
 def get_credentials():
     dirname = path.dirname(path.dirname(__file__))
     return path.join(dirname, "credentials.json")

@@ -23,9 +23,7 @@ def test_drive__find_files(auth_test_clients, test_filled_folder):
     """Test of basic find_files functionality."""
     filled_folder, child_text_file, child_sheets_file = test_filled_folder
 
-    files = Drive().find_files(
-        folder_id=filled_folder.id,
-    )
+    files = Drive().find_files(folder_id=filled_folder.id)
     assert all(
         test_file.id in [file.id for file in files]
         for test_file in [child_text_file, child_sheets_file]
@@ -36,10 +34,7 @@ def test_drive__find_files__by_name(auth_test_clients, test_filled_folder):
     """Test of find_files functionality, filtering by name."""
     filled_folder, child_text_file, child_sheets_file = test_filled_folder
 
-    files = Drive().find_files(
-        folder_id=filled_folder.id,
-        name=child_text_file.name,
-    )
+    files = Drive().find_files(folder_id=filled_folder.id, name=child_text_file.name)
     assert child_text_file.id in [file.id for file in files]
 
 
@@ -49,10 +44,7 @@ def test_drive__find_files__by_type(auth_test_clients, test_filled_folder):
 
     filled_folder, child_text_file, child_sheets_file = test_filled_folder
 
-    files = Drive().find_files(
-        folder_id=filled_folder.id,
-        type=MimeType.SHEETS,
-    )
+    files = Drive().find_files(folder_id=filled_folder.id, type=MimeType.SHEETS)
     assert child_sheets_file.id in [file.id for file in files]
 
 
@@ -65,10 +57,7 @@ def test_drive__find_files__support_all_drives(auth_test_clients, test_filled_fo
     """Test of find_files functionality with support for all drives (wider search)."""
     filled_folder, child_text_file, child_sheets_file = test_filled_folder
 
-    files = Drive().find_files(
-        folder_id=filled_folder.id,
-        support_all_drives=True,
-    )
+    files = Drive().find_files(folder_id=filled_folder.id, support_all_drives=True)
     assert all(
         test_file.id in [file.id for file in files]
         for test_file in [child_text_file, child_sheets_file]

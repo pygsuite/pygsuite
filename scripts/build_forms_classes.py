@@ -10,7 +10,7 @@ from jinja2 import Template
 
 file_template = Template(
     '''
-from typing import TYPE_CHECKING, Optional, Dict, Union, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 {% if dependency %}
@@ -24,7 +24,7 @@ class {{target.class_name}}(BaseFormItem):
     def __init__(self, {% for arg in target.props if arg.read_only is false() %}
                 {{arg.base}}: Optional[{% if not arg.is_basic_type %}"{{arg.type}}"{% else %}{{ arg.type }}{% endif %}] = None,{% endfor %}
                 object_info: Optional[Dict] = None):
-        generated = {}
+        generated:Dict = {}
         {% for arg in target.props if arg.read_only is false() %}
         if {{arg.base}} is not None:
             generated['{{arg.camel_case}}'] = {% if not arg.is_basic_type %} {{arg.base}}._info {% else %} {{ arg.base }} {% endif %}{% endfor %}
@@ -50,6 +50,7 @@ class {{target.class_name}}(BaseFormItem):
     def wire_format(self)->dict:
         base = '{{target.class_name.replace('Request', '')}}'
         base = base[0].lower() + base[1:]
+        {% if update_mask %}
         request = self._info
         components = '{{target.snake}}'.split('_')
         # if it's an update, we *may* need to provide an update mask
@@ -59,6 +60,7 @@ class {{target.class_name}}(BaseFormItem):
             if not self.update_mask:
                 target_field = [field for field in request.keys() if field not in ['update_mask', 'location']][0]           
                 self._info['updateMask'] = ','.join(request[target_field].keys())
+        {% endif %}
         return {base:self._info}
     {% endif %}
 
@@ -177,14 +179,17 @@ def build_classes(resource: Resource):
                 for akey, avalue in value["properties"].items()
             ],
         )
-        rendered = file_template.render(dependency=dependency, target=target)
+        update_mask = any([x.base == 'update_mask' for x in target.props])
+        rendered = file_template.render(dependency=dependency, target=target, update_mask=update_mask)
 
         with open(new_parent / f"{target.snake}.py", "w") as f:
             f.write(rendered)
-        all_classes.append(target.snake)
-    all_classes = [v for v in all_classes if v != "form"]
+        all_classes.append([target.snake, target.class_name])
+    all_classes = [v for v in all_classes if v[0] != "form"]
     with open(new_parent / f"__init__.py", "w") as f:
-        f.write("\n".join([f"from pygsuite.forms.generated.{v} import *" for v in all_classes]))
+        f.write("\n".join([f"from pygsuite.forms.generated.{v[0]} import {v[1]}" for v in all_classes]))
+        f.write('\n')
+        f.write('__all__ = [{}]'.format(','.join([f'"{v[1]}"' for v in all_classes])))
 
 
 if __name__ == "__main__":

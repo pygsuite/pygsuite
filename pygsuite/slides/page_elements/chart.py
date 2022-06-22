@@ -1,7 +1,3 @@
-from dataclasses import dataclass
-from typing import Dict
-from enum import Enum
-
 from .base_element import BaseElement
 
 
@@ -19,7 +15,7 @@ class Chart(BaseElement):
         return self._element["objectId"]
 
     def __repr__(self):
-        return f"<Chart >"
+        return "<Chart >"
 
     @property
     def spreadsheet_id(self):

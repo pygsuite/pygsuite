@@ -1,11 +1,10 @@
 import warnings
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from pygsuite import Clients
 from pygsuite.drive.folder import Folder
 from pygsuite.drive.query import Operator, QueryString, QueryStringGroup, QueryTerm
 from pygsuite.enums import MimeType
-
 
 DRIVE_V3_API_URL = "https://www.googleapis.com/drive/v3/files"
 
@@ -64,26 +63,29 @@ class Drive:
             extra_conditions (Union[QueryString, QueryStringGroup]): Any additional queries to pass to the files search.
             support_all_drives (bool): Whether the requesting application supports both My Drives and shared drives.
         """
-        query = None
+        query_components: List[Union[QueryString, QueryStringGroup]] = []
 
         # name match query
         if name:
             operator = Operator.EQUAL if exact_match else Operator.CONTAINS
             name_query = QueryString(QueryTerm.NAME, operator, name)
-            query = name_query
+            query_components.append(name_query)
 
         # optional type query
         if type:
             mimetype = str(type) if isinstance(type, MimeType) else type
             type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
-            query = QueryStringGroup([query, type_query]) if query else type_query
+            query_components.append(type_query)
 
-        # optional auxillary query
+        # optional auxiliary query
         if extra_conditions:
-            query = QueryStringGroup([query, extra_conditions]) if query else extra_conditions
+            query_components.append(extra_conditions)
 
+        final_query = QueryStringGroup(query_components) if query_components else None
         folder = Folder(id=folder_id, client=self.service)
-        files = folder.get_files(extra_conditions=query, support_all_drives=support_all_drives)
+        files = folder.get_files(
+            extra_conditions=final_query, support_all_drives=support_all_drives
+        )
 
         return files
 

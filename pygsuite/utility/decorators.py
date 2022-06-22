@@ -1,7 +1,7 @@
 import time
 from functools import wraps
 from types import MethodType
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union, Type
 
 
 class lazy_property(object):
@@ -29,8 +29,8 @@ def safe_property(f):
     return wrapper
 
 
-def retry(
-    exceptions,
+def retry(  # noqa: C901
+    exceptions: Union[Type[Exception], Tuple[Type[Exception]]],
     tries: int = 4,
     delay: int = 3,
     backoff: int = 2,

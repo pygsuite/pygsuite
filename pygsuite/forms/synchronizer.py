@@ -1,16 +1,16 @@
-from typing import Any, Optional, Iterable, Callable
+from typing import Any, Iterable, Callable, overload, SupportsIndex, Union
 
 
 class WatchedList(list):
-    """List to support mutations"""
+    """List that supports synchronizing changes to remote."""
 
     def __init__(
         self,
-        update_factory: Optional[Callable[[Any, int], None]],
-        create_factory: Optional[Callable[[Any, int], None]] = None,
-        delete_factory: Optional[Callable[[int], None]] = None,
-        move_factory: Optional[Callable[[int, int], None]] = None,
-        iterable: Iterable = None,
+        iterable: Iterable,
+        update_factory: Callable[[Any, int], None],
+        create_factory: Callable[[Any, SupportsIndex], None],
+        delete_factory: Callable[[Union[SupportsIndex, slice]], None],
+        move_factory: Callable[[int, int], None],
     ):
         self.initialized = False
         # processed = [WatchedDictionary(parent_dict=x, update_factory=update_factory) if isinstance(x, dict) else x for x in iterable]
@@ -21,18 +21,26 @@ class WatchedList(list):
         self.move_factory = move_factory
         self.sync_changes: bool = True
 
-    def __setitem__(self, key: int, value) -> None:
+    @overload
+    def __setitem__(self, key: SupportsIndex, value: Any) -> None:
+        raise NotImplementedError
+
+    @overload
+    def __setitem__(self, key: slice, value: Iterable[Any]) -> None:
+        raise NotImplementedError
+
+    def __setitem__(self, key: Any, value: Any) -> None:
         current = self[key]
         super().__setitem__(key, value)
         if current != value and self.sync_changes:
             self.update_factory(value, key)
 
-    def insert(self, __index: int, __object) -> None:
+    def insert(self, __index: SupportsIndex, __object) -> None:
         super().insert(__index, __object)
         if self.sync_changes:
             self.create_factory(__object, __index)
 
-    def __delitem__(self, key: int) -> None:
+    def __delitem__(self, key: Union[SupportsIndex, slice]) -> None:
         if self.sync_changes:
             self.delete_factory(key)
         super().__delitem__(key)
@@ -57,7 +65,7 @@ class WatchedDictionary(dict):
 
     def __init__(
         self,
-        update_factory: Any,
+        update_factory: Callable[[], Any],
         # create_factory:Optional[Any] = None,
         # delete_factory:Optional[Any]  = None,
         # parent: Optional["WatchedDictionary"] = None,
@@ -65,17 +73,16 @@ class WatchedDictionary(dict):
     ):
         self.update_factory = update_factory
         # don't track updates for initial build
-        self.initialized = False
+        self.initialized: bool = False
         self.update(**parent_dict)
         # now, all modifications will trigger updates
         self.initialized = True
-        self.request_queue = []
 
-    def _trigger_update(self):
+    def _trigger_update(self) -> None:
         if self.initialized:
             self.update_factory()
 
-    def __setitem__(self, key, val):
+    def __setitem__(self, key, val) -> None:
         comp = self.get(key, None)
         dict.__setitem__(self, key, val)
         # early exit if no changes
@@ -83,11 +90,11 @@ class WatchedDictionary(dict):
             return
         self._trigger_update()
 
-    def __delitem__(self, key):
+    def __delitem__(self, key) -> None:
         dict.__delitem__(self, key)
         self._trigger_update()
 
-    def update(self, *args, **kwargs):
+    def update(self, *args, **kwargs) -> None:
         for k, v in dict(*args, **kwargs).items():
             if isinstance(v, dict):
                 v = WatchedDictionary(parent_dict=v, update_factory=self.update_factory)

@@ -70,10 +70,7 @@ def test_filled_folder(auth_test_clients):
 def test_text_file(auth_test_clients):
     from pygsuite import File
 
-    test_file = File.get_safe(
-        name=f"test-{uuid4()}",
-        mimetype="text/plain",
-    )
+    test_file = File.get_safe(name=f"test-{uuid4()}", mimetype="text/plain")
 
     yield test_file
 

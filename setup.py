@@ -24,6 +24,7 @@ setuptools.setup(
     description="Package for working with the Gsuite set of tools.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
+    package_data={"pygsuite": ["py.typed"]},
     packages=setuptools.find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=[install_requires],
     extras_require={"images": ["google-cloud-storage", "pyopenssl"]},
@@ -34,5 +35,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
 )
