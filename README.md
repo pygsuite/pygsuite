@@ -7,15 +7,21 @@
 [![Join the chat at https://gitter.im/pygsuite/community](https://badges.gitter.im/pygsuite/community.svg)](https://gitter.im/pygsuite/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Pygsuite provides utilities for working with g-suite products such as docs, forms, sheets, and slides 
-in an intuitive, pythonic, object-oriented way. TLDR; it wraps the drive APIs nicely.
+in an intuitive, pythonic, object-oriented way. TLDR; it makes the google APIs more fun to use. 
 
-It currently offers abstractions for the following:
+Base level goals is 100% support for all API objects, with an emphasis on type completion and IDE+autocomplete support.
+Where helpful, additional higher level abstractions are provided to improve developer velocity. 
 
-- Drive
+Typical use cases include personal or business process automation. 
+
+Pygsuite supports the following:
+
 - Sheets
 - Slides
 - Docs
 - Forms
+
+as well as providing a base level of Drive support for these 4 and beyond, such as for sharing and managing objects. 
 
 ## Install
 
