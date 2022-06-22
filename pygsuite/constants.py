@@ -2,7 +2,7 @@ from os import environ, path
 from logging import getLogger
 from pygsuite.enums import GoogleDocFormat
 
-logger = getLogger('pygsuite')
+logger = getLogger("pygsuite")
 
 # AUTH
 def get_credentials():
@@ -48,9 +48,7 @@ FILE_MIME_TYPE_MAP = {
         ".pdf": "application/pdf",
         ".txt": "text/plain",
     },
-    GoogleDocFormat.SCRIPTS: {
-        ".json": "application/vnd.google-apps.script+json",
-    },
+    GoogleDocFormat.SCRIPTS: {".json": "application/vnd.google-apps.script+json"},
 }
 
 # Each chunk of a Drive File upload cannot exceed 50MB
@@ -62,3 +60,5 @@ SHEETS_MAX_COLUMN_NUMBER = 18278
 # DOCS
 
 # SLIDES
+
+FATAL_HTTP_CODES = [400]

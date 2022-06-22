@@ -1,4 +1,4 @@
-'''This file contains the code used to generate base Forms classes off the provided google reference implementation.'''
+"""This file contains the code used to generate base Forms classes off the provided google reference implementation."""
 
 import re
 from dataclasses import dataclass
@@ -8,7 +8,8 @@ from typing import List, Optional
 from googleapiclient.discovery import Resource, build
 from jinja2 import Template
 
-file_template = Template('''
+file_template = Template(
+    '''
 from typing import TYPE_CHECKING, Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
@@ -51,8 +52,9 @@ class {{target.class_name}}(BaseFormItem):
         base = base[0].lower() + base[1:]
         request = self._info
         components = '{{target.snake}}'.split('_')
-        # if it's an update, we need to provide an update mask
-        # generate this automatically to cinlude all fields
+        # if it's an update, we *may* need to provide an update mask
+        # generate this automatically to include all fields
+        # can be optionally overridden when creating synchronization method
         if components[0] == 'update':
             if not self.update_mask:
                 target_field = [field for field in request.keys() if field not in ['update_mask', 'location']][0]           
@@ -60,7 +62,8 @@ class {{target.class_name}}(BaseFormItem):
         return {base:self._info}
     {% endif %}
 
-''')
+'''
+)
 
 
 @dataclass
@@ -76,16 +79,16 @@ class ArgInfo:
     camel_case: str = None
 
     def __post_init__(self):
-        self.base = '_'.join([z.lower() for z in re.split('(?=[A-Z])', self.original)])
+        self.base = "_".join([z.lower() for z in re.split("(?=[A-Z])", self.original)])
         self.camel_case = self.original
 
     @property
     def is_basic_type(self):
-        return self.value.get('$ref', False) is False
+        return self.value.get("$ref", False) is False
 
     @property
     def is_list(self) -> bool:
-        return self.value.get('type', 'str') == 'array'
+        return self.value.get("type", "str") == "array"
 
     @property
     def type(self):
@@ -93,9 +96,9 @@ class ArgInfo:
 
     @property
     def class_name(self):
-        if not self.value.get('items'):
+        if not self.value.get("items"):
             return None
-        return self.value['items'].get('$ref', None)
+        return self.value["items"].get("$ref", None)
 
 
 @dataclass
@@ -106,7 +109,9 @@ class Target:
     snake: Optional[str] = None
 
     def __post_init__(self):
-        self.snake = '_'.join([z.lower() for z in re.split('(?=[A-Z])', self.class_name.strip()) if z])
+        self.snake = "_".join(
+            [z.lower() for z in re.split("(?=[A-Z])", self.class_name.strip()) if z]
+        )
 
 
 @dataclass
@@ -115,63 +120,78 @@ class Dependency:
     snake: str = None
 
     def __post_init__(self):
-        self.snake = '_'.join([z.lower() for z in re.split('(?=[A-Z])', self.original.strip()) if z])
+        self.snake = "_".join(
+            [z.lower() for z in re.split("(?=[A-Z])", self.original.strip()) if z]
+        )
 
 
 def map_type(input: str):
-    if input == 'string':
-        return 'str'
-    elif input == 'array':
-        return 'list'
-    elif input == 'boolean':
-        return 'bool'
-    elif input =='integer':
-        return 'int'
+    if input == "string":
+        return "str"
+    elif input == "array":
+        return "list"
+    elif input == "boolean":
+        return "bool"
+    elif input == "integer":
+        return "int"
+    elif input == "number":
+        return "float"
     return input
 
 
 def build_type(avalue: dict) -> str:
-    basic_type = avalue.get('$ref', map_type(avalue.get('type', 'str')))
-    if basic_type == 'list':
-        detail = avalue['items']
+    basic_type = avalue.get("$ref", map_type(avalue.get("type", "str")))
+    if basic_type == "list":
+        detail = avalue["items"]
         return f"""List["{build_type(detail)}"]"""
     return basic_type
 
 
 def build_classes(resource: Resource):
+    all_classes = []
     base_path = Path(__file__)
-    new_parent = base_path.parent.parent / 'pygsuite' / 'forms' / 'generated'
-    for key, value in resource._rootDesc['schemas'].items():
+    new_parent = base_path.parent.parent / "pygsuite" / "forms" / "generated"
+    for key, value in resource._rootDesc["schemas"].items():
         print(key)
         print(value)
         # {'fileUploadAnswers': {'$ref': 'FileUploadAnswers', 'description': 'Output only. The answers to a file upload question.', 'readOnly': True}
         # 'questionId': {'description': "Output only. The question's ID. See also Question.question_id.", 'readOnly': True, 'type': 'string'}
         # 'items': {'description': "Required. A list of the form's items, which can include section headers, questions, embedded media, etc.", 'items': {'$ref': 'Item'}, 'type': 'array'}
         dependency = []
-        for akey, avalue in value['properties'].items():
-            if avalue.get('$ref'):
-                dependency.append(Dependency(original=avalue['$ref']))
-            elif avalue.get('type', 'str') == 'array':
-                if avalue['items'].get('$ref'):
-                    dependency.append(Dependency(original=avalue['items'].get('$ref')))
-        target = Target(description=value['description'], class_name=value['id'], props=
-        [ArgInfo(original=akey, description=avalue['description'],
-                 value=avalue,
-                 read_only=avalue.get('readOnly', False)) for akey, avalue in
-         value['properties'].items()])
+        for akey, avalue in value["properties"].items():
+            if avalue.get("$ref"):
+                dependency.append(Dependency(original=avalue["$ref"]))
+            elif avalue.get("type", "str") == "array":
+                if avalue["items"].get("$ref"):
+                    dependency.append(Dependency(original=avalue["items"].get("$ref")))
+        target = Target(
+            description=value["description"],
+            class_name=value["id"],
+            props=[
+                ArgInfo(
+                    original=akey,
+                    description=avalue["description"],
+                    value=avalue,
+                    read_only=avalue.get("readOnly", False),
+                )
+                for akey, avalue in value["properties"].items()
+            ],
+        )
         rendered = file_template.render(dependency=dependency, target=target)
-        print(rendered)
 
-        with open(new_parent / f'{target.snake}.py', 'w') as f:
+        with open(new_parent / f"{target.snake}.py", "w") as f:
             f.write(rendered)
+        all_classes.append(target.snake)
+    all_classes = [v for v in all_classes if v != "form"]
+    with open(new_parent / f"__init__.py", "w") as f:
+        f.write("\n".join([f"from pygsuite.forms.generated.{v} import *" for v in all_classes]))
 
 
 if __name__ == "__main__":
     from google.auth import default
 
-    auth, project = default(
-    )
+    auth, project = default()
 
-    x = build("forms", 'v1', credentials=auth)
+    x = build("forms", "v1", credentials=auth)
 
     build_classes(x)

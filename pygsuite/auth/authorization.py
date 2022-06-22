@@ -40,7 +40,7 @@ def json_str_to_oauth(token_str: str) -> Union[Credentials, SACredentials]:
 
     cred_dict = json.loads(token_str)
     # check for service account credentials
-    if cred_dict.get('type', 'unknown') == 'service_account':
+    if cred_dict.get("type", "unknown") == "service_account":
         return SACredentials.from_service_account_info(info=cred_dict)
     return Credentials.from_authorized_user_info(info=cred_dict)
 
@@ -130,13 +130,13 @@ class _Clients(object):
         """
         self.auth = get_oauth_credential(auth_string)
 
-    def local_file_auth(self, filepath: Optional[str]=None):
+    def local_file_auth(self, filepath: Optional[str] = None):
         """Sets the credentials for the current environment based on a local file with credentials.
 
         Args:
             filepath (Optional[str]): Filepath to the credentials file, will default to token.json in working directory.
         """
-        filepath = filepath or join(os.getcwd(), 'token.json')
+        filepath = filepath or join(os.getcwd(), "token.json")
         directory = dirname(filepath)
         pickle_path = join(directory, "cache.pickle")
         creds = None
@@ -205,5 +205,6 @@ class _Clients(object):
         """Form Client"""
         self.validate()
         return build("forms", FORMS_VERSION, credentials=self.auth)
+
 
 Clients = _Clients()

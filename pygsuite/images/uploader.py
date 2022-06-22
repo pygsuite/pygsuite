@@ -60,8 +60,9 @@ class ImageUploader:
 
         from google.oauth2 import service_account
 
-        return service_account.Credentials.from_service_account_info(info_dict), info_dict.get(
-            "project_id"
+        return (
+            service_account.Credentials.from_service_account_info(info_dict),
+            info_dict.get("project_id"),
         )
 
     def _get_signed_url(self, obj: str):

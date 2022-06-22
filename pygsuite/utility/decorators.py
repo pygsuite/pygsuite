@@ -1,6 +1,7 @@
 import time
 from functools import wraps
 from types import MethodType
+from typing import Optional, Tuple
 
 
 class lazy_property(object):
@@ -28,7 +29,14 @@ def safe_property(f):
     return wrapper
 
 
-def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
+def retry(
+    exceptions,
+    tries: int = 4,
+    delay: int = 3,
+    backoff: int = 2,
+    fatal_exceptions: Optional[Tuple] = None,
+    logger=None,
+):
     """
     Retry calling the decorated function using an exponential backoff.
 
@@ -41,6 +49,7 @@ def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
             each retry).
         logger: Logger to use. If None, print.
     """
+    fatal_exceptions = fatal_exceptions or ()
 
     def deco_retry(f):
         @wraps(f)
@@ -49,6 +58,10 @@ def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
             while mtries > 1:
                 try:
                     return f(*args, **kwargs)
+                except fatal_exceptions as e:
+                    if logger:
+                        logger.error(f"Fatal exception, not retrying {str(e)}")
+                    raise e
                 except exceptions as e:
                     msg = "{}, Retrying in {} seconds...".format(e, mdelay)
                     if logger:

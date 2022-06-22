@@ -41,7 +41,7 @@ class FormResponse(BaseFormItem):
         return self._info.get('responseId')
     
     @property
-    def total_score(self)->number:
+    def total_score(self)->float:
         return self._info.get('totalScore')
     
     

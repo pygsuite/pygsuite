@@ -27,7 +27,7 @@ class Grade(BaseFormItem):
         return Feedback(object_info=self._info.get('feedback'))
     
     @property
-    def score(self)->number:
+    def score(self)->float:
         return self._info.get('score')
     
     

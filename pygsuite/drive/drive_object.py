@@ -106,12 +106,7 @@ class DriveObject:
         # execute files.create request and return File object
         file = (
             drive_client.files()
-            .create(
-                body=body,
-                media_body=media_body,
-                fields="id",
-                **kwargs,
-            )
+            .create(body=body, media_body=media_body, fields="id", **kwargs)
             .execute()
         )
 
@@ -283,7 +278,9 @@ class DriveObject:
             for id in parent_folder_ids:
                 folder_query = QueryString(QueryTerm.PARENTS, Operator.IN, id)
                 folder_queries.append(folder_query)
-            folder_query = QueryStringGroup(folder_queries, [Connector.OR for query in folder_queries[:-1]])
+            folder_query = QueryStringGroup(
+                folder_queries, [Connector.OR for query in folder_queries[:-1]]
+            )
 
             query = QueryStringGroup([query, folder_query])
 
@@ -331,9 +328,7 @@ class DriveObject:
         raise NotImplementedError
 
     def move(
-        self,
-        destination_folder_ids: List[str],
-        current_folder_ids: Optional[List[str]] = None,
+        self, destination_folder_ids: List[str], current_folder_ids: Optional[List[str]] = None
     ):
         """Move the file from a current folder to a new folder.
         If no current folder is specified, the current folder ID is derived.
@@ -359,9 +354,7 @@ class DriveObject:
         return response.get("parents")
 
     def fetch_metadata(
-        self,
-        ignore_cache: bool = False,
-        fields: Optional[List[str]] = None,
+        self, ignore_cache: bool = False, fields: Optional[List[str]] = None
     ) -> dict:
         """Metadata for the file, based on the files.get method.
         Default fields include kind, name, and mimetype. Additional fields available are found here:
@@ -398,10 +391,7 @@ class DriveObject:
                 return metadata
 
         self._metadata = (
-            self._drive_client.files().get(
-                fileId=self.id,
-                fields=f"{', '.join(_fields)}",
-            )
+            self._drive_client.files().get(fileId=self.id, fields=f"{', '.join(_fields)}")
         ).execute()
 
         for field in _fields:
@@ -435,10 +425,7 @@ class DriveObject:
         return [
             Comment(item)
             for item in self._drive_client.comments()
-            .list(
-                fileId=self.id,
-                fields=None,
-            )
+            .list(fileId=self.id, fields=None)
             .execute()
             .get("items", [])
         ]

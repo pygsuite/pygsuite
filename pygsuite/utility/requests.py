@@ -30,11 +30,7 @@ def execute_with_backoff(request):
 
 
 def execute_paginated_command(
-    client: Resource,
-    method: str,
-    fetch_field: str,
-    max_results: Optional[int] = None,
-    **kwargs,
+    client: Resource, method: str, fetch_field: str, max_results: Optional[int] = None, **kwargs
 ) -> List:
     """Iteratively execute a request over pages.
 

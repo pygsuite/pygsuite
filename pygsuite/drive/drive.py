@@ -24,10 +24,13 @@ class Drive:
         self.service = client
 
         # warn users about deprecation
-        warnings.warn((
-            "This object and its methods will be deprecated soon."
-            "Please consider using a drive.File or drive.Folder object instead"
-        ), DeprecationWarning)
+        warnings.warn(
+            (
+                "This object and its methods will be deprecated soon."
+                "Please consider using a drive.File or drive.Folder object instead"
+            ),
+            DeprecationWarning,
+        )
 
     def _find_files(self, type: MimeType, name: Optional[str] = None):
         q = f'mimeType="{type}"'

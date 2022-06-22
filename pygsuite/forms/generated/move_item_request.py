@@ -55,8 +55,9 @@ class MoveItemRequest(BaseFormItem):
         base = base[0].lower() + base[1:]
         request = self._info
         components = 'move_item_request'.split('_')
-        # if it's an update, we need to provide an update mask
-        # generate this automatically to cinlude all fields
+        # if it's an update, we *may* need to provide an update mask
+        # generate this automatically to include all fields
+        # can be optionally overridden when creating synchronization method
         if components[0] == 'update':
             if not self.update_mask:
                 target_field = [field for field in request.keys() if field not in ['update_mask', 'location']][0]           

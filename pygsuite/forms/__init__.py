@@ -1,3 +1,2 @@
+from .generated import *
 from .form import Form
-
-__all__ = ["Form"]
