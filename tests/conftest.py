@@ -89,6 +89,17 @@ def test_document(auth_test_clients):
 
 
 @fixture(scope="session")
+def test_form(auth_test_clients):
+    from pygsuite import Form
+
+    test_form = Form.get_safe(name=f"test-{uuid4()}")
+
+    yield test_form
+
+    test_form.delete()
+
+
+@fixture(scope="session")
 def test_presentation(auth_test_clients):
     from pygsuite import Presentation
 
