@@ -5,3 +5,4 @@ pytest-ordering
 pytest-xdist
 google-cloud-storage
 requests
+types-requests

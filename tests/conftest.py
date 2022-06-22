@@ -115,6 +115,7 @@ def test_sheet(auth_test_clients):
     from pygsuite import Spreadsheet
 
     test_sheet = Spreadsheet.create(name=f"test-{uuid4()}")
+    assert len(test_sheet.worksheets) == 1
 
     yield test_sheet
 
