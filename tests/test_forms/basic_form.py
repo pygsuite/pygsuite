@@ -15,7 +15,7 @@ def test_form(test_form):
 def test_complex_parsing():
     from os.path import dirname, join
 
-    with open(join(dirname(__file__), "test_form.json"), "r", encoding="utf-8") as f:
+    with open(join(dirname(__file__), "test_form.json_capture"), "r", encoding="utf-8") as f:
         form = f.read()
 
     test = Form(_form=json.loads(form), local=True)

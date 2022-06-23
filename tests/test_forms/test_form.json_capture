@@ -1,0 +1,47 @@
+{
+  "formId": "AAAAAAAAAAA",
+  "info": {
+    "title": "Presidents",
+    "documentTitle": "Presidents"
+  },
+  "revisionId": "0000000d",
+  "responderUri": "https://docs.google.com/forms/d/e/AAAAAAAAAAA/viewform",
+  "items": [
+    {
+      "itemId": "79e7a524",
+      "questionGroupItem": {
+        "questions": [
+          {
+            "questionId": "49407403",
+            "rowQuestion": {
+              "title": "Clinton"
+            }
+          },
+          {
+            "questionId": "4e580f40",
+            "rowQuestion": {
+              "title": "Bush"
+            }
+          }
+        ],
+        "grid": {
+          "columns": {
+            "type": "RADIO",
+            "options": [
+              {
+                "value": "Great"
+              },
+              {
+                "value": "Okay"
+              },
+              {
+                "value": "Awful"
+              }
+            ]
+          }
+        }
+      },
+      "title": "Untitled Question"
+    }
+  ]
+}
