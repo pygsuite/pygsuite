@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from googleapiclient.errors import HttpError
 
@@ -43,6 +43,9 @@ class Form(BaseForm, DriveObject):
         BaseForm.__init__(self, object_info=_form or client.forms().get(formId=self.id).execute())
         self._change_queue: List = []
         self.auto_sync: bool = False
+        self._info_cache: Optional["Info"] = None
+        self._settings_cache: Optional["FormSettings"] = None
+        self._items_cache: Optional[List["Item"]] = None
 
         def update_factory(idx, item):
             self._mutation([UpdateItemRequest(item=item, location=Location(index=idx)).wire_format])
@@ -113,6 +116,8 @@ class Form(BaseForm, DriveObject):
 
     @property
     def info(self) -> "Info":
+        if self._info_cache:
+            return self._info_cache
         item = super().info
         # manually set update mask here
         if isinstance(item._info, WatchedDictionary):
@@ -121,6 +126,7 @@ class Form(BaseForm, DriveObject):
             [UpdateFormInfoRequest(info=item, update_mask="*").wire_format]
         )
         item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
+        self._info_cache = item
         return item
 
     @info.setter
@@ -131,9 +137,12 @@ class Form(BaseForm, DriveObject):
 
         item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
         super(Form, self.__class__).info.fset(self, item)  # type: ignore
+        self._info_cache = None
 
     @property
     def settings(self) -> "FormSettings":
+        if self._settings_cache:
+            return self._settings_cache
         from pygsuite.forms.generated.update_settings_request import UpdateSettingsRequest
 
         settings = super().settings
@@ -143,6 +152,7 @@ class Form(BaseForm, DriveObject):
             [UpdateSettingsRequest(settings=settings).wire_format]
         )
         settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
+        self._settings_cache = settings
         return settings
 
     @settings.setter
@@ -154,19 +164,23 @@ class Form(BaseForm, DriveObject):
         )
         settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
         super(Form, self.__class__).settings.fset(self, settings)  # type:ignore
+        self._settings_cache = None
 
     @property
     def items(self) -> List["Item"]:
+        if self._items_cache:
+            return self._items_cache
         base = super().items
-        if isinstance(base, WatchedList):
-            return base
-        return WatchedList(
-            iterable=base,
-            update_factory=self.items_update_factory,
-            delete_factory=self.items_delete_factory,
-            move_factory=self.items_move_factory,
-            create_factory=self.items_create_factory,
-        )
+        if not isinstance(base, WatchedList):
+            base = WatchedList(
+                iterable=base,
+                update_factory=self.items_update_factory,
+                delete_factory=self.items_delete_factory,
+                move_factory=self.items_move_factory,
+                create_factory=self.items_create_factory,
+            )
+        self._items_cache = base
+        return base
 
     @items.setter
     def items(self, items: List):
@@ -178,10 +192,14 @@ class Form(BaseForm, DriveObject):
             create_factory=self.items_create_factory,
         )
         super(Form, self.__class__).items.fset(self, items)  # type: ignore
+        self._items_cache = None
 
     @retry(HttpError, tries=3, delay=5, backoff=3, fatal_exceptions=(FatalHttpError,))
     def refresh(self):
         self._info = self.service.forms().get(formId=self.id).execute()
+        self._info_cache = None
+        self._settings_cache = None
+        self._items_cache = None
 
     # def add_item(self, title: str, description: str, item: Union[
     #     "PageBreakItem", "TextItem", "VideoItem", "ImageItem", "QuestionItem", "QuestionGroupItem"],

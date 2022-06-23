@@ -6,9 +6,15 @@ except ImportError:
     SupportsIndex = None  # type: ignore
 
 
-def generate_function(parent, idx: int, item: Any):
+def generate_function(parent, item: Any):
     def new_update_function():
-        parent.update_factory(idx, item)
+        index = None
+        for idx, val in enumerate(parent):
+            if val.item_id == item.item_id:
+                index = idx
+                break
+        if index is not None:
+            parent.update_factory(index, item)
 
     return new_update_function
 
@@ -39,7 +45,7 @@ class WatchedList(list):
         """Bind all child objects to the appropriate index modification"""
         for idx, item in enumerate(self):
             item._info = WatchedDictionary(
-                parent_dict=item._info, update_factory=generate_function(self, idx, item)
+                parent_dict=item._info, update_factory=generate_function(self, item)
             )
 
     @overload
@@ -72,8 +78,8 @@ class WatchedList(list):
         # we don't actually want to send the deletion or insertion
         # as the move handles both of these
         self.sync_changes = False
-        del self[original_idx]
         stash = self[original_idx]
+        del self[original_idx]
         self.insert(new_idx, stash)
         self.move_factory(original_idx, new_idx)
         self.sync_changes = True
