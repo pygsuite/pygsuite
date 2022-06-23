@@ -1,8 +1,6 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict
 
 from pygsuite.forms.base_object import BaseFormItem
-
-from pygsuite.forms.generated.location import Location
 from pygsuite.forms.generated.location import Location
 
 

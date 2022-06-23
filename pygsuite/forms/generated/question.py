@@ -1,7 +1,6 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict
 
 from pygsuite.forms.base_object import BaseFormItem
-
 from pygsuite.forms.generated.choice_question import ChoiceQuestion
 from pygsuite.forms.generated.date_question import DateQuestion
 from pygsuite.forms.generated.file_upload_question import FileUploadQuestion
@@ -17,7 +16,7 @@ class Question(BaseFormItem):
     Any question. The specific type of question is known by its `kind`.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         choice_question: Optional["ChoiceQuestion"] = None,
         date_question: Optional["DateQuestion"] = None,

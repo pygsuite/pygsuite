@@ -1,10 +1,7 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict
 
 from pygsuite.forms.base_object import BaseFormItem
-
 from pygsuite.forms.generated.correct_answers import CorrectAnswers
-from pygsuite.forms.generated.feedback import Feedback
-from pygsuite.forms.generated.feedback import Feedback
 from pygsuite.forms.generated.feedback import Feedback
 
 

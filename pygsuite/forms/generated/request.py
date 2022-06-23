@@ -1,7 +1,6 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict
 
 from pygsuite.forms.base_object import BaseFormItem
-
 from pygsuite.forms.generated.create_item_request import CreateItemRequest
 from pygsuite.forms.generated.delete_item_request import DeleteItemRequest
 from pygsuite.forms.generated.move_item_request import MoveItemRequest

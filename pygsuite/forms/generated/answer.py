@@ -1,7 +1,6 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict
 
 from pygsuite.forms.base_object import BaseFormItem
-
 from pygsuite.forms.generated.file_upload_answers import FileUploadAnswers
 from pygsuite.forms.generated.grade import Grade
 from pygsuite.forms.generated.text_answers import TextAnswers

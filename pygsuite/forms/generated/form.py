@@ -1,10 +1,9 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict, List
 
 from pygsuite.forms.base_object import BaseFormItem
-
+from pygsuite.forms.generated.form_settings import FormSettings
 from pygsuite.forms.generated.info import Info
 from pygsuite.forms.generated.item import Item
-from pygsuite.forms.generated.form_settings import FormSettings
 
 
 class Form(BaseFormItem):

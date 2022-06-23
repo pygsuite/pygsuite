@@ -1,7 +1,6 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict, List
 
 from pygsuite.forms.base_object import BaseFormItem
-
 from pygsuite.forms.generated.correct_answer import CorrectAnswer
 
 

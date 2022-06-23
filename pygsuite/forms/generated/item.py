@@ -1,7 +1,6 @@
-from typing import Optional, Dict, Union, List
+from typing import Optional, Dict
 
 from pygsuite.forms.base_object import BaseFormItem
-
 from pygsuite.forms.generated.image_item import ImageItem
 from pygsuite.forms.generated.page_break_item import PageBreakItem
 from pygsuite.forms.generated.question_group_item import QuestionGroupItem
@@ -15,7 +14,7 @@ class Item(BaseFormItem):
     A single item of the form. `kind` defines which kind of item it is.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         description: Optional[str] = None,
         image_item: Optional["ImageItem"] = None,

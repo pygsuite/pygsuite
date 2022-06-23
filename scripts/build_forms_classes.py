@@ -21,7 +21,7 @@ class {{target.class_name}}(BaseFormItem):
     """
     {{ target.description }}
     """
-    def __init__(self, {% for arg in target.props if arg.read_only is false() %}
+    def __init__(self, # noqa: C901 {% for arg in target.props if arg.read_only is false() %}
                 {{arg.base}}: Optional[{% if not arg.is_basic_type %}"{{arg.type}}"{% else %}{{ arg.type }}{% endif %}] = None,{% endfor %}
                 object_info: Optional[Dict] = None):
         generated:Dict = {}
@@ -166,13 +166,13 @@ def build_classes(resource: Resource):
         # {'fileUploadAnswers': {'$ref': 'FileUploadAnswers', 'description': 'Output only. The answers to a file upload question.', 'readOnly': True}
         # 'questionId': {'description': "Output only. The question's ID. See also Question.question_id.", 'readOnly': True, 'type': 'string'}
         # 'items': {'description': "Required. A list of the form's items, which can include section headers, questions, embedded media, etc.", 'items': {'$ref': 'Item'}, 'type': 'array'}
-        dependency = []
+        dependency = set()
         for akey, avalue in value["properties"].items():
             if avalue.get("$ref"):
-                dependency.append(Dependency(original=avalue["$ref"]))
+                dependency.add(Dependency(original=avalue["$ref"]))
             elif avalue.get("type", "str") == "array":
                 if avalue["items"].get("$ref"):
-                    dependency.append(Dependency(original=avalue["items"].get("$ref")))
+                    dependency.add(Dependency(original=avalue["items"].get("$ref")))
         target = Target(
             description=value["description"],
             class_name=value["id"],
@@ -187,7 +187,7 @@ def build_classes(resource: Resource):
             ],
         )
         update_mask = any([x.base == 'update_mask' for x in target.props])
-        rendered = file_template.render(dependency=dependency, target=target, update_mask=update_mask)
+        rendered = file_template.render(dependency=list(dependency), target=target, update_mask=update_mask)
 
         with open(new_parent / f"{target.snake}.py", "w") as f:
             f.write(rendered)
