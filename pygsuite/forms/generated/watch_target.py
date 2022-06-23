@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.cloud_pubsub_topic import CloudPubsubTopic
 
 
@@ -15,6 +16,7 @@ class WatchTarget(BaseFormItem):
         generated: Dict = {}
 
         if topic is not None:
+
             generated["topic"] = topic._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

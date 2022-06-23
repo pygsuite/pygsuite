@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.watch import Watch
 
 
@@ -18,8 +19,10 @@ class CreateWatchRequest(BaseFormItem):
         generated: Dict = {}
 
         if watch is not None:
+
             generated["watch"] = watch._info
         if watch_id is not None:
+
             generated["watchId"] = watch_id
         object_info = object_info or generated
         super().__init__(object_info=object_info)

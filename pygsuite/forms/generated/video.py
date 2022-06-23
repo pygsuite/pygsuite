@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.media_properties import MediaProperties
 
 
@@ -18,8 +19,10 @@ class Video(BaseFormItem):
         generated: Dict = {}
 
         if properties is not None:
+
             generated["properties"] = properties._info
         if youtube_uri is not None:
+
             generated["youtubeUri"] = youtube_uri
         object_info = object_info or generated
         super().__init__(object_info=object_info)

@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -17,8 +17,10 @@ class TextLink(BaseFormItem):
         generated: Dict = {}
 
         if display_text is not None:
+
             generated["displayText"] = display_text
         if uri is not None:
+
             generated["uri"] = uri
         object_info = object_info or generated
         super().__init__(object_info=object_info)

@@ -1,6 +1,7 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.option import Option
 
 
@@ -19,10 +20,12 @@ class ChoiceQuestion(BaseFormItem):
         generated: Dict = {}
 
         if options is not None:
-            generated["options"] = options
+            generated["options"] = [v._info for v in options]
         if shuffle is not None:
+
             generated["shuffle"] = shuffle
         if type is not None:
+
             generated["type"] = type
         object_info = object_info or generated
         super().__init__(object_info=object_info)

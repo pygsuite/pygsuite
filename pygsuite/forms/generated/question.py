@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.choice_question import ChoiceQuestion
 from pygsuite.forms.generated.date_question import DateQuestion
 from pygsuite.forms.generated.file_upload_question import FileUploadQuestion
@@ -16,7 +17,7 @@ class Question(BaseFormItem):
     Any question. The specific type of question is known by its `kind`.
     """
 
-    def __init__(  # noqa: C901
+    def __init__(
         self,
         choice_question: Optional["ChoiceQuestion"] = None,
         date_question: Optional["DateQuestion"] = None,
@@ -33,24 +34,34 @@ class Question(BaseFormItem):
         generated: Dict = {}
 
         if choice_question is not None:
+
             generated["choiceQuestion"] = choice_question._info
         if date_question is not None:
+
             generated["dateQuestion"] = date_question._info
         if file_upload_question is not None:
+
             generated["fileUploadQuestion"] = file_upload_question._info
         if grading is not None:
+
             generated["grading"] = grading._info
         if question_id is not None:
+
             generated["questionId"] = question_id
         if required is not None:
+
             generated["required"] = required
         if row_question is not None:
+
             generated["rowQuestion"] = row_question._info
         if scale_question is not None:
+
             generated["scaleQuestion"] = scale_question._info
         if text_question is not None:
+
             generated["textQuestion"] = text_question._info
         if time_question is not None:
+
             generated["timeQuestion"] = time_question._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

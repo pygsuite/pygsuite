@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.text_link import TextLink
 from pygsuite.forms.generated.video_link import VideoLink
 
@@ -19,8 +20,10 @@ class ExtraMaterial(BaseFormItem):
         generated: Dict = {}
 
         if link is not None:
+
             generated["link"] = link._info
         if video is not None:
+
             generated["video"] = video._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.create_item_response import CreateItemResponse
 
 
@@ -15,6 +16,7 @@ class Response(BaseFormItem):
         generated: Dict = {}
 
         if create_item is not None:
+
             generated["createItem"] = create_item._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

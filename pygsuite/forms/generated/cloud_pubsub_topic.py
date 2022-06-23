@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -12,6 +12,7 @@ class CloudPubsubTopic(BaseFormItem):
         generated: Dict = {}
 
         if topic_name is not None:
+
             generated["topicName"] = topic_name
         object_info = object_info or generated
         super().__init__(object_info=object_info)

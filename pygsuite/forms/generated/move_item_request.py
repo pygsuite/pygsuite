@@ -1,6 +1,8 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
+from pygsuite.forms.generated.location import Location
 from pygsuite.forms.generated.location import Location
 
 
@@ -18,8 +20,10 @@ class MoveItemRequest(BaseFormItem):
         generated: Dict = {}
 
         if new_location is not None:
+
             generated["newLocation"] = new_location._info
         if original_location is not None:
+
             generated["originalLocation"] = original_location._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

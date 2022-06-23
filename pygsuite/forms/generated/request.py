@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.create_item_request import CreateItemRequest
 from pygsuite.forms.generated.delete_item_request import DeleteItemRequest
 from pygsuite.forms.generated.move_item_request import MoveItemRequest
@@ -27,16 +28,22 @@ class Request(BaseFormItem):
         generated: Dict = {}
 
         if create_item is not None:
+
             generated["createItem"] = create_item._info
         if delete_item is not None:
+
             generated["deleteItem"] = delete_item._info
         if move_item is not None:
+
             generated["moveItem"] = move_item._info
         if update_form_info is not None:
+
             generated["updateFormInfo"] = update_form_info._info
         if update_item is not None:
+
             generated["updateItem"] = update_item._info
         if update_settings is not None:
+
             generated["updateSettings"] = update_settings._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

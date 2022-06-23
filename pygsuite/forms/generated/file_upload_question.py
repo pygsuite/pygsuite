@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -19,13 +19,16 @@ class FileUploadQuestion(BaseFormItem):
         generated: Dict = {}
 
         if folder_id is not None:
+
             generated["folderId"] = folder_id
         if max_file_size is not None:
+
             generated["maxFileSize"] = max_file_size
         if max_files is not None:
+
             generated["maxFiles"] = max_files
         if types is not None:
-            generated["types"] = types
+            generated["types"] = [v for v in types]
         object_info = object_info or generated
         super().__init__(object_info=object_info)
 

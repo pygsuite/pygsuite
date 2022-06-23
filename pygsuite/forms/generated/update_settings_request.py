@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.form_settings import FormSettings
 
 
@@ -18,8 +19,10 @@ class UpdateSettingsRequest(BaseFormItem):
         generated: Dict = {}
 
         if settings is not None:
+
             generated["settings"] = settings._info
         if update_mask is not None:
+
             generated["updateMask"] = update_mask
         object_info = object_info or generated
         super().__init__(object_info=object_info)

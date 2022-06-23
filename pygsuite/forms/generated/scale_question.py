@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -19,12 +19,16 @@ class ScaleQuestion(BaseFormItem):
         generated: Dict = {}
 
         if high is not None:
+
             generated["high"] = high
         if high_label is not None:
+
             generated["highLabel"] = high_label
         if low is not None:
+
             generated["low"] = low
         if low_label is not None:
+
             generated["lowLabel"] = low_label
         object_info = object_info or generated
         super().__init__(object_info=object_info)

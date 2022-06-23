@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.media_properties import MediaProperties
 
 
@@ -19,10 +20,13 @@ class Image(BaseFormItem):
         generated: Dict = {}
 
         if alt_text is not None:
+
             generated["altText"] = alt_text
         if properties is not None:
+
             generated["properties"] = properties._info
         if source_uri is not None:
+
             generated["sourceUri"] = source_uri
         object_info = object_info or generated
         super().__init__(object_info=object_info)

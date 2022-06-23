@@ -1,6 +1,7 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.grid import Grid
 from pygsuite.forms.generated.image import Image
 from pygsuite.forms.generated.question import Question
@@ -21,11 +22,13 @@ class QuestionGroupItem(BaseFormItem):
         generated: Dict = {}
 
         if grid is not None:
+
             generated["grid"] = grid._info
         if image is not None:
+
             generated["image"] = image._info
         if questions is not None:
-            generated["questions"] = questions
+            generated["questions"] = [v._info for v in questions]
         object_info = object_info or generated
         super().__init__(object_info=object_info)
 

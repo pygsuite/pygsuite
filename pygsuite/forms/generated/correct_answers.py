@@ -1,6 +1,7 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.correct_answer import CorrectAnswer
 
 
@@ -15,7 +16,7 @@ class CorrectAnswers(BaseFormItem):
         generated: Dict = {}
 
         if answers is not None:
-            generated["answers"] = answers
+            generated["answers"] = [v._info for v in answers]
         object_info = object_info or generated
         super().__init__(object_info=object_info)
 

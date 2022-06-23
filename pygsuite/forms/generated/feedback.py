@@ -1,6 +1,7 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.extra_material import ExtraMaterial
 
 
@@ -18,8 +19,9 @@ class Feedback(BaseFormItem):
         generated: Dict = {}
 
         if material is not None:
-            generated["material"] = material
+            generated["material"] = [v._info for v in material]
         if text is not None:
+
             generated["text"] = text
         object_info = object_info or generated
         super().__init__(object_info=object_info)

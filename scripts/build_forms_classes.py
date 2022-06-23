@@ -27,7 +27,8 @@ class {{target.class_name}}(BaseFormItem):
         generated:Dict = {}
         {% for arg in target.props if arg.read_only is false() %}
         if {{arg.base}} is not None:
-            generated['{{arg.camel_case}}'] = {% if not arg.is_basic_type %} {{arg.base}}._info {% else %} {{ arg.base }} {% endif %}{% endfor %}
+            {% if arg.is_list %}generated['{{arg.camel_case}}'] = [{% if not arg.list_type_is_basic %} v._info {% else %} v {% endif %} for v in {{arg.base}}]{% else %}
+            generated['{{arg.camel_case}}'] = {% if not arg.is_basic_type %} {{arg.base}}._info {% else %} {{ arg.base }} {% endif %}{% endif %}{% endfor %}
         object_info = object_info or generated
         super().__init__(object_info=object_info)
     
@@ -91,6 +92,12 @@ class ArgInfo:
     @property
     def is_list(self) -> bool:
         return self.value.get("type", "str") == "array"
+
+    @property
+    def list_type_is_basic(self):
+        if not self.is_list:
+            return None
+        return self.value['items'].get("$ref", False) is False
 
     @property
     def type(self):

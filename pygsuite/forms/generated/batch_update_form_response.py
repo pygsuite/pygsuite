@@ -1,6 +1,7 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.form import Form
 from pygsuite.forms.generated.response import Response
 from pygsuite.forms.generated.write_control import WriteControl
@@ -21,10 +22,12 @@ class BatchUpdateFormResponse(BaseFormItem):
         generated: Dict = {}
 
         if form is not None:
+
             generated["form"] = form._info
         if replies is not None:
-            generated["replies"] = replies
+            generated["replies"] = [v._info for v in replies]
         if write_control is not None:
+
             generated["writeControl"] = write_control._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.info import Info
 
 
@@ -18,8 +19,10 @@ class UpdateFormInfoRequest(BaseFormItem):
         generated: Dict = {}
 
         if info is not None:
+
             generated["info"] = info._info
         if update_mask is not None:
+
             generated["updateMask"] = update_mask
         object_info = object_info or generated
         super().__init__(object_info=object_info)

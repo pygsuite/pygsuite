@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -17,8 +17,10 @@ class DateQuestion(BaseFormItem):
         generated: Dict = {}
 
         if include_time is not None:
+
             generated["includeTime"] = include_time
         if include_year is not None:
+
             generated["includeYear"] = include_year
         object_info = object_info or generated
         super().__init__(object_info=object_info)

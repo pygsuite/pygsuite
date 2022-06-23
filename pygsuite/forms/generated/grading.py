@@ -1,7 +1,10 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.correct_answers import CorrectAnswers
+from pygsuite.forms.generated.feedback import Feedback
+from pygsuite.forms.generated.feedback import Feedback
 from pygsuite.forms.generated.feedback import Feedback
 
 
@@ -22,14 +25,19 @@ class Grading(BaseFormItem):
         generated: Dict = {}
 
         if correct_answers is not None:
+
             generated["correctAnswers"] = correct_answers._info
         if general_feedback is not None:
+
             generated["generalFeedback"] = general_feedback._info
         if point_value is not None:
+
             generated["pointValue"] = point_value
         if when_right is not None:
+
             generated["whenRight"] = when_right._info
         if when_wrong is not None:
+
             generated["whenWrong"] = when_wrong._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

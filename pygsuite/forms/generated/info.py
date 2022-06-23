@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -17,8 +17,10 @@ class Info(BaseFormItem):
         generated: Dict = {}
 
         if description is not None:
+
             generated["description"] = description
         if title is not None:
+
             generated["title"] = title
         object_info = object_info or generated
         super().__init__(object_info=object_info)

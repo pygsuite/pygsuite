@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.choice_question import ChoiceQuestion
 
 
@@ -18,8 +19,10 @@ class Grid(BaseFormItem):
         generated: Dict = {}
 
         if columns is not None:
+
             generated["columns"] = columns._info
         if shuffle_questions is not None:
+
             generated["shuffleQuestions"] = shuffle_questions
         object_info = object_info or generated
         super().__init__(object_info=object_info)

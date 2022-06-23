@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.image import Image
 from pygsuite.forms.generated.question import Question
 
@@ -19,8 +20,10 @@ class QuestionItem(BaseFormItem):
         generated: Dict = {}
 
         if image is not None:
+
             generated["image"] = image._info
         if question is not None:
+
             generated["question"] = question._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

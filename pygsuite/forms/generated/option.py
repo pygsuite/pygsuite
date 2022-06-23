@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.image import Image
 
 
@@ -21,14 +22,19 @@ class Option(BaseFormItem):
         generated: Dict = {}
 
         if go_to_action is not None:
+
             generated["goToAction"] = go_to_action
         if go_to_section_id is not None:
+
             generated["goToSectionId"] = go_to_section_id
         if image is not None:
+
             generated["image"] = image._info
         if is_other is not None:
+
             generated["isOther"] = is_other
         if value is not None:
+
             generated["value"] = value
         object_info = object_info or generated
         super().__init__(object_info=object_info)

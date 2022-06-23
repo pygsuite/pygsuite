@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.quiz_settings import QuizSettings
 
 
@@ -15,6 +16,7 @@ class FormSettings(BaseFormItem):
         generated: Dict = {}
 
         if quiz_settings is not None:
+
             generated["quizSettings"] = quiz_settings._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

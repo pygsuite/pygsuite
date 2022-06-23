@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.item import Item
 from pygsuite.forms.generated.location import Location
 
@@ -19,8 +20,10 @@ class CreateItemRequest(BaseFormItem):
         generated: Dict = {}
 
         if item is not None:
+
             generated["item"] = item._info
         if location is not None:
+
             generated["location"] = location._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

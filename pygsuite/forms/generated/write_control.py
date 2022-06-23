@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -17,8 +17,10 @@ class WriteControl(BaseFormItem):
         generated: Dict = {}
 
         if required_revision_id is not None:
+
             generated["requiredRevisionId"] = required_revision_id
         if target_revision_id is not None:
+
             generated["targetRevisionId"] = target_revision_id
         object_info = object_info or generated
         super().__init__(object_info=object_info)

@@ -1,6 +1,7 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.image_item import ImageItem
 from pygsuite.forms.generated.page_break_item import PageBreakItem
 from pygsuite.forms.generated.question_group_item import QuestionGroupItem
@@ -14,7 +15,7 @@ class Item(BaseFormItem):
     A single item of the form. `kind` defines which kind of item it is.
     """
 
-    def __init__(  # noqa: C901
+    def __init__(
         self,
         description: Optional[str] = None,
         image_item: Optional["ImageItem"] = None,
@@ -30,22 +31,31 @@ class Item(BaseFormItem):
         generated: Dict = {}
 
         if description is not None:
+
             generated["description"] = description
         if image_item is not None:
+
             generated["imageItem"] = image_item._info
         if item_id is not None:
+
             generated["itemId"] = item_id
         if page_break_item is not None:
+
             generated["pageBreakItem"] = page_break_item._info
         if question_group_item is not None:
+
             generated["questionGroupItem"] = question_group_item._info
         if question_item is not None:
+
             generated["questionItem"] = question_item._info
         if text_item is not None:
+
             generated["textItem"] = text_item._info
         if title is not None:
+
             generated["title"] = title
         if video_item is not None:
+
             generated["videoItem"] = video_item._info
         object_info = object_info or generated
         super().__init__(object_info=object_info)

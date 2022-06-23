@@ -1,6 +1,7 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
+
 from pygsuite.forms.generated.form_response import FormResponse
 
 
@@ -18,9 +19,10 @@ class ListFormResponsesResponse(BaseFormItem):
         generated: Dict = {}
 
         if next_page_token is not None:
+
             generated["nextPageToken"] = next_page_token
         if responses is not None:
-            generated["responses"] = responses
+            generated["responses"] = [v._info for v in responses]
         object_info = object_info or generated
         super().__init__(object_info=object_info)
 

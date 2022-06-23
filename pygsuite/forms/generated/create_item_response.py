@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -17,9 +17,10 @@ class CreateItemResponse(BaseFormItem):
         generated: Dict = {}
 
         if item_id is not None:
+
             generated["itemId"] = item_id
         if question_id is not None:
-            generated["questionId"] = question_id
+            generated["questionId"] = [v for v in question_id]
         object_info = object_info or generated
         super().__init__(object_info=object_info)
 

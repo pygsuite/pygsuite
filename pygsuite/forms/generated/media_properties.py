@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from pygsuite.forms.base_object import BaseFormItem
 
@@ -17,8 +17,10 @@ class MediaProperties(BaseFormItem):
         generated: Dict = {}
 
         if alignment is not None:
+
             generated["alignment"] = alignment
         if width is not None:
+
             generated["width"] = width
         object_info = object_info or generated
         super().__init__(object_info=object_info)
