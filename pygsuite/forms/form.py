@@ -181,7 +181,7 @@ class Form(BaseForm, DriveObject):
 
     @retry(HttpError, tries=3, delay=5, backoff=3, fatal_exceptions=(FatalHttpError,))
     def refresh(self):
-        self._form = self.service.forms().get(formId=self.id).execute()
+        self._info = self.service.forms().get(formId=self.id).execute()
 
     # def add_item(self, title: str, description: str, item: Union[
     #     "PageBreakItem", "TextItem", "VideoItem", "ImageItem", "QuestionItem", "QuestionGroupItem"],

@@ -6,25 +6,41 @@ except ImportError:
     SupportsIndex = None  # type: ignore
 
 
+def generate_function(parent, idx: int, item: Any):
+    def new_update_function():
+        parent.update_factory(idx, item)
+
+    return new_update_function
+
+
 class WatchedList(list):
     """List that supports synchronizing changes to remote."""
 
     def __init__(
         self,
         iterable: Iterable,
-        update_factory: Callable[[Any, int], None],
+        update_factory: Callable[[int, Any], None],
         create_factory: Callable[[Any, "SupportsIndex"], None],
         delete_factory: Callable[[Union["SupportsIndex", slice]], None],
         move_factory: Callable[[int, int], None],
     ):
         self.initialized = False
-        # processed = [WatchedDictionary(parent_dict=x, update_factory=update_factory) if isinstance(x, dict) else x for x in iterable]
-        super().__init__(iterable)
         self.update_factory = update_factory
         self.create_factory = create_factory
         self.delete_factory = delete_factory
         self.move_factory = move_factory
+        super().__init__(iterable)
+
+        self.list = iterable
+        self._update_wrappers()
         self.sync_changes: bool = True
+
+    def _update_wrappers(self):
+        """Bind all child objects to the appropriate index modification"""
+        for idx, item in enumerate(self):
+            item._info = WatchedDictionary(
+                parent_dict=item._info, update_factory=generate_function(self, idx, item)
+            )
 
     @overload
     def __setitem__(self, key: "SupportsIndex", value: Any) -> None:
@@ -44,11 +60,13 @@ class WatchedList(list):
         super().insert(__index, __object)
         if self.sync_changes:
             self.create_factory(__object, __index)
+        self._update_wrappers()
 
     def __delitem__(self, key: Union["SupportsIndex", slice]) -> None:
         if self.sync_changes:
             self.delete_factory(key)
         super().__delitem__(key)
+        self._update_wrappers()
 
     def move(self, original_idx: int, new_idx: int) -> None:
         # we don't actually want to send the deletion or insertion
@@ -59,10 +77,12 @@ class WatchedList(list):
         self.insert(new_idx, stash)
         self.move_factory(original_idx, new_idx)
         self.sync_changes = True
+        self._update_wrappers()
 
     def append(self, __object) -> None:
         self.create_factory(__object, len(self))
         super().append(__object)
+        self._update_wrappers()
 
 
 class WatchedDictionary(dict):
