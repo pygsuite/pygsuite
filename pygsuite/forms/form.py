@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from googleapiclient.errors import HttpError
 
@@ -135,7 +135,9 @@ class Form(BaseForm, DriveObject):
             [UpdateFormInfoRequest(info=item, update_mask="*").wire_format]
         )
 
-        item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
+        item._info = WatchedDictionary(
+            parent_dict=item._info, update_factory=uf, default_flush=True
+        )
         super(Form, self.__class__).info.fset(self, item)  # type: ignore
         self._info_cache = None
 
@@ -149,7 +151,7 @@ class Form(BaseForm, DriveObject):
         if isinstance(settings._info, WatchedDictionary):
             return settings
         uf = lambda: self._mutation(  # noqa: E731
-            [UpdateSettingsRequest(settings=settings).wire_format]
+            [UpdateSettingsRequest(settings=settings, update_mask="*").wire_format]
         )
         settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
         self._settings_cache = settings
@@ -160,9 +162,11 @@ class Form(BaseForm, DriveObject):
         from pygsuite.forms.generated.update_settings_request import UpdateSettingsRequest
 
         uf = lambda: self._mutation(  # noqa: E731
-            [UpdateSettingsRequest(settings=settings).wire_format]
+            [UpdateSettingsRequest(settings=settings, update_mask="*").wire_format]
         )
-        settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
+        settings._info = WatchedDictionary(
+            parent_dict=settings._info, update_factory=uf, default_flush=True
+        )
         super(Form, self.__class__).settings.fset(self, settings)  # type:ignore
         self._settings_cache = None
 
@@ -183,7 +187,7 @@ class Form(BaseForm, DriveObject):
         return base
 
     @items.setter
-    def items(self, items: List):
+    def items(self, items: List["Item"]):  # type: ignore
         items = WatchedList(
             iterable=items,
             update_factory=self.items_update_factory,
@@ -191,6 +195,18 @@ class Form(BaseForm, DriveObject):
             move_factory=self.items_move_factory,
             create_factory=self.items_create_factory,
         )
+        # handle assignments/overwrites
+        # someone could directly
+        if self._items_cache and items != self._items_cache:
+            # it may be possible to optimize this
+            # but for now, take the brute force approach
+            # on assignment, remove all current items
+            # then trigger additions of the new objects
+            for idx, val in reversed(list(enumerate(self._items_cache))):
+                del self._items_cache[idx]
+            # then set back
+            for idx, val in enumerate(items):
+                self._items_cache.append(val)
         super(Form, self.__class__).items.fset(self, items)  # type: ignore
         self._items_cache = None
 

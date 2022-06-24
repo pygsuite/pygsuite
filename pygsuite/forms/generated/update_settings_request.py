@@ -16,7 +16,6 @@ class UpdateSettingsRequest(BaseFormItem):
         object_info: Optional[Dict] = None,
     ):
         generated: Dict = {}
-
         if settings is not None:
 
             generated["settings"] = settings._info

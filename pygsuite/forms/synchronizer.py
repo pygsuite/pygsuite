@@ -101,6 +101,7 @@ class WatchedDictionary(dict):
         # delete_factory:Optional[Any]  = None,
         # parent: Optional["WatchedDictionary"] = None,
         parent_dict: dict,
+        default_flush: bool = False,
     ):
         self.update_factory = update_factory
         # don't track updates for initial build
@@ -108,6 +109,8 @@ class WatchedDictionary(dict):
         self.update(**parent_dict)
         # now, all modifications will trigger updates
         self.initialized = True
+        if default_flush:
+            self._trigger_update()
 
     def _trigger_update(self) -> None:
         if self.initialized:

@@ -252,7 +252,7 @@ class Spreadsheet(DriveObject):
 
         return self
 
-    @retry(HttpError, tries=3, delay=5, backoff=3, fatal_exceptions=(FatalHttpError,))
+    @retry(HttpError, tries=4, delay=5, backoff=5, fatal_exceptions=(FatalHttpError,))
     def _execute(self, resource: Any):
         return resource.execute()
 
