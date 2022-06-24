@@ -12,7 +12,7 @@ class QuestionGroupItem(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         grid: Optional["Grid"] = None,
         image: Optional["Image"] = None,
         questions: Optional[List["Question"]] = None,
@@ -53,7 +53,7 @@ class QuestionGroupItem(BaseFormItem):
 
     @property
     def questions(self) -> List["Question"]:
-        return [Question(object_info=v) for v in self._info.get("questions")]
+        return [Question(object_info=v) for v in self._info.get("questions", [])]
 
     @questions.setter
     def questions(self, value: List["Question"]):

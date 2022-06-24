@@ -9,7 +9,7 @@ class ScaleQuestion(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         high: Optional[int] = None,
         high_label: Optional[str] = None,
         low: Optional[int] = None,

@@ -11,7 +11,7 @@ class CreateItemRequest(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         item: Optional["Item"] = None,
         location: Optional["Location"] = None,
         object_info: Optional[Dict] = None,

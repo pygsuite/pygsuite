@@ -10,7 +10,9 @@ class FormSettings(BaseFormItem):
     """
 
     def __init__(
-        self, quiz_settings: Optional["QuizSettings"] = None, object_info: Optional[Dict] = None
+        self,  # noqa: C901
+        quiz_settings: Optional["QuizSettings"] = None,
+        object_info: Optional[Dict] = None,
     ):
         generated: Dict = {}
 

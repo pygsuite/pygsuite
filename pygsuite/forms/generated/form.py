@@ -12,7 +12,7 @@ class Form(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         info: Optional["Info"] = None,
         items: Optional[List["Item"]] = None,
         settings: Optional["FormSettings"] = None,
@@ -47,7 +47,7 @@ class Form(BaseFormItem):
 
     @property
     def items(self) -> List["Item"]:
-        return [Item(object_info=v) for v in self._info.get("items")]
+        return [Item(object_info=v) for v in self._info.get("items", [])]
 
     @items.setter
     def items(self, value: List["Item"]):

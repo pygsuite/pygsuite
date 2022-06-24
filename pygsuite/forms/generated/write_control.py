@@ -9,7 +9,7 @@ class WriteControl(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         required_revision_id: Optional[str] = None,
         target_revision_id: Optional[str] = None,
         object_info: Optional[Dict] = None,

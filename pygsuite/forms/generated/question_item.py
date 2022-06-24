@@ -11,7 +11,7 @@ class QuestionItem(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         image: Optional["Image"] = None,
         question: Optional["Question"] = None,
         object_info: Optional[Dict] = None,

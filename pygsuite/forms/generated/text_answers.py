@@ -9,7 +9,7 @@ class TextAnswers(BaseFormItem):
     A question's answers as text.
     """
 
-    def __init__(self, object_info: Optional[Dict] = None):
+    def __init__(self, object_info: Optional[Dict] = None):  # noqa: C901
         generated: Dict = {}
 
         object_info = object_info or generated
@@ -17,4 +17,4 @@ class TextAnswers(BaseFormItem):
 
     @property
     def answers(self) -> List["TextAnswer"]:
-        return [TextAnswer(object_info=v) for v in self._info.get("answers")]
+        return [TextAnswer(object_info=v) for v in self._info.get("answers", [])]

@@ -10,7 +10,7 @@ class Grid(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         columns: Optional["ChoiceQuestion"] = None,
         shuffle_questions: Optional[bool] = None,
         object_info: Optional[Dict] = None,

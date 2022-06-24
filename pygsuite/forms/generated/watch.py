@@ -10,7 +10,7 @@ class Watch(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         event_type: Optional[str] = None,
         target: Optional["WatchTarget"] = None,
         object_info: Optional[Dict] = None,

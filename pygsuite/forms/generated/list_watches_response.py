@@ -9,7 +9,11 @@ class ListWatchesResponse(BaseFormItem):
     The response of a ListWatchesRequest.
     """
 
-    def __init__(self, watches: Optional[List["Watch"]] = None, object_info: Optional[Dict] = None):
+    def __init__(
+        self,  # noqa: C901
+        watches: Optional[List["Watch"]] = None,
+        object_info: Optional[Dict] = None,
+    ):
         generated: Dict = {}
 
         if watches is not None:
@@ -19,7 +23,7 @@ class ListWatchesResponse(BaseFormItem):
 
     @property
     def watches(self) -> List["Watch"]:
-        return [Watch(object_info=v) for v in self._info.get("watches")]
+        return [Watch(object_info=v) for v in self._info.get("watches", [])]
 
     @watches.setter
     def watches(self, value: List["Watch"]):

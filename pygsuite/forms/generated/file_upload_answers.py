@@ -9,7 +9,7 @@ class FileUploadAnswers(BaseFormItem):
     All submitted files for a FileUpload question.
     """
 
-    def __init__(self, object_info: Optional[Dict] = None):
+    def __init__(self, object_info: Optional[Dict] = None):  # noqa: C901
         generated: Dict = {}
 
         object_info = object_info or generated
@@ -17,4 +17,4 @@ class FileUploadAnswers(BaseFormItem):
 
     @property
     def answers(self) -> List["FileUploadAnswer"]:
-        return [FileUploadAnswer(object_info=v) for v in self._info.get("answers")]
+        return [FileUploadAnswer(object_info=v) for v in self._info.get("answers", [])]

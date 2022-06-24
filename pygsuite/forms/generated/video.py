@@ -10,7 +10,7 @@ class Video(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         properties: Optional["MediaProperties"] = None,
         youtube_uri: Optional[str] = None,
         object_info: Optional[Dict] = None,

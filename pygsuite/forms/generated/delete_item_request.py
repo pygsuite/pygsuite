@@ -9,7 +9,11 @@ class DeleteItemRequest(BaseFormItem):
     Delete an item in a form.
     """
 
-    def __init__(self, location: Optional["Location"] = None, object_info: Optional[Dict] = None):
+    def __init__(
+        self,  # noqa: C901
+        location: Optional["Location"] = None,
+        object_info: Optional[Dict] = None,
+    ):
         generated: Dict = {}
 
         if location is not None:

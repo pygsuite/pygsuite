@@ -9,7 +9,9 @@ class ImageItem(BaseFormItem):
     An item containing an image.
     """
 
-    def __init__(self, image: Optional["Image"] = None, object_info: Optional[Dict] = None):
+    def __init__(
+        self, image: Optional["Image"] = None, object_info: Optional[Dict] = None  # noqa: C901
+    ):
         generated: Dict = {}
 
         if image is not None:

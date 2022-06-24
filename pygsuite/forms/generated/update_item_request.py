@@ -11,7 +11,7 @@ class UpdateItemRequest(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         item: Optional["Item"] = None,
         location: Optional["Location"] = None,
         update_mask: Optional[str] = None,

@@ -8,7 +8,9 @@ class TimeQuestion(BaseFormItem):
     A time question.
     """
 
-    def __init__(self, duration: Optional[bool] = None, object_info: Optional[Dict] = None):
+    def __init__(
+        self, duration: Optional[bool] = None, object_info: Optional[Dict] = None  # noqa: C901
+    ):
         generated: Dict = {}
 
         if duration is not None:

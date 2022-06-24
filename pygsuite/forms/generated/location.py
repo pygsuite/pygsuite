@@ -8,7 +8,9 @@ class Location(BaseFormItem):
     A specific location in a form.
     """
 
-    def __init__(self, index: Optional[int] = None, object_info: Optional[Dict] = None):
+    def __init__(
+        self, index: Optional[int] = None, object_info: Optional[Dict] = None  # noqa: C901
+    ):
         generated: Dict = {}
 
         if index is not None:

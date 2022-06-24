@@ -10,7 +10,7 @@ class ChoiceQuestion(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         options: Optional[List["Option"]] = None,
         shuffle: Optional[bool] = None,
         type: Optional[str] = None,
@@ -31,7 +31,7 @@ class ChoiceQuestion(BaseFormItem):
 
     @property
     def options(self) -> List["Option"]:
-        return [Option(object_info=v) for v in self._info.get("options")]
+        return [Option(object_info=v) for v in self._info.get("options", [])]
 
     @options.setter
     def options(self, value: List["Option"]):

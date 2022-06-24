@@ -9,7 +9,7 @@ class Info(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         description: Optional[str] = None,
         title: Optional[str] = None,
         object_info: Optional[Dict] = None,

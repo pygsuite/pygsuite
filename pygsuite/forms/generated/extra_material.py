@@ -11,7 +11,7 @@ class ExtraMaterial(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         link: Optional["TextLink"] = None,
         video: Optional["VideoLink"] = None,
         object_info: Optional[Dict] = None,

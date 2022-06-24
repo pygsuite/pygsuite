@@ -11,7 +11,7 @@ class BatchUpdateFormRequest(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         include_form_in_response: Optional[bool] = None,
         requests: Optional[List["Request"]] = None,
         write_control: Optional["WriteControl"] = None,
@@ -42,7 +42,7 @@ class BatchUpdateFormRequest(BaseFormItem):
 
     @property
     def requests(self) -> List["Request"]:
-        return [Request(object_info=v) for v in self._info.get("requests")]
+        return [Request(object_info=v) for v in self._info.get("requests", [])]
 
     @requests.setter
     def requests(self, value: List["Request"]):

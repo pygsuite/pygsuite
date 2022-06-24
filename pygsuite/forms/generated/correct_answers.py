@@ -10,7 +10,9 @@ class CorrectAnswers(BaseFormItem):
     """
 
     def __init__(
-        self, answers: Optional[List["CorrectAnswer"]] = None, object_info: Optional[Dict] = None
+        self,  # noqa: C901
+        answers: Optional[List["CorrectAnswer"]] = None,
+        object_info: Optional[Dict] = None,
     ):
         generated: Dict = {}
 
@@ -21,7 +23,7 @@ class CorrectAnswers(BaseFormItem):
 
     @property
     def answers(self) -> List["CorrectAnswer"]:
-        return [CorrectAnswer(object_info=v) for v in self._info.get("answers")]
+        return [CorrectAnswer(object_info=v) for v in self._info.get("answers", [])]
 
     @answers.setter
     def answers(self, value: List["CorrectAnswer"]):

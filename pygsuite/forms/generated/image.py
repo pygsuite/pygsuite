@@ -10,7 +10,7 @@ class Image(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         alt_text: Optional[str] = None,
         properties: Optional["MediaProperties"] = None,
         source_uri: Optional[str] = None,

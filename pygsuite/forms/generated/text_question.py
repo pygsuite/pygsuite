@@ -8,7 +8,9 @@ class TextQuestion(BaseFormItem):
     A text-based question.
     """
 
-    def __init__(self, paragraph: Optional[bool] = None, object_info: Optional[Dict] = None):
+    def __init__(
+        self, paragraph: Optional[bool] = None, object_info: Optional[Dict] = None  # noqa: C901
+    ):
         generated: Dict = {}
 
         if paragraph is not None:

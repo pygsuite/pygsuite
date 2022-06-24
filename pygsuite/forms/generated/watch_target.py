@@ -10,7 +10,9 @@ class WatchTarget(BaseFormItem):
     """
 
     def __init__(
-        self, topic: Optional["CloudPubsubTopic"] = None, object_info: Optional[Dict] = None
+        self,  # noqa: C901
+        topic: Optional["CloudPubsubTopic"] = None,
+        object_info: Optional[Dict] = None,
     ):
         generated: Dict = {}
 

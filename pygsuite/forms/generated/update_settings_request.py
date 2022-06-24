@@ -10,7 +10,7 @@ class UpdateSettingsRequest(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         settings: Optional["FormSettings"] = None,
         update_mask: Optional[str] = None,
         object_info: Optional[Dict] = None,

@@ -1,16 +1,26 @@
 # Images
 
-Image insert may require a public URL.
+Image inserts typically requires a public URL. 
 
-In those cases, if you have a GCS bucket available, the recommended
-work-around is signed URLs.
+This tutorial walks you through using Google Cloud's offerings - in this case, a Google Cloud Storage bucket - 
+to host a public image and insert it.
+
+You can replace GCS with any other public blob storage, such as an Amazon S3 bucket, or even a public
+resource on github or google drive.
+
+This guide in particular shows how to configure an uploader that can be integrated into pygsuite
+to seamlessly generate secure public URLs from a local image. 
+
+## Images with GCP
+
+If you can work with GCP, you can get a public URL using signed URLs.
 
 ## Configuring the Bucket
 
 ### Step 1 - Cloud Storage
 
 Follow the [package guide](https://pypi.org/project/google-cloud-storage/)
-to get a project and bukcet configured.
+to get a project and bucket configured.
 
 It's recommended that you configure the bucket to have a short TTL
 for your image uploads - there's no need to keep the images around.

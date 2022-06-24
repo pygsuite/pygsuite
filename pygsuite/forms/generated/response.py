@@ -10,7 +10,9 @@ class Response(BaseFormItem):
     """
 
     def __init__(
-        self, create_item: Optional["CreateItemResponse"] = None, object_info: Optional[Dict] = None
+        self,  # noqa: C901
+        create_item: Optional["CreateItemResponse"] = None,
+        object_info: Optional[Dict] = None,
     ):
         generated: Dict = {}
 

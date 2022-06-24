@@ -10,7 +10,7 @@ class MoveItemRequest(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         new_location: Optional["Location"] = None,
         original_location: Optional["Location"] = None,
         object_info: Optional[Dict] = None,

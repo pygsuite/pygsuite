@@ -9,7 +9,7 @@ class DateQuestion(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         include_time: Optional[bool] = None,
         include_year: Optional[bool] = None,
         object_info: Optional[Dict] = None,

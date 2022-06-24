@@ -10,7 +10,7 @@ class VideoItem(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         caption: Optional[str] = None,
         video: Optional["Video"] = None,
         object_info: Optional[Dict] = None,

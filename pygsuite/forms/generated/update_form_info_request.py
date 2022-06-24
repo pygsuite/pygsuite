@@ -10,7 +10,7 @@ class UpdateFormInfoRequest(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         info: Optional["Info"] = None,
         update_mask: Optional[str] = None,
         object_info: Optional[Dict] = None,

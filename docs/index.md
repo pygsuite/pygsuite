@@ -31,3 +31,4 @@ You'll need to start with the auth tutorial to use any of them, so begin there.
 - [Sheets](./tutorials/sheets/sheets.md)
 - [Docs](./tutorials/docs/docs.md)
 - [Slides](./tutorials/slides/slides.md)
+- [Forms](./tutorials/forms/forms.md)

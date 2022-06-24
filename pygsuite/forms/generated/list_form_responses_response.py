@@ -10,7 +10,7 @@ class ListFormResponsesResponse(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         next_page_token: Optional[str] = None,
         responses: Optional[List["FormResponse"]] = None,
         object_info: Optional[Dict] = None,
@@ -37,7 +37,7 @@ class ListFormResponsesResponse(BaseFormItem):
 
     @property
     def responses(self) -> List["FormResponse"]:
-        return [FormResponse(object_info=v) for v in self._info.get("responses")]
+        return [FormResponse(object_info=v) for v in self._info.get("responses", [])]
 
     @responses.setter
     def responses(self, value: List["FormResponse"]):

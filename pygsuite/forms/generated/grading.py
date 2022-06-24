@@ -11,7 +11,7 @@ class Grading(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         correct_answers: Optional["CorrectAnswers"] = None,
         general_feedback: Optional["Feedback"] = None,
         point_value: Optional[int] = None,

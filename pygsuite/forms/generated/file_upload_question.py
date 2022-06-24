@@ -9,7 +9,7 @@ class FileUploadQuestion(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         folder_id: Optional[str] = None,
         max_file_size: Optional[str] = None,
         max_files: Optional[int] = None,
@@ -64,7 +64,7 @@ class FileUploadQuestion(BaseFormItem):
 
     @property
     def types(self) -> List["str"]:
-        return [v for v in self._info.get("types")]
+        return [v for v in self._info.get("types", [])]
 
     @types.setter
     def types(self, value: List["str"]):

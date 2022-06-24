@@ -35,7 +35,7 @@ class {{target.class_name}}(BaseFormItem):
     {% for prop in target.props %}
     @property
     def {{prop.base}}(self)->{% if prop.is_basic_type %}{{prop.type }}{% else %}"{{ prop.type }}"{% endif %}:
-        {% if prop.is_list %}return [{% if prop.class_name %}{{prop.class_name}}(object_info=v){% else %}v{% endif %} for v in self._info.get('{{prop.camel_case}}')]
+        {% if prop.is_list %}return [{% if prop.class_name %}{{prop.class_name}}(object_info=v){% else %}v{% endif %} for v in self._info.get('{{prop.camel_case}}', [])]
         {% else %}return {% if prop.is_basic_type %}self._info.get('{{prop.camel_case}}'){% else %}{{ prop.type }}(object_info=self._info.get('{{prop.camel_case}}')){% endif %}{% endif %}{% if not prop.read_only %}
     
     @{{prop.base}}.setter
@@ -133,6 +133,8 @@ class Dependency:
             [z.lower() for z in re.split("(?=[A-Z])", self.original.strip()) if z]
         )
 
+    def __hash__(self):
+        return self.original.__hash__()
 
 def map_type(input: str):
     if input == "string":

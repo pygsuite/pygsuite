@@ -12,7 +12,7 @@ class BatchUpdateFormResponse(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         form: Optional["Form"] = None,
         replies: Optional[List["Response"]] = None,
         write_control: Optional["WriteControl"] = None,
@@ -43,7 +43,7 @@ class BatchUpdateFormResponse(BaseFormItem):
 
     @property
     def replies(self) -> List["Response"]:
-        return [Response(object_info=v) for v in self._info.get("replies")]
+        return [Response(object_info=v) for v in self._info.get("replies", [])]
 
     @replies.setter
     def replies(self, value: List["Response"]):

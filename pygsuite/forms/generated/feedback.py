@@ -10,7 +10,7 @@ class Feedback(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         material: Optional[List["ExtraMaterial"]] = None,
         text: Optional[str] = None,
         object_info: Optional[Dict] = None,
@@ -27,7 +27,7 @@ class Feedback(BaseFormItem):
 
     @property
     def material(self) -> List["ExtraMaterial"]:
-        return [ExtraMaterial(object_info=v) for v in self._info.get("material")]
+        return [ExtraMaterial(object_info=v) for v in self._info.get("material", [])]
 
     @material.setter
     def material(self, value: List["ExtraMaterial"]):

@@ -9,7 +9,7 @@ class MediaProperties(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         alignment: Optional[str] = None,
         width: Optional[int] = None,
         object_info: Optional[Dict] = None,

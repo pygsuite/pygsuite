@@ -9,7 +9,7 @@ class TextLink(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         display_text: Optional[str] = None,
         uri: Optional[str] = None,
         object_info: Optional[Dict] = None,

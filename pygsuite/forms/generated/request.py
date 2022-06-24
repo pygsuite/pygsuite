@@ -15,7 +15,7 @@ class Request(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         create_item: Optional["CreateItemRequest"] = None,
         delete_item: Optional["DeleteItemRequest"] = None,
         move_item: Optional["MoveItemRequest"] = None,

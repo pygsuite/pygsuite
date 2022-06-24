@@ -10,7 +10,7 @@ class Option(BaseFormItem):
     """
 
     def __init__(
-        self,
+        self,  # noqa: C901
         go_to_action: Optional[str] = None,
         go_to_section_id: Optional[str] = None,
         image: Optional["Image"] = None,
