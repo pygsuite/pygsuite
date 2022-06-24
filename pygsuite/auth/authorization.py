@@ -3,10 +3,11 @@ from __future__ import print_function
 from os.path import dirname, join
 import os.path
 import pickle
-from typing import Optional
+from typing import Optional, Union
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+from google.oauth2.service_account import Credentials as SACredentials
 from google_auth_oauthlib.flow import InstalledAppFlow, Flow
 from googleapiclient.discovery import build
 
@@ -17,16 +18,18 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/presentations",
     "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/forms",
 ]
 
 SHEETS_VERSION = "v4"
 DOCS_VERSION = "v1"
 SLIDES_VERSION = "v1"
 DRIVE_VERSION = "v2"
+FORMS_VERSION = "v1"
 
 
-def json_str_to_oauth(token_str: str) -> Credentials:
-    """Convert a JSON-like string into a Google OAuth `Credentials` object.
+def json_str_to_oauth(token_str: str) -> Union[Credentials, SACredentials]:
+    """Convert a JSON-like string into a Google OAuth `Credentials` object or a service account object, depending on what was provided.
 
     Args:
         token_str (str): A JSON-like string containing Google authentication information.
@@ -36,10 +39,13 @@ def json_str_to_oauth(token_str: str) -> Credentials:
     import json
 
     cred_dict = json.loads(token_str)
-    return Credentials(**cred_dict)
+    # check for service account credentials
+    if cred_dict.get("type", "unknown") == "service_account":
+        return SACredentials.from_service_account_info(info=cred_dict)
+    return Credentials.from_authorized_user_info(info=cred_dict)
 
 
-def get_oauth_credential(credential_string: str) -> Credentials:
+def get_oauth_credential(credential_string: str) -> Union[Credentials, SACredentials]:
     """Convert a JSON-like string into a Google OAuth `Credentials` object,
     and refresh the credentials if they are expired and contain a refresh token.
     Raises a `ValueError` if invalid credentials cannot be refreshed.
@@ -50,7 +56,7 @@ def get_oauth_credential(credential_string: str) -> Credentials:
     Returns a valid `Credentials` object.
     """
     creds = json_str_to_oauth(credential_string)
-    if not creds.valid:
+    if isinstance(creds, Credentials) and not creds.valid:
         if creds.expired and creds.refresh_token:
             creds.refresh(Request())
             return creds
@@ -124,12 +130,13 @@ class _Clients(object):
         """
         self.auth = get_oauth_credential(auth_string)
 
-    def local_file_auth(self, filepath: str):
+    def local_file_auth(self, filepath: Optional[str] = None):
         """Sets the credentials for the current environment based on a local file with credentials.
 
         Args:
-            filepath (str): Filepath to the credentials file.
+            filepath (Optional[str]): Filepath to the credentials file, will default to token.json in working directory.
         """
+        filepath = filepath or join(os.getcwd(), "token.json")
         directory = dirname(filepath)
         pickle_path = join(directory, "cache.pickle")
         creds = None
@@ -192,6 +199,12 @@ class _Clients(object):
         """Google Drive client (API v3)"""
         self.validate()
         return build("drive", "v3", credentials=self.auth)
+
+    @lazy_property
+    def forms_client(self):
+        """Form Client"""
+        self.validate()
+        return build("forms", FORMS_VERSION, credentials=self.auth)
 
 
 Clients = _Clients()

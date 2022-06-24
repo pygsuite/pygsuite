@@ -1,7 +1,7 @@
-from io import BytesIO
 import logging
 import os
-from typing import List, Optional, Union
+from io import BytesIO
+from typing import List, Optional, Union, Dict
 
 import filetype
 from googleapiclient.discovery import Resource
@@ -14,7 +14,6 @@ from pygsuite.constants import DRIVE_FILE_MAX_SINGLE_UPLOAD_SIZE, FILE_MIME_TYPE
 from pygsuite.drive.query import Connector, Operator, QueryString, QueryStringGroup, QueryTerm
 from pygsuite.enums import GoogleDocFormat, PermissionType, MimeType
 from pygsuite.utility.decorators import lazy_property
-
 
 _logger = logging.getLogger(__name__)
 
@@ -106,12 +105,7 @@ class DriveObject:
         # execute files.create request and return File object
         file = (
             drive_client.files()
-            .create(
-                body=body,
-                media_body=media_body,
-                fields="id",
-                **kwargs,
-            )
+            .create(body=body, media_body=media_body, fields="id", **kwargs)
             .execute()
         )
 
@@ -249,7 +243,7 @@ class DriveObject:
         exact_match: bool = True,
         parent_folder_ids: Optional[List[str]] = None,
         mimetype: Optional[Union[MimeType, str]] = None,
-        support_all_drives: bool = False,
+        support_all_drives: bool = True,
         extra_conditions: Optional[Union[QueryString, QueryStringGroup]] = None,
         drive_client: Optional[Resource] = None,
         object_client: Optional[Resource] = None,
@@ -271,32 +265,37 @@ class DriveObject:
         """
         # establish a client
         drive_client = drive_client or Clients.drive_client_v3
-
+        # always restrict to the mimetype if set
+        if not mimetype and cls._mimetype != MimeType.UNKNOWN:
+            mimetype = cls._mimetype
         # name match query
         operator = Operator.EQUAL if exact_match else Operator.CONTAINS
         name_query = QueryString(QueryTerm.NAME, operator, name)
-        query = name_query
-
+        base_query = name_query
+        query_components: List[Union[QueryString, QueryStringGroup]] = [base_query]
         # optional folder query
         if parent_folder_ids:
+            folder_query: Union[QueryString, QueryStringGroup]
             folder_queries = []
             for id in parent_folder_ids:
                 folder_query = QueryString(QueryTerm.PARENTS, Operator.IN, id)
                 folder_queries.append(folder_query)
-            folder_query = QueryStringGroup(folder_queries, [Connector.OR for query in folder_queries[:-1]])
-
-            query = QueryStringGroup([query, folder_query])
+            folder_query = QueryStringGroup(
+                folder_queries, [Connector.OR for query in folder_queries[:-1]]
+            )
+            query_components.append(folder_query)
 
         # optional mimetype query
         if mimetype:
             mimetype = str(mimetype)
             type_query = QueryString(QueryTerm.MIMETYPE, Operator.EQUAL, mimetype)
-            query = QueryStringGroup([query, type_query])
+            query_components.append(type_query)
 
-        # optional auxillary query
+        # optional auxiliary query
         if extra_conditions:
-            query = QueryStringGroup([query, extra_conditions])
+            query_components.append(extra_conditions)
 
+        query = QueryStringGroup(query_components)
         # we are not handling multiple pages of matches here because
         # we only return the first match anyway
         response = (
@@ -331,9 +330,7 @@ class DriveObject:
         raise NotImplementedError
 
     def move(
-        self,
-        destination_folder_ids: List[str],
-        current_folder_ids: Optional[List[str]] = None,
+        self, destination_folder_ids: List[str], current_folder_ids: Optional[List[str]] = None
     ):
         """Move the file from a current folder to a new folder.
         If no current folder is specified, the current folder ID is derived.
@@ -358,10 +355,21 @@ class DriveObject:
 
         return response.get("parents")
 
+    def _cache_local_metadata_with_args_and_return(self, fields: List[str]):
+        """Local metadata only has a potential subset of fields. Call this to rebuild
+        with another potential set."""
+        output: Dict = {}
+        self._metadata = (
+            self._drive_client.files().get(fileId=self.id, fields=f"{', '.join(fields)}")
+        ).execute()
+
+        if self._metadata:
+            for field in fields:
+                output[field] = self._metadata[field]
+        return output
+
     def fetch_metadata(
-        self,
-        ignore_cache: bool = False,
-        fields: Optional[List[str]] = None,
+        self, ignore_cache: bool = False, fields: Optional[List[str]] = None
     ) -> dict:
         """Metadata for the file, based on the files.get method.
         Default fields include kind, name, and mimetype. Additional fields available are found here:
@@ -380,34 +388,16 @@ class DriveObject:
         _fields = ["id", "kind", "name", "mimeType"]
         if fields:
             _fields.extend(fields)
-
-        metadata = {}
-
         # see if we have cached the file metadata already
-        if ignore_cache is False:
-            fetch = False
-            for field in _fields:
-                try:
-                    metadata[field] = self._metadata[field]
-                # if we cannot find a field, we need to fetch the metadata again
-                except KeyError:
-                    fetch = True
-                    break
-            if not fetch:
-                _logger.info("Using cached metadata...")
-                return metadata
-
-        self._metadata = (
-            self._drive_client.files().get(
-                fileId=self.id,
-                fields=f"{', '.join(_fields)}",
-            )
-        ).execute()
-
-        for field in _fields:
-            metadata[field] = self._metadata[field]
-
-        return metadata
+        if (
+            ignore_cache is False
+            and self._metadata
+            and all([field in self._metadata.keys() for field in _fields])
+        ):
+            _logger.info("Using cached metadata...")
+            return {key: value for key, value in self._metadata.items() if key in _fields}
+        # fetch, cache
+        return self._cache_local_metadata_with_args_and_return(fields=_fields)
 
     @property
     def kind(self):
@@ -415,17 +405,17 @@ class DriveObject:
         return self.fetch_metadata().get("kind")
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
 
         return self.fetch_metadata().get("name")
 
     @property
-    def mimetype(self):
+    def mimetype(self) -> Optional[str]:
 
         return self.fetch_metadata().get("mimeType")
 
     @property
-    def url(self):
+    def url(self) -> str:
 
         return self._base_url.format(self.id)
 
@@ -435,10 +425,7 @@ class DriveObject:
         return [
             Comment(item)
             for item in self._drive_client.comments()
-            .list(
-                fileId=self.id,
-                fields=None,
-            )
+            .list(fileId=self.id, fields=None)
             .execute()
             .get("items", [])
         ]

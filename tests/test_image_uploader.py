@@ -1,8 +1,5 @@
-import base64
 from json import loads
 from os import environ
-
-import requests
 
 from pygsuite import ImageUploader
 

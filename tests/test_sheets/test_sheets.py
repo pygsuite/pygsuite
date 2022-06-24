@@ -11,20 +11,17 @@ from pygsuite.sheets import Worksheet, SheetProperties, Cell, CellFormat
 
 @pytest.mark.run(order=1)
 def test_spreadsheet__create_new(auth_test_clients):
-    new_spreadsheet = Spreadsheet.create(
-        name="New Empty Spreadsheet",
-    )
+    new_spreadsheet = Spreadsheet.create(name="New Empty Spreadsheet")
     assert new_spreadsheet.id is not None
     new_spreadsheet.delete()
 
 
 @pytest.mark.run(order=2)
 def test_spreadsheet__upload_excel(auth_test_clients):
-    upload_file = join(dirname(dirname(abspath(__file__))), "test_sheets", "assets", "test data.xlsx")
-    uploaded_sheet = Spreadsheet.upload(
-        filepath=upload_file,
-        name="Uploaded Spreadsheet",
+    upload_file = join(
+        dirname(dirname(abspath(__file__))), "test_sheets", "assets", "test data.xlsx"
     )
+    uploaded_sheet = Spreadsheet.upload(filepath=upload_file, name="Uploaded Spreadsheet")
     assert uploaded_sheet.id is not None
     # just to assure us that we have created the right pygsuite object:
     assert uploaded_sheet.url.startswith("https://docs.google.com/spreadsheets/d/")
@@ -63,10 +60,7 @@ def test_spreadsheet__remove_worksheets(auth_test_clients, test_sheet):
 def test_spreadsheet__insert_data__from_df(auth_test_clients, test_sheet):
     df = DataFrame(data={"col1": [1, 2], "col2": [3, 4]})
 
-    response = test_sheet.insert_data_from_df(
-        df=df,
-        insert_range="Sheet1!A1:B3",
-    ).flush()
+    response = test_sheet.insert_data_from_df(df=df, insert_range="Sheet1!A1:B3").flush()
     assert response.get("values_update_response")[0].get("updatedRange") == "Sheet1!A1:B3"
 
 
@@ -74,35 +68,19 @@ def test_spreadsheet__insert_data__from_df(auth_test_clients, test_sheet):
 def test_spreadsheet__insert_data__from_list(auth_test_clients, test_sheet):
     test_sheet.create_sheet(SheetProperties(title="Sheet2"))
 
-    values = [
-        ["A", "B", "C"],
-        [1, 4, 7],
-        [2, 5, 8],
-        [3, 6, 9],
-    ]
+    values = [["A", "B", "C"], [1, 4, 7], [2, 5, 8], [3, 6, 9]]
 
-    response = test_sheet.insert_data(
-        insert_range="Sheet2!A1:C4",
-        values=values,
-    ).flush()
+    response = test_sheet.insert_data(insert_range="Sheet2!A1:C4", values=values).flush()
     assert response.get("values_update_response")[0].get("updatedRange") == "Sheet2!A1:C4"
 
 
 @pytest.mark.run(order=8)
 def test_spreadsheet__format_cells(auth_test_clients, test_sheet):
-    cell_format = CellFormat(
-        text_format=TextStyle(bold=True)
-    )
-    bold = Cell(
-        user_entered_format=cell_format
-    )
+    cell_format = CellFormat(text_format=TextStyle(bold=True))
+    bold = Cell(user_entered_format=cell_format)
 
     test_sheet["Sheet1"].format_cells(
-        start_row_index=0,
-        end_row_index=1,
-        start_column_index=0,
-        end_column_index=2,
-        cell=bold,
+        start_row_index=0, end_row_index=1, start_column_index=0, end_column_index=2, cell=bold
     )
     response = test_sheet.flush()
     assert response is not None
@@ -111,9 +89,7 @@ def test_spreadsheet__format_cells(auth_test_clients, test_sheet):
 @pytest.mark.run(order=9)
 def test_spreadsheet__format_borders(auth_test_clients, test_sheet):
     bottom_border = Border(
-        position=BorderPosition.BOTTOM,
-        style=BorderStyle.SOLID,
-        color=Color(hex="#000000"),
+        position=BorderPosition.BOTTOM, style=BorderStyle.SOLID, color=Color(hex="#000000")
     )
 
     test_sheet["Sheet1"].format_borders(
@@ -131,9 +107,7 @@ def test_spreadsheet__format_borders(auth_test_clients, test_sheet):
 def test_spreadsheet__read_data_to_df(auth_test_clients, test_sheet):
     df = DataFrame(data={"col1": [1, 2], "col2": [3, 4]})
 
-    spreadsheet_data = test_sheet.to_df(
-        cell_range="Sheet1!A1:B3",
-    )
+    spreadsheet_data = test_sheet.to_df(cell_range="Sheet1!A1:B3")
     # casting columns returned as 'object' to 'int64'
     spreadsheet_data = spreadsheet_data.astype("int64")
 
@@ -142,16 +116,9 @@ def test_spreadsheet__read_data_to_df(auth_test_clients, test_sheet):
 
 @pytest.mark.run(order=11)
 def test_spreadsheet__read_data_to_list(auth_test_clients, test_sheet):
-    spreadsheet_data = test_sheet.to_list(
-        cell_range="Sheet2!A1:C4",
-    )
+    spreadsheet_data = test_sheet.to_list(cell_range="Sheet2!A1:C4")
 
-    values = [
-        ["A", "B", "C"],
-        ["1", "4", "7"],
-        ["2", "5", "8"],
-        ["3", "6", "9"],
-    ]
+    values = [["A", "B", "C"], ["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
     assert spreadsheet_data == values
 
 
@@ -163,34 +130,28 @@ def test_spreadsheet__clear_range(auth_test_clients, test_sheet):
     sheet_1 = test_sheet["Sheet1"].values
     sheet_2 = test_sheet["Sheet2"].values
 
-    assert (len(sheet_1) == 0 and len(sheet_2) == 0)
+    assert len(sheet_1) == 0 and len(sheet_2) == 0
 
 
 @pytest.mark.run(order=13)
 def test_spreadsheet__insert_data__from_df__in_worksheet(auth_test_clients, test_sheet):
     df = DataFrame(data={"col1": [1, 2], "col2": [3, 4]})
 
-    test_sheet["Sheet1"].insert_data_from_df(
-        df=df,
-        flush=True,
-    )
+    test_sheet["Sheet1"].insert_data_from_df(df=df, flush=True)
     assert test_sheet["Sheet1"].values == [["col1", "col2"], ["1", "3"], ["2", "4"]]
 
 
 @pytest.mark.run(order=14)
 def test_spreadsheet__insert_data__from_list__in_worksheet(auth_test_clients, test_sheet):
-    values = [
-        ["A", "B", "C"],
-        [1, 4, 7],
-        [2, 5, 8],
-        [3, 6, 9],
-    ]
+    values = [["A", "B", "C"], [1, 4, 7], [2, 5, 8], [3, 6, 9]]
 
-    test_sheet["Sheet2"].insert_data(
-        values=values,
-        flush=True,
-    )
-    assert test_sheet["Sheet2"].values == [["A", "B", "C"], ["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
+    test_sheet["Sheet2"].insert_data(values=values, flush=True)
+    assert test_sheet["Sheet2"].values == [
+        ["A", "B", "C"],
+        ["1", "4", "7"],
+        ["2", "5", "8"],
+        ["3", "6", "9"],
+    ]
 
 
 @pytest.mark.run(order=15)
@@ -201,4 +162,4 @@ def test_spreadsheet__clear_range__in_worksheet(auth_test_clients, test_sheet):
     sheet_1 = test_sheet["Sheet1"].values
     sheet_2 = test_sheet["Sheet2"].values
 
-    assert (len(sheet_1) == 0 and len(sheet_2) == 0)
+    assert len(sheet_1) == 0 and len(sheet_2) == 0

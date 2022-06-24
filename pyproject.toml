@@ -19,3 +19,7 @@ exclude = '''
   | tests/data
 )/
 '''
+
+[tool.mypy]
+ignore_missing_imports = true
+

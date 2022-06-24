@@ -31,6 +31,13 @@ class QueryTerm(Enum):
     MEMBER_COUNT = "memberCount"
     ORGANIZER_COUNT = "organizerCount"
 
+    @classmethod
+    def _missing_(cls, value):
+        raise ValueError(
+            f"{value} is an unsupported query term. Please see the docs for supported query terms: "
+            "https://developers.google.com/drive/api/v3/ref-search-terms"
+        )
+
 
 class Operator(Enum):
     """Enumeration representing comparison operators for a query string.
@@ -52,6 +59,13 @@ class Operator(Enum):
     NOT = "not"
     HAS = "has"
 
+    @classmethod
+    def _missing_(cls, value):
+        raise ValueError(
+            f"{value} is an unsupported operator. Please see the docs for supported operators: "
+            "https://developers.google.com/drive/api/v3/ref-search-terms"
+        )
+
 
 class Connector(Enum):
     AND = "and"
@@ -65,26 +79,8 @@ class QueryString:
     value: Optional[str] = None
 
     def __post_init__(self):
-
-        # convert strings to enums
-        if isinstance(self.query_term, str):
-            try:
-                self.query_term = QueryTerm(self.query_term)
-            except ValueError as e:
-                raise ValueError(
-                    f"{self.query_term} is an unsupported query term. Please see the docs for supported query terms: "
-                    "https://developers.google.com/drive/api/v3/ref-search-terms"
-                ) from e
-
-        if isinstance(self.operator, str):
-            try:
-                self.operator = Operator(self.operator)
-            except ValueError as e:
-                raise ValueError(
-                    f"{self.operator} is an unsupported operator. Please see the docs for supported operators: "
-                    "https://developers.google.com/drive/api/v3/ref-search-terms"
-                ) from e
-
+        self.query_term = QueryTerm(self.query_term)
+        self.operator = Operator(self.operator)
         # convert bools to JSON-friendly capitalization
         if isinstance(self.value, bool):
             self.value = str(self.value).lower()

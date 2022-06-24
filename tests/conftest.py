@@ -70,10 +70,7 @@ def test_filled_folder(auth_test_clients):
 def test_text_file(auth_test_clients):
     from pygsuite import File
 
-    test_file = File.get_safe(
-        name=f"test-{uuid4()}",
-        mimetype="text/plain",
-    )
+    test_file = File.get_safe(name=f"test-{uuid4()}", mimetype="text/plain")
 
     yield test_file
 
@@ -92,6 +89,17 @@ def test_document(auth_test_clients):
 
 
 @fixture(scope="session")
+def test_form(auth_test_clients):
+    from pygsuite import Form
+
+    test_form = Form.get_safe(name=f"test-{uuid4()}")
+
+    yield test_form
+
+    test_form.delete()
+
+
+@fixture(scope="session")
 def test_presentation(auth_test_clients):
     from pygsuite import Presentation
 
@@ -107,6 +115,7 @@ def test_sheet(auth_test_clients):
     from pygsuite import Spreadsheet
 
     test_sheet = Spreadsheet.create(name=f"test-{uuid4()}")
+    assert len(test_sheet.worksheets) == 1
 
     yield test_sheet
 
