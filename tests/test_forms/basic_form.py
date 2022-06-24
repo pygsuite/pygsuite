@@ -28,6 +28,20 @@ def test_auto_sync(test_form):
     assert test_form.items[1].title == test_title
 
 
+@pytest.mark.run(order=3)
+def test_empty_assignment(test_form):
+    test_form.items = []
+    test_form.flush()
+    new_item = Item(
+        question_item=QuestionItem(question=Question(text_question=TextQuestion(paragraph=True))),
+        description="A new question",
+        title="My fun question",
+    )
+    test_form.items.append(new_item)
+    test_form.flush()
+    assert len(test_form.items) == 1
+
+
 def test_complex_parsing():
     from os.path import dirname, join
 

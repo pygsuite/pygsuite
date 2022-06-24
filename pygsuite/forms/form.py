@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from googleapiclient.errors import HttpError
 
@@ -183,7 +183,7 @@ class Form(BaseForm, DriveObject):
         return base
 
     @items.setter
-    def items(self, items: List):
+    def items(self, items: Union[List["Item"], WatchedList["Item"]]):  # type: ignore
         items = WatchedList(
             iterable=items,
             update_factory=self.items_update_factory,
@@ -191,6 +191,18 @@ class Form(BaseForm, DriveObject):
             move_factory=self.items_move_factory,
             create_factory=self.items_create_factory,
         )
+        # handle assignments/overwrites
+        # someone could directly
+        if self._items_cache and items != self._items_cache:
+            # it may be possible to optimize this
+            # but for now, take the brute force approach
+            # on assignment, remove all current items
+            # then trigger additions of the new objects
+            for idx, val in reversed(list(enumerate(self._items_cache))):
+                del self._items_cache[idx]
+            # then set back
+            for idx, val in enumerate(items):
+                self._items_cache.append(val)
         super(Form, self.__class__).items.fset(self, items)  # type: ignore
         self._items_cache = None
 
