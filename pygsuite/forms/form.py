@@ -135,7 +135,9 @@ class Form(BaseForm, DriveObject):
             [UpdateFormInfoRequest(info=item, update_mask="*").wire_format]
         )
 
-        item._info = WatchedDictionary(parent_dict=item._info, update_factory=uf)
+        item._info = WatchedDictionary(
+            parent_dict=item._info, update_factory=uf, default_flush=True
+        )
         super(Form, self.__class__).info.fset(self, item)  # type: ignore
         self._info_cache = None
 
@@ -149,7 +151,7 @@ class Form(BaseForm, DriveObject):
         if isinstance(settings._info, WatchedDictionary):
             return settings
         uf = lambda: self._mutation(  # noqa: E731
-            [UpdateSettingsRequest(settings=settings).wire_format]
+            [UpdateSettingsRequest(settings=settings, update_mask="*").wire_format]
         )
         settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
         self._settings_cache = settings
@@ -160,9 +162,11 @@ class Form(BaseForm, DriveObject):
         from pygsuite.forms.generated.update_settings_request import UpdateSettingsRequest
 
         uf = lambda: self._mutation(  # noqa: E731
-            [UpdateSettingsRequest(settings=settings).wire_format]
+            [UpdateSettingsRequest(settings=settings, update_mask="*").wire_format]
         )
-        settings._info = WatchedDictionary(parent_dict=settings._info, update_factory=uf)
+        settings._info = WatchedDictionary(
+            parent_dict=settings._info, update_factory=uf, default_flush=True
+        )
         super(Form, self.__class__).settings.fset(self, settings)  # type:ignore
         self._settings_cache = None
 
