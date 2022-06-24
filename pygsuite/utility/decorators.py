@@ -2,6 +2,7 @@ import time
 from functools import wraps
 from types import MethodType
 from typing import Optional, Tuple, Union, Type
+from random import randint
 
 
 class lazy_property(object):
@@ -68,6 +69,8 @@ def retry(  # noqa: C901
                         logger.warning(msg)
                     else:
                         print(msg)
+                    # add some additional jitter between 0 and 5 seconds
+                    mdelay += randint(0, 50) / 10
                     time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
