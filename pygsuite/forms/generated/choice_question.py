@@ -9,8 +9,8 @@ class ChoiceQuestion(BaseFormItem):
     A radio/checkbox/dropdown question.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         options: Optional[List["Option"]] = None,
         shuffle: Optional[bool] = None,
         type: Optional[str] = None,

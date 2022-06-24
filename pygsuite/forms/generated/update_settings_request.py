@@ -9,8 +9,8 @@ class UpdateSettingsRequest(BaseFormItem):
     Update Form's FormSettings.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         settings: Optional["FormSettings"] = None,
         update_mask: Optional[str] = None,
         object_info: Optional[Dict] = None,

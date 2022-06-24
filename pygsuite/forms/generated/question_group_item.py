@@ -11,8 +11,8 @@ class QuestionGroupItem(BaseFormItem):
     Defines a question that comprises multiple questions grouped together.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         grid: Optional["Grid"] = None,
         image: Optional["Image"] = None,
         questions: Optional[List["Question"]] = None,

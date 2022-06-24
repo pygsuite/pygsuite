@@ -8,8 +8,8 @@ class TextQuestion(BaseFormItem):
     A text-based question.
     """
 
-    def __init__(
-        self, paragraph: Optional[bool] = None, object_info: Optional[Dict] = None  # noqa: C901
+    def __init__(  # noqa: C901
+        self, paragraph: Optional[bool] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

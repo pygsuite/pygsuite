@@ -9,10 +9,8 @@ class FormSettings(BaseFormItem):
     A form's settings.
     """
 
-    def __init__(
-        self,  # noqa: C901
-        quiz_settings: Optional["QuizSettings"] = None,
-        object_info: Optional[Dict] = None,
+    def __init__(  # noqa: C901
+        self, quiz_settings: Optional["QuizSettings"] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

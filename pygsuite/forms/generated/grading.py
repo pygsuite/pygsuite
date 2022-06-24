@@ -10,8 +10,8 @@ class Grading(BaseFormItem):
     Grading for a single question
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         correct_answers: Optional["CorrectAnswers"] = None,
         general_feedback: Optional["Feedback"] = None,
         point_value: Optional[int] = None,

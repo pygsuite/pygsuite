@@ -9,8 +9,8 @@ class VideoItem(BaseFormItem):
     An item containing a video.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         caption: Optional[str] = None,
         video: Optional["Video"] = None,
         object_info: Optional[Dict] = None,

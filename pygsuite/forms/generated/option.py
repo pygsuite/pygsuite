@@ -9,8 +9,8 @@ class Option(BaseFormItem):
     An option for a Choice question.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         go_to_action: Optional[str] = None,
         go_to_section_id: Optional[str] = None,
         image: Optional["Image"] = None,

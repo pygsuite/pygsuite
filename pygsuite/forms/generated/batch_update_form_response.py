@@ -11,8 +11,8 @@ class BatchUpdateFormResponse(BaseFormItem):
     Response to a BatchUpdateFormRequest.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         form: Optional["Form"] = None,
         replies: Optional[List["Response"]] = None,
         write_control: Optional["WriteControl"] = None,

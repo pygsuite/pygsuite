@@ -9,8 +9,8 @@ class Grid(BaseFormItem):
     A grid of choices (radio or check boxes) with each row constituting a separate question. Each row has the same choices, which are shown as the columns.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         columns: Optional["ChoiceQuestion"] = None,
         shuffle_questions: Optional[bool] = None,
         object_info: Optional[Dict] = None,

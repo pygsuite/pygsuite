@@ -10,8 +10,8 @@ class CreateItemRequest(BaseFormItem):
     Create an item in a form.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         item: Optional["Item"] = None,
         location: Optional["Location"] = None,
         object_info: Optional[Dict] = None,

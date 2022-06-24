@@ -8,8 +8,8 @@ class CorrectAnswer(BaseFormItem):
     A single correct answer for a question. For multiple-valued (`CHECKBOX`) questions, several `CorrectAnswer`s may be needed to represent a single correct response option.
     """
 
-    def __init__(
-        self, value: Optional[str] = None, object_info: Optional[Dict] = None  # noqa: C901
+    def __init__(  # noqa: C901
+        self, value: Optional[str] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

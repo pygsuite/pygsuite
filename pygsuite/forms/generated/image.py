@@ -9,8 +9,8 @@ class Image(BaseFormItem):
     Data representing an image.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         alt_text: Optional[str] = None,
         properties: Optional["MediaProperties"] = None,
         source_uri: Optional[str] = None,

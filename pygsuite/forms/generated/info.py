@@ -8,8 +8,8 @@ class Info(BaseFormItem):
     The general information for a form.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         description: Optional[str] = None,
         title: Optional[str] = None,
         object_info: Optional[Dict] = None,

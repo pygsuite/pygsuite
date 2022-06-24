@@ -8,8 +8,8 @@ class ScaleQuestion(BaseFormItem):
     A scale question. The user has a range of numeric values to choose from.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         high: Optional[int] = None,
         high_label: Optional[str] = None,
         low: Optional[int] = None,

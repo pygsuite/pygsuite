@@ -9,10 +9,8 @@ class CorrectAnswers(BaseFormItem):
     The answer key for a question.
     """
 
-    def __init__(
-        self,  # noqa: C901
-        answers: Optional[List["CorrectAnswer"]] = None,
-        object_info: Optional[Dict] = None,
+    def __init__(  # noqa: C901
+        self, answers: Optional[List["CorrectAnswer"]] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

@@ -8,8 +8,8 @@ class DateQuestion(BaseFormItem):
     A date question. Date questions default to just month + day.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         include_time: Optional[bool] = None,
         include_year: Optional[bool] = None,
         object_info: Optional[Dict] = None,

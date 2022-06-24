@@ -9,10 +9,8 @@ class WatchTarget(BaseFormItem):
     The target for notification delivery.
     """
 
-    def __init__(
-        self,  # noqa: C901
-        topic: Optional["CloudPubsubTopic"] = None,
-        object_info: Optional[Dict] = None,
+    def __init__(  # noqa: C901
+        self, topic: Optional["CloudPubsubTopic"] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

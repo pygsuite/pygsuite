@@ -9,10 +9,8 @@ class ListWatchesResponse(BaseFormItem):
     The response of a ListWatchesRequest.
     """
 
-    def __init__(
-        self,  # noqa: C901
-        watches: Optional[List["Watch"]] = None,
-        object_info: Optional[Dict] = None,
+    def __init__(  # noqa: C901
+        self, watches: Optional[List["Watch"]] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

@@ -8,8 +8,8 @@ class MediaProperties(BaseFormItem):
     Properties of the media.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         alignment: Optional[str] = None,
         width: Optional[int] = None,
         object_info: Optional[Dict] = None,

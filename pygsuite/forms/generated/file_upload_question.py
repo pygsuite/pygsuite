@@ -8,8 +8,8 @@ class FileUploadQuestion(BaseFormItem):
     A file upload question. The API currently does not support creating file upload questions.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         folder_id: Optional[str] = None,
         max_file_size: Optional[str] = None,
         max_files: Optional[int] = None,

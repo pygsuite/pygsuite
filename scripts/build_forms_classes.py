@@ -21,7 +21,8 @@ class {{target.class_name}}(BaseFormItem):
     """
     {{ target.description }}
     """
-    def __init__(self, # noqa: C901 {% for arg in target.props if arg.read_only is false() %}
+    def __init__( # noqa: C901
+                self,  {% for arg in target.props if arg.read_only is false() %}
                 {{arg.base}}: Optional[{% if not arg.is_basic_type %}"{{arg.type}}"{% else %}{{ arg.type }}{% endif %}] = None,{% endfor %}
                 object_info: Optional[Dict] = None):
         generated:Dict = {}

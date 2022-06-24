@@ -8,8 +8,8 @@ class WriteControl(BaseFormItem):
     Provides control over how write requests are executed.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         required_revision_id: Optional[str] = None,
         target_revision_id: Optional[str] = None,
         object_info: Optional[Dict] = None,

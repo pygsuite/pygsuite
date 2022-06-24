@@ -9,10 +9,8 @@ class DeleteItemRequest(BaseFormItem):
     Delete an item in a form.
     """
 
-    def __init__(
-        self,  # noqa: C901
-        location: Optional["Location"] = None,
-        object_info: Optional[Dict] = None,
+    def __init__(  # noqa: C901
+        self, location: Optional["Location"] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

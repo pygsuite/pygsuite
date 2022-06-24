@@ -9,8 +9,8 @@ class MoveItemRequest(BaseFormItem):
     Move an item in a form.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         new_location: Optional["Location"] = None,
         original_location: Optional["Location"] = None,
         object_info: Optional[Dict] = None,

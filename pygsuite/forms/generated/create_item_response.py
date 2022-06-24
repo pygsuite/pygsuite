@@ -8,8 +8,8 @@ class CreateItemResponse(BaseFormItem):
     The result of creating an item.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         item_id: Optional[str] = None,
         question_id: Optional[List["str"]] = None,
         object_info: Optional[Dict] = None,

@@ -10,8 +10,8 @@ class BatchUpdateFormRequest(BaseFormItem):
     A batch of updates to perform on a form. All the specified updates are made or none of them are.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         include_form_in_response: Optional[bool] = None,
         requests: Optional[List["Request"]] = None,
         write_control: Optional["WriteControl"] = None,

@@ -10,8 +10,8 @@ class QuestionItem(BaseFormItem):
     A form item containing a single question.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         image: Optional["Image"] = None,
         question: Optional["Question"] = None,
         object_info: Optional[Dict] = None,

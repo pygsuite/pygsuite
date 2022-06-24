@@ -9,8 +9,8 @@ class UpdateFormInfoRequest(BaseFormItem):
     Update Form's Info.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         info: Optional["Info"] = None,
         update_mask: Optional[str] = None,
         object_info: Optional[Dict] = None,

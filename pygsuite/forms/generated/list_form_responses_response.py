@@ -9,8 +9,8 @@ class ListFormResponsesResponse(BaseFormItem):
     Response to a ListFormResponsesRequest.
     """
 
-    def __init__(
-        self,  # noqa: C901
+    def __init__(  # noqa: C901
+        self,
         next_page_token: Optional[str] = None,
         responses: Optional[List["FormResponse"]] = None,
         object_info: Optional[Dict] = None,

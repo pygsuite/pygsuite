@@ -8,8 +8,8 @@ class CloudPubsubTopic(BaseFormItem):
     A Pub/Sub topic.
     """
 
-    def __init__(
-        self, topic_name: Optional[str] = None, object_info: Optional[Dict] = None  # noqa: C901
+    def __init__(  # noqa: C901
+        self, topic_name: Optional[str] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

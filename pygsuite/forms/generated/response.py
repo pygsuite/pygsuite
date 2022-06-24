@@ -9,10 +9,8 @@ class Response(BaseFormItem):
     A single response from an update.
     """
 
-    def __init__(
-        self,  # noqa: C901
-        create_item: Optional["CreateItemResponse"] = None,
-        object_info: Optional[Dict] = None,
+    def __init__(  # noqa: C901
+        self, create_item: Optional["CreateItemResponse"] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 

@@ -8,8 +8,8 @@ class QuizSettings(BaseFormItem):
     Settings related to quiz forms and grading. These must be updated with the UpdateSettingsRequest.
     """
 
-    def __init__(
-        self, is_quiz: Optional[bool] = None, object_info: Optional[Dict] = None  # noqa: C901
+    def __init__(  # noqa: C901
+        self, is_quiz: Optional[bool] = None, object_info: Optional[Dict] = None
     ):
         generated: Dict = {}
 
