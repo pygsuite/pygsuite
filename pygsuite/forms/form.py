@@ -187,7 +187,7 @@ class Form(BaseForm, DriveObject):
         return base
 
     @items.setter
-    def items(self, items: Union[List["Item"], WatchedList["Item"]]):  # type: ignore
+    def items(self, items: List["Item"]):  # type: ignore
         items = WatchedList(
             iterable=items,
             update_factory=self.items_update_factory,
