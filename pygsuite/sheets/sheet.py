@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Union, List, Dict
+from typing import Any, Optional, Union, List, Dict
 
 import pandas as pd
 from googleapiclient.discovery import Resource
@@ -12,6 +12,7 @@ from pygsuite.enums import MimeType
 from pygsuite.sheets.sheet_properties import SheetProperties
 from pygsuite.sheets.worksheet import Worksheet
 from pygsuite.utility.decorators import retry
+from pygsuite.exceptions import FatalHttpError
 
 
 class ValueInputOption(Enum):
@@ -101,7 +102,7 @@ class Spreadsheet(DriveObject):
         self.id = parse_id(id) if id else None
         DriveObject.__init__(self, id=id, client=client)
 
-        self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
+        self._spreadsheet = self._execute(self.service.spreadsheets().get(spreadsheetId=self.id))
         self._properties = self._spreadsheet.get("properties")
 
         # queues to add to and run in flush()
@@ -135,7 +136,7 @@ class Spreadsheet(DriveObject):
 
     def refresh(self):
         """Method to refresh the spreadsheets API connection."""
-        self._spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.id).execute()
+        self._spreadsheet = self._execute(self.service.spreadsheets().get(spreadsheetId=self.id))
 
         self._spreadsheets_update_queue = []
         self._values_update_queue = []
@@ -172,15 +173,14 @@ class Spreadsheet(DriveObject):
         response_dict = dict()
 
         if len(_spreadsheets_update_queue) > 0:
-            response_dict["spreadsheets_update_response"] = (
-                self.service.spreadsheets()
-                .batchUpdate(body={"requests": _spreadsheets_update_queue}, spreadsheetId=self.id)
-                .execute()
-                .get("responses")
-            )
+            response_dict["spreadsheets_update_response"] = self._execute(
+                self.service.spreadsheets().batchUpdate(
+                    body={"requests": _spreadsheets_update_queue}, spreadsheetId=self.id
+                )
+            ).get("responses")
 
         if len(_values_update_queue) > 0:
-            response_dict["values_update_response"] = (
+            response_dict["values_update_response"] = self._execute(
                 self.service.spreadsheets()
                 .values()
                 .batchUpdate(
@@ -193,9 +193,7 @@ class Spreadsheet(DriveObject):
                         "responseDateTimeRenderOption": response_date_time_render_option.value,
                     },
                 )
-                .execute()
-                .get("responses")
-            )
+            ).get("responses")
 
         # the queues are reset in the refresh() method
         # self._spreadsheets_update_queue = []
@@ -228,7 +226,9 @@ class Spreadsheet(DriveObject):
         pass
 
     def clear_range(self, range: str):
-        self.service.spreadsheets().values().clear(spreadsheetId=self.id, range=range).execute()
+        self._execute(
+            self.service.spreadsheets().values().clear(spreadsheetId=self.id, range=range)
+        )
         return self
 
     def delete_sheet(self, title: Optional[str] = None, id: Optional[int] = None):
@@ -252,6 +252,10 @@ class Spreadsheet(DriveObject):
 
         return self
 
+    @retry(HttpError, tries=3, delay=5, backoff=3, fatal_exceptions=(FatalHttpError,))
+    def _execute(self, resource: Any):
+        return resource.execute()
+
     def get_values_from_range(self, cell_range: str) -> ValueResponse:
         """Method to get data from a Spreadsheet range. Returns a value object which can be chained
         to a dataframe or list.
@@ -263,11 +267,10 @@ class Spreadsheet(DriveObject):
             self (Spreadsheet): The object itself, to method chain.
         """
 
-        get_response = (
+        get_response = self._execute(
             self.service.spreadsheets()
             .values()
             .batchGet(spreadsheetId=self.id, ranges=[cell_range])
-            .execute()
         )
 
         value_range = get_response.get("valueRanges")[0]  # TODO: cleanup
