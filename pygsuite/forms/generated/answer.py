@@ -11,7 +11,7 @@ class Answer(BaseFormItem):
     The submitted answer for a question.
     """
 
-    def __init__(self, object_info: Optional[Dict] = None):
+    def __init__(self, object_info: Optional[Dict] = None):  # noqa: C901
         generated: Dict = {}
 
         object_info = object_info or generated

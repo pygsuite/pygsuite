@@ -8,7 +8,9 @@ class RowQuestion(BaseFormItem):
     Configuration for a question that is part of a question group.
     """
 
-    def __init__(self, title: Optional[str] = None, object_info: Optional[Dict] = None):
+    def __init__(  # noqa: C901
+        self, title: Optional[str] = None, object_info: Optional[Dict] = None
+    ):
         generated: Dict = {}
 
         if title is not None:

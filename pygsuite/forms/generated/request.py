@@ -14,7 +14,7 @@ class Request(BaseFormItem):
     The kinds of update requests that can be made.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         create_item: Optional["CreateItemRequest"] = None,
         delete_item: Optional["DeleteItemRequest"] = None,

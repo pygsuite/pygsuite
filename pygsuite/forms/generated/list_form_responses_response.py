@@ -9,7 +9,7 @@ class ListFormResponsesResponse(BaseFormItem):
     Response to a ListFormResponsesRequest.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         next_page_token: Optional[str] = None,
         responses: Optional[List["FormResponse"]] = None,
@@ -37,7 +37,7 @@ class ListFormResponsesResponse(BaseFormItem):
 
     @property
     def responses(self) -> List["FormResponse"]:
-        return [FormResponse(object_info=v) for v in self._info.get("responses")]
+        return [FormResponse(object_info=v) for v in self._info.get("responses", [])]
 
     @responses.setter
     def responses(self, value: List["FormResponse"]):

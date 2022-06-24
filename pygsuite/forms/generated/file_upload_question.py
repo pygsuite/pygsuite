@@ -8,7 +8,7 @@ class FileUploadQuestion(BaseFormItem):
     A file upload question. The API currently does not support creating file upload questions.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         folder_id: Optional[str] = None,
         max_file_size: Optional[str] = None,
@@ -64,7 +64,7 @@ class FileUploadQuestion(BaseFormItem):
 
     @property
     def types(self) -> List["str"]:
-        return [v for v in self._info.get("types")]
+        return [v for v in self._info.get("types", [])]
 
     @types.setter
     def types(self, value: List["str"]):

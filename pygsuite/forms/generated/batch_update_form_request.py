@@ -10,7 +10,7 @@ class BatchUpdateFormRequest(BaseFormItem):
     A batch of updates to perform on a form. All the specified updates are made or none of them are.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         include_form_in_response: Optional[bool] = None,
         requests: Optional[List["Request"]] = None,
@@ -42,7 +42,7 @@ class BatchUpdateFormRequest(BaseFormItem):
 
     @property
     def requests(self) -> List["Request"]:
-        return [Request(object_info=v) for v in self._info.get("requests")]
+        return [Request(object_info=v) for v in self._info.get("requests", [])]
 
     @requests.setter
     def requests(self, value: List["Request"]):

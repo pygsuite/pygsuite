@@ -8,7 +8,7 @@ class TextLink(BaseFormItem):
     Link for text.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         display_text: Optional[str] = None,
         uri: Optional[str] = None,

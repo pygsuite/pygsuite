@@ -8,7 +8,7 @@ class TextAnswer(BaseFormItem):
     An answer to a question represented as text.
     """
 
-    def __init__(self, object_info: Optional[Dict] = None):
+    def __init__(self, object_info: Optional[Dict] = None):  # noqa: C901
         generated: Dict = {}
 
         object_info = object_info or generated

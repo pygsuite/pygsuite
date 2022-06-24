@@ -9,7 +9,7 @@ class ChoiceQuestion(BaseFormItem):
     A radio/checkbox/dropdown question.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         options: Optional[List["Option"]] = None,
         shuffle: Optional[bool] = None,
@@ -31,7 +31,7 @@ class ChoiceQuestion(BaseFormItem):
 
     @property
     def options(self) -> List["Option"]:
-        return [Option(object_info=v) for v in self._info.get("options")]
+        return [Option(object_info=v) for v in self._info.get("options", [])]
 
     @options.setter
     def options(self, value: List["Option"]):

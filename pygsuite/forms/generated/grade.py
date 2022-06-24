@@ -9,7 +9,7 @@ class Grade(BaseFormItem):
     Grade information associated with a respondent's answer to a question.
     """
 
-    def __init__(self, object_info: Optional[Dict] = None):
+    def __init__(self, object_info: Optional[Dict] = None):  # noqa: C901
         generated: Dict = {}
 
         object_info = object_info or generated

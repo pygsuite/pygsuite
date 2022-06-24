@@ -9,7 +9,7 @@ class Video(BaseFormItem):
     Data representing a video.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         properties: Optional["MediaProperties"] = None,
         youtube_uri: Optional[str] = None,

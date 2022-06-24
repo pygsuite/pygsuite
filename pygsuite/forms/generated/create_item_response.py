@@ -8,7 +8,7 @@ class CreateItemResponse(BaseFormItem):
     The result of creating an item.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         item_id: Optional[str] = None,
         question_id: Optional[List["str"]] = None,
@@ -36,7 +36,7 @@ class CreateItemResponse(BaseFormItem):
 
     @property
     def question_id(self) -> List["str"]:
-        return [v for v in self._info.get("questionId")]
+        return [v for v in self._info.get("questionId", [])]
 
     @question_id.setter
     def question_id(self, value: List["str"]):

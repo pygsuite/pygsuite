@@ -9,7 +9,7 @@ class CreateWatchRequest(BaseFormItem):
     Create a new watch.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         watch: Optional["Watch"] = None,
         watch_id: Optional[str] = None,

@@ -9,7 +9,7 @@ class Watch(BaseFormItem):
     A watch for events for a form. When the designated event happens, a notification will be published to the specified target. The notification's attributes will include a `formId` key that has the ID of the watched form and an `eventType` key that has the string of the type. Messages are sent with at-least-once delivery and are only dropped in extraordinary circumstances. Typically all notifications should be reliably delivered within a few seconds; however, in some situations notifications may be delayed. A watch expires seven days after it is created unless it is renewed with watches.renew
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         event_type: Optional[str] = None,
         target: Optional["WatchTarget"] = None,

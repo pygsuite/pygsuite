@@ -12,6 +12,7 @@
     * [Slides](tutorials/slides/slides.md)
     * [Docs](tutorials/docs/docs.md)
     * [Images](tutorials/images/images.md)
+    * [Forms](tutorials/forms/forms.md)
 * [How to Guides](how_to_guides/how_to_guides.md)
     * [Auth](how_to_guides/auth/auth.md)
     * [Drive](how_to_guides/drive/drive.md)

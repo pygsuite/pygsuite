@@ -11,7 +11,7 @@ class BatchUpdateFormResponse(BaseFormItem):
     Response to a BatchUpdateFormRequest.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         form: Optional["Form"] = None,
         replies: Optional[List["Response"]] = None,
@@ -43,7 +43,7 @@ class BatchUpdateFormResponse(BaseFormItem):
 
     @property
     def replies(self) -> List["Response"]:
-        return [Response(object_info=v) for v in self._info.get("replies")]
+        return [Response(object_info=v) for v in self._info.get("replies", [])]
 
     @replies.setter
     def replies(self, value: List["Response"]):

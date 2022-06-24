@@ -11,7 +11,7 @@ class Form(BaseFormItem):
     A Google Forms document. A form is created in Drive, and deleting a form or changing its access protections is done via the [Drive API](https://developers.google.com/drive/api/v3/about-sdk).
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         info: Optional["Info"] = None,
         items: Optional[List["Item"]] = None,
@@ -47,7 +47,7 @@ class Form(BaseFormItem):
 
     @property
     def items(self) -> List["Item"]:
-        return [Item(object_info=v) for v in self._info.get("items")]
+        return [Item(object_info=v) for v in self._info.get("items", [])]
 
     @items.setter
     def items(self, value: List["Item"]):

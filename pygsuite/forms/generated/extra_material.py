@@ -10,7 +10,7 @@ class ExtraMaterial(BaseFormItem):
     Supplementary material to the feedback.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         link: Optional["TextLink"] = None,
         video: Optional["VideoLink"] = None,

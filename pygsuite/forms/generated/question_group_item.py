@@ -11,7 +11,7 @@ class QuestionGroupItem(BaseFormItem):
     Defines a question that comprises multiple questions grouped together.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         grid: Optional["Grid"] = None,
         image: Optional["Image"] = None,
@@ -53,7 +53,7 @@ class QuestionGroupItem(BaseFormItem):
 
     @property
     def questions(self) -> List["Question"]:
-        return [Question(object_info=v) for v in self._info.get("questions")]
+        return [Question(object_info=v) for v in self._info.get("questions", [])]
 
     @questions.setter
     def questions(self, value: List["Question"]):

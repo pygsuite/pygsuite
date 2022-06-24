@@ -9,7 +9,7 @@ class Feedback(BaseFormItem):
     Feedback for a respondent about their response to a question.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         material: Optional[List["ExtraMaterial"]] = None,
         text: Optional[str] = None,
@@ -27,7 +27,7 @@ class Feedback(BaseFormItem):
 
     @property
     def material(self) -> List["ExtraMaterial"]:
-        return [ExtraMaterial(object_info=v) for v in self._info.get("material")]
+        return [ExtraMaterial(object_info=v) for v in self._info.get("material", [])]
 
     @material.setter
     def material(self, value: List["ExtraMaterial"]):

@@ -2,15 +2,16 @@
 
 ## Modern Python
 
-Type declarations and test coverage.
+Simple, pythonic API. Type declarations and test coverage.
 
-## Performance Optimzed
+## Performance Optimized
 
-Batching of requests.
+Easy batching of requests. Reasonable retries and exponential backoff. 
 
-## Secret Management
+## Easy Configuration
 
-Simplified authentication management.
+Simplified authentication management for users and service accounts. Make your life easier, or embed into 
+enterprise workloads on schedule. 
 
 ## Helpful Utilities
 

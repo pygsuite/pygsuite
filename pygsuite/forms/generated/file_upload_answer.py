@@ -8,7 +8,7 @@ class FileUploadAnswer(BaseFormItem):
     Info for a single file submitted to a file upload question.
     """
 
-    def __init__(self, object_info: Optional[Dict] = None):
+    def __init__(self, object_info: Optional[Dict] = None):  # noqa: C901
         generated: Dict = {}
 
         object_info = object_info or generated
