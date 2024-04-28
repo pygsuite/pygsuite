@@ -21,7 +21,7 @@ Pygsuite supports the following:
 - Docs
 - Forms
 
-as well as providing a base level of Drive support for these 4 and beyond, such as for sharing and managing objects. 
+As well as providing a base level of Drive support for these 4 and beyond, such as for sharing and managing objects. 
 
 ## Install
 
